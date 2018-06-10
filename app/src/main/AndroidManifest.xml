@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="technians.com.vucabsdriver">
+
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:name=".AppController"
+        android:allowBackup="true"
+        android:icon="@drawable/vucabsquarelogo"
+        android:label="@string/app_name"
+        android:roundIcon="@drawable/vucabsquarelogo"
+        android:screenOrientation="portrait"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        tools:replace="android:allowBackup">
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
+
+        <!-- <activity -->
+        <!-- android:name=".MainActivity" -->
+        <!-- android:windowSoftInputMode="adjustPan" /> -->
+        <activity android:name=".PayUMoneyIntegrate.PayUMoneyActivity" />
+        <!-- <activity android:name=".BillDetailsActivity"> -->
+        <!-- <meta-data -->
+        <!-- android:name="android.support.PARENT_ACTIVITY" -->
+        <!-- android:value=".MainActivity" /> -->
+        <!-- </activity> -->
+        <activity android:name=".SplashScreenActivity" />
+        <!-- <activity android:name=".DashboardItems.DriverDuty.BookingOtpActivity"> -->
+        <!-- <meta-data -->
+        <!-- android:name="android.support.PARENT_ACTIVITY" -->
+        <!-- android:value=".MainActivity" /> -->
+        <!-- </activity> -->
+        <!-- <activity android:name=".DashboardItems.DriverDuty.AssingedBooking"> -->
+        <!-- <meta-data -->
+        <!-- android:name="android.support.PARENT_ACTIVITY" -->
+        <!-- android:value=".MainActivity" /> -->
+        <!-- </activity> -->
+
+        <service android:name=".BackgroundFusedLocation" />
+
+        <activity android:name=".View.Login.LoginWithPhone.LoginWithPhoneActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".View.Login.LoginWithOTP.LoginWithOTPActivity" />
+        <activity
+            android:name=".View.MainView.ContainerActivity.NavigationActivity"
+            android:theme="@style/AppTheme" />
+        <activity android:name=".View.Login.BaseActivity" />
+        <activity android:name=".View.MainView.BookingOTP.OTPBookingActivity" />
+
+        <receiver android:name=".OTPReceivers.OtpReader">
+            <intent-filter>
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- [START firebase_service] -->
+        <service android:name=".FirebaseService.MyFirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <!-- [END firebase_service] -->
+        <!-- [START firebase_iid_service] -->
+        <service android:name=".FirebaseService.MyFirebaseInstanceIDService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+            </intent-filter>
+        </service>
+        <!-- [END firebase_iid_service] -->
+        <service
+            android:name=".FirebaseService.MyJobService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
+            </intent-filter>
+        </service>
+
+        <!--
+             Set custom default icon. This is used when no icon is set for incoming notification messages.
+              See README(https://goo.gl/l4GJaQ) for more.
+        -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/vucablogo_square_xxxdpi" />
+        <!--
+             Set color used with incoming notification messages. This is used when no color is set for the incoming
+             notification message. See README(https://goo.gl/6BKBk7) for more.
+        -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/colorAccent" />
+        <!-- [END fcm_default_icon] -->
+        <!-- [START fcm_default_channel] -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="@string/default_notification_channel_id" />
+        <!-- [END fcm_default_channel] -->
+
+        <activity android:name=".View.MainView.AssingedBooking.BookingAssingedActivity" />
+        <activity android:name=".View.MainView.TripEnd.TripEndActivity"></activity>
+    </application>
+
+</manifest>

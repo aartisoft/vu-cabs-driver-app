@@ -1,0 +1,142 @@
+<resources>
+    <string name="app_name">VU Cabs driver</string>
+    <string name="google_maps_key">AIzaSyDJBODAVYBAgrDvUnSk5QhbRjckVXKWca8</string>
+    <string name="pickupfrom">Pickup from</string>
+    <string name="dropat">Drop at</string>
+    <string name="EnterMobileNumber">Enter your mobile number</string>
+    <string name="countrycode">+91</string>
+    <string name="slider">Slider</string>
+    <string name="logo">Logo</string>
+    <string name="Entermobilenumber">Enter mobile number</string>
+    <string name="PleaseEnterMobile">Please enter your mobile number</string>
+    <string name="Example">eg. 9999999999</string>
+    <string name="EnterOTP">Enter OTP</string>
+    <string name="PleaseEnterOTP">Enter the 4- digit code sent to you at +91 9999999999</string>
+    <string name="zero">0</string>
+    <string name="Register">Register</string>
+    <string name="FirstName">First Name</string>
+    <string name="LastName">Last Name</string>
+    <string name="Email">name@example.com</string>
+    <string name="Next">Next</string>
+    <string name="termsandcons"><![CDATA[I confirm that i have read and agree to the Terms & Conditions.]]></string>
+    <string name="confirm">Confirm</string>
+    <string name="availablecabs">Available cabs</string>
+    <string name="confirmpool">Confirm Pool</string>
+    <string name="confirmgo">Confirm Go</string>
+    <string name="seats">How many seats do you need?</string>
+    <string name="confirmseats">Confirm Seats</string>
+    <string name="Payment">Payment</string>
+    <string name="BookingConfirmed">Booking Confirmed</string>
+    <string name="title_activity_base">BaseActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="EnterLocation">Enter Location</string>
+    <string name="SavedPlaces">Saved Places</string>
+
+    <string name="log_out_user">Logout</string>
+    <string name="BillDetails">Bill details</string>
+    <string name="title_activity_firebase">FirebaseActivity</string>
+    <string name="timeout">Request timeout</string>
+    <string name="nointernet">Check internet connection</string>
+    <string name="generic_error">Some error occurred</string>
+    <string name="str_Offduty">Off Duty</string>
+    <string name="str_terms"><![CDATA[Terms & Conditions]]></string>
+    <string name="no_location_detected">No location detected</string>
+    <string name="launch_activity">lauch</string>
+    <string name="remove_location_updates">remove_location_updates</string>
+    <string name="location_updated">location_updated</string>
+    <string name="edittext_hint_entermobile"><font size="16">ENTER YOUR MOBILE NUMBER</font></string>
+    <string name="enter_mobile">Please enter a valid mobile number</string>
+
+    <!--Translations-->
+    <string name="transition_arrow">transition_arrow</string>
+    <string name="transition_tvMoving">transition_tvMoving</string>
+    <string name="transition_ivFlag">transition_ivFlag</string>
+    <string name="transition_tvCode">transition_tvCode</string>
+    <string name="transition_tvPhoneNo">transition_tvPhoneNo</string>
+    <string name="transition_llPhone">transition_llPhone</string>
+    <string name="enter_no">Enter your mobile number</string>
+    <string name="title_activity_navigation">NAvigationActivity</string>
+
+    <string name="time">Time</string>
+    <string name="date">Date</string>
+    <string name="dropoff">Drop off</string>
+
+
+    <string name="drivetodestination">Drive to destination</string>
+    <string name="addtoll">Add toll</string>
+    <string name="endtrip">End trip</string>
+
+    <!--NEW Strings MVP-->
+    <string name="validmobilenumber">Please enter valid mobile number</string>
+    <string name="madatoryfield">This field cannot be empty</string>
+    <string name="resetotp">Resend OTP</string>
+    <string name="OTPReader">Vucabs</string>
+    <string name="msg_manual_otp">(Enter the OTP below in case if we fail to detect the SMS automatically)</string>
+    <string name="otp_message1">Enter the OTP sent to</string>
+    <string name="message2">Didn\'t receive the OTP?</string>
+    <string name="myduty">My Duty</string>
+    <string name="mypasses">My Passes</string>
+    <string name="documents">Documents</string>
+    <string name="profile">My Profile</string>
+    <string name="ridehistory">Ride History</string>
+    <string name="str_Logout">Logout</string>
+    <string name="termsandconds"><![CDATA[Terms & Conditions]]></string>
+    <string name="name">Name</string>
+    <string name="firebasenode">driver_current_location</string>
+    <string name="amounts">₹ 525</string>
+    <string name="remainingrides">REMAINING RIDES</string>
+    <string name="renewrides">Renew Pass</string>
+    <string name="expired">Expired</string>
+    <string name="unlimitedvalidity">Unlimited Validity</string>
+    <string name="Continue">Continue</string>
+    <string name="rechrgesuccess">Recharge Successful!</string>
+    <string name="rechrgefail">Recharge not successful</string>
+    <string name="rechargedescription">Rides have been added to your current pass</string>
+    <string name="rechargefaildescription">OOPS! Something went wrong. If you have already paid and rides are not added to your current pass then kindly contact VU Cabs customer support.</string>
+    <string name="call">Call us</string>
+    <string name="emailus">Email us</string>
+    <string name="mobile">Mobile</string>
+    <string name="verify_details">Verify your details</string>
+    <string name="ridescarry">Rides in your current pass will be carried forward</string>
+    <string name="ratingfeedback"><![CDATA[Rating & Feedback]]></string>
+    <string name="online">You are ONLINE!</string>
+    <string name="offline">You are OFFLINE!</string>
+    <string name="booking_id">Booking Id: </string>
+    <string name="destination">Destination</string>
+    <string name="pick_cust">Pick customer</string>
+    <string name="start_trip">Start trip</string>
+    <string name="nobooking">No new booking!</string>
+    <string name="pickup">Pickup</string>
+    <string name="bookingotp">Verify Ride OTP</string>
+    <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
+    <string name="default_notification_channel_name" translatable="true">News</string>
+    <string name="msg_token_fmt" translatable="false">InstanceID Token: %s</string>
+    <string name="firebasepushnode">driver_token</string>
+    <string name="otp_message2">Verify rider\'s booking OTP</string>
+    <string name="VerifyOtp">Verify booking OTP</string>
+    <string name="assingedtrip">Assinged Booking</string>
+    <string name="tolladdress">Enter toll address</string>
+    <string name="tollprice">Enter toll price</string>
+    <string name="tollsuccess">Toll added successfully!</string>
+    <string name="billend">Bill Details</string>
+    <string name="youreceived">You Received</string>
+    <string name="custname">Customer Name</string>
+    <string name="rideamount">Ride Amount</string>
+    <string name="tax">Tax</string>
+    <string name="toll">Toll</string>
+    <string name="totalpayable">Total Payable</string>
+    <string name="paymentmode">Payment Mode</string>
+    <string name="scheduled">Scheduled</string>
+    <string name="cancelled">Cancelled</string>
+    <string name="completed">Completed</string>
+    <string name="nohistory">No Ride History Available!</string>
+    <string name="norating">No Ratings Available!</string>
+    <string name="url_terms">https://www.vucabs.com/driver-terms-and-conditions</string>
+</resources>

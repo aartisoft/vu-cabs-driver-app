@@ -1,0 +1,157 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootFrame"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/dimen_16dp"
+        android:layout_marginRight="@dimen/dimen_16dp"
+        app:cardCornerRadius="7dp"
+        app:cardElevation="22dp">
+
+        <LinearLayout
+            android:id="@+id/llphone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/dimen_20dp"
+            android:background="#fff"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/dimen_20dp"
+                android:gravity="center"
+                android:text="@string/otp_message1"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@color/colorTextColor" />
+
+            <TextView
+                android:id="@+id/activity_enter_otp_mobilenumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawablePadding="@dimen/dimen_5dp"
+                android:drawableRight="@drawable/ic_edit_black_18dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@color/colorBlack"
+                android:textStyle="bold" />
+
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/activity_enter_otp_otpview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen_30dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="@dimen/dimen_5dp">
+
+                <EditText
+                    android:id="@+id/otp_one_edit_text"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginRight="@dimen/dimen_16dp"
+                    android:gravity="center"
+                    android:inputType="number"
+                    android:maxLength="1"
+                    android:maxLines="1"
+                    android:nextFocusLeft="@+id/otp_one_edit_text"
+                    android:nextFocusRight="@+id/otp_two_edit_text" />
+
+                <EditText
+                    android:id="@+id/otp_two_edit_text"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginRight="@dimen/dimen_16dp"
+                    android:gravity="center"
+                    android:inputType="number"
+                    android:maxLength="1"
+                    android:maxLines="1"
+                    android:nextFocusLeft="@+id/otp_one_edit_text"
+                    android:nextFocusRight="@+id/otp_three_edit_text" />
+
+                <EditText
+                    android:id="@+id/otp_three_edit_text"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginRight="@dimen/dimen_16dp"
+                    android:gravity="center"
+                    android:inputType="number"
+                    android:maxLength="1"
+                    android:maxLines="1"
+                    android:nextFocusLeft="@+id/otp_two_edit_text"
+                    android:nextFocusRight="@+id/otp_four_edit_text" />
+
+                <EditText
+                    android:id="@+id/otp_four_edit_text"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:gravity="center"
+                    android:inputType="number"
+                    android:maxLength="1"
+                    android:maxLines="1"
+                    android:nextFocusLeft="@+id/otp_three_edit_text"
+                    android:nextFocusRight="@+id/otp_four_edit_text" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dimen_30dp"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:padding="@dimen/dimen_5dp"
+                    android:text="@string/message2" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:padding="@dimen/dimen_5dp"
+                        android:text="@string/cb_please_wait" />
+
+                    <TextView
+                        android:id="@+id/activity_enter_otp_textView_timer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/dimen_5dp" />
+                </LinearLayout>
+            </LinearLayout>
+
+
+            <Button
+                android:id="@+id/activity_enter_otp_btn_resendOTP"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="@dimen/dimen_20dp"
+                android:layout_marginLeft="@dimen/dimen_20dp"
+                android:layout_marginRight="@dimen/dimen_20dp"
+                android:layout_marginTop="@dimen/dimen_30dp"
+                android:background="@drawable/bg_button_transparent_solidgreen"
+                android:padding="10dp"
+                android:text="@string/resetotp"
+                android:textColor="@drawable/button_text_color"
+                android:textSize="@dimen/dimen_18dp" />
+
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+</LinearLayout>

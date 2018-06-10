@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_myduty"
+            android:icon="@drawable/ic_taxi_driver"
+            android:title="@string/myduty" />
+        <item
+            android:id="@+id/nav_mypasses"
+            android:icon="@drawable/ic_ticket"
+            android:title="@string/mypasses" />
+        <item
+            android:id="@+id/nav_documents"
+            android:icon="@drawable/ic_file"
+            android:title="@string/documents" />
+        <item
+            android:id="@+id/nav_profile"
+            android:icon="@drawable/ic_if_user"
+            android:title="@string/profile" />
+        <item
+            android:id="@+id/nav_ridehistory"
+            android:icon="@drawable/ic_history"
+            android:title="@string/ridehistory" />
+        <item
+            android:id="@+id/nav_ratingfeedback"
+            android:icon="@drawable/ic_customer"
+            android:title="@string/ratingfeedback" />
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/ic_if_logout"
+            android:title="@string/str_Logout" />
+        <item
+            android:id="@+id/nav_termscons"
+            android:icon="@drawable/ic_document"
+            android:title="@string/termsandconds" />
+    </group>
+
+</menu>

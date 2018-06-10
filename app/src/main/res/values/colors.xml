@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#212121</color>
+    <color name="colorPrimaryLight">#484848</color>
+    <color name="colorPrimaryDark">#000000</color>
+    <color name="colorAccent">#a8c737</color>
+    <color name="colorTextColor">#343434</color>
+    <color name="colorAccentLight">#f4ff63</color>
+    <color name="colorAccentDark">#8aa600</color>
+    <color name="alphacolorAccentLight">#59ecff72</color>
+    <color name="colorBlack">#000000</color>
+    <color name="colorWhite">#ffffff</color>
+    <color name="colorBlackEighty">#B3000000</color>
+    <color name="green">#b7e03e</color>
+    <color name="yellow">#d5e428</color>
+    <color name="secondary_text">#727272</color>
+    <color name="backgroundcolor">#1A000000</color>
+    <color name="hintcolor">#a8a8a8</color>
+    <color name="backgroundGrey">#ECEFF1</color>
+    <color name="black_effective">#2a2a2a</color>
+    <color name="shadow">#d0d8dc</color>
+
+    <!--custom toggle-->
+
+    <color name="toggleOnColor">#a8c737</color>
+    <color name="toggleOffColor">@android:color/transparent</color>
+    <color name="uncheckedTextColor">#333</color>
+    <color name="CheckedTextColor">#333</color>
+</resources>
+

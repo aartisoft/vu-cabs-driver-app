@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/activity_entermobile_appbarlayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="@style/AppTheme.AppBarOverlay">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/activity_enterotp_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@color/colorPrimary"
+                app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="@string/EnterOTP"
+                android:textColor="@color/colorWhite"
+                android:textSize="18sp" />
+
+        </RelativeLayout>
+    </android.support.design.widget.AppBarLayout>
+
+    <TextView
+        android:id="@+id/activity_entermobile_textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/activity_entermobile_appbarlayout"
+        android:layout_margin="20dp"
+        android:text="@string/PleaseEnterOTP"
+        android:textColor="@color/colorBlackEighty"
+        android:textSize="21sp" />
+
+    <LinearLayout
+        android:id="@+id/activity_entermobile_editText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/activity_entermobile_textview"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:weightSum="4">
+
+        <EditText
+            android:id="@+id/activity_otp_et1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="30dp"
+            android:hint="@string/zero"
+            android:inputType="number"
+            android:maxLength="1"
+            android:padding="10dp"
+            android:textColorHint="@color/hintcolor"
+            android:textSize="20sp" />
+
+        <EditText
+            android:id="@+id/activity_otp_et2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="30dp"
+            android:hint="@string/zero"
+            android:inputType="number"
+            android:maxLength="1"
+            android:padding="10dp"
+            android:textColorHint="@color/hintcolor"
+            android:textSize="20sp" />
+
+        <EditText
+            android:id="@+id/activity_otp_et3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="30dp"
+            android:hint="@string/zero"
+            android:inputType="number"
+            android:maxLength="1"
+            android:padding="10dp"
+            android:textColorHint="@color/hintcolor"
+            android:textSize="20sp" />
+
+        <EditText
+            android:id="@+id/activity_otp_et4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="30dp"
+            android:hint="@string/zero"
+            android:inputType="number"
+            android:maxLength="1"
+            android:padding="10dp"
+            android:textColorHint="@color/hintcolor"
+            android:textSize="20sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/activity_entermobile_editText"
+        android:layout_marginTop="@dimen/dimen_5dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:padding="@dimen/dimen_5dp"
+            android:text="OTP not received?"
+            android:textColor="@color/colorBlackEighty" />
+
+        <Button
+            android:id="@+id/activity_enterotp_btn_resendOTP"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@color/transparent"
+            android:text="Resend OTP"
+            android:textColor="@android:color/holo_blue_dark" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/activity_enterotp_iv_forward"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_margin="30dp"
+        android:clipToPadding="false"
+        android:elevation="20dp"
+        android:src="@drawable/circular_arrow_forward" />
+</RelativeLayout>

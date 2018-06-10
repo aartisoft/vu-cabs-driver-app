@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="technians.com.vucabsdriver.DashboardItems.DriverDuty.AssingedBooking">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/activity_bookingassinged_appbarlayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/activity_bookingassinged_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+    </android.support.design.widget.AppBarLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/dimen_10dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            android:layout_marginTop="@dimen/dimen_10dp">
+
+            <TextView
+                android:id="@+id/activity_bookingassinged_bookingid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="BOOKING ID: 72"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                android:textColor="@color/colorAccent" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorBlack"/>
+        </LinearLayout>
+
+        <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dimen_10dp">
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/dimen_5dp"
+                android:weightSum="2">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="1"
+                    android:layout_gravity="center"
+                    android:layout_weight="@integer/int_1"
+                    android:drawableLeft="@drawable/ic_person_coloraccent_24dp"
+                    android:drawablePadding="@dimen/dimen_5dp"
+                    android:text="@string/name"
+                    android:textSize="@dimen/dimen_16dp" />
+
+                <TextView
+                    android:id="@+id/activity_bookingassinged_custname"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="1"
+                    android:layout_weight="@integer/int_1"
+                    android:text="" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/dimen_5dp"
+                android:weightSum="2">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="1"
+                    android:layout_gravity="center"
+                    android:layout_weight="@integer/int_1"
+                    android:drawableLeft="@drawable/ic_location_on_coloraccent_24dp"
+                    android:drawablePadding="@dimen/dimen_5dp"
+                    android:text="@string/pickup"
+                    android:textSize="@dimen/dimen_16dp" />
+
+                <TextView
+                    android:id="@+id/activity_bookingassinged_pickLocation"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="1"
+                    android:layout_weight="@integer/int_1"
+                    />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/dimen_5dp"
+                android:weightSum="2">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="1"
+                    android:layout_gravity="center"
+                    android:layout_weight="@integer/int_1"
+                    android:drawableLeft="@drawable/ic_location_on_coloraccent_24dp"
+                    android:drawablePadding="@dimen/dimen_5dp"
+                    android:text="@string/dropoff"
+                    android:textSize="@dimen/dimen_16dp" />
+
+                <TextView
+                    android:id="@+id/activity_bookingassinged_dropLocation"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="1"
+                    android:layout_weight="@integer/int_1"
+                    android:text="" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/dimen_5dp"
+                android:weightSum="2">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="1"
+                    android:layout_gravity="center"
+                    android:layout_weight="@integer/int_1"
+                    android:drawableLeft="@drawable/ic_date_range_coloraccent_24dp"
+                    android:drawablePadding="@dimen/dimen_5dp"
+                    android:text="@string/date"
+                    android:textSize="@dimen/dimen_16dp" />
+
+                <TextView
+                    android:id="@+id/activity_bookingassinged_date"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="1"
+                    android:layout_weight="@integer/int_1"
+                    android:text="" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/dimen_5dp"
+                android:weightSum="2">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="1"
+                    android:layout_gravity="center"
+                    android:layout_weight="@integer/int_1"
+                    android:drawableLeft="@drawable/ic_access_time_coloraccent_24dp"
+                    android:drawablePadding="@dimen/dimen_5dp"
+                    android:text="@string/time"
+                    android:textSize="@dimen/dimen_16dp" />
+
+                <TextView
+                    android:id="@+id/activity_bookingassinged_time"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="1"
+                    android:layout_weight="@integer/int_1"
+                    android:text="" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/dimen_5dp"
+                android:weightSum="2">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="1"
+                    android:layout_gravity="center"
+                    android:layout_weight="@integer/int_1"
+                    android:drawableLeft="@drawable/ic_attach_money_coloraccent_24dp"
+                    android:drawablePadding="@dimen/dimen_5dp"
+                    android:text="@string/Payment"
+                    android:textSize="@dimen/dimen_16dp" />
+
+                <TextView
+                    android:id="@+id/activity_bookingassinged_payment"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_column="1"
+                    android:layout_weight="@integer/int_1"
+                    />
+            </TableRow>
+
+
+        </TableLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="@integer/int_1" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="@dimen/dimen_30dp"
+            android:gravity="bottom"
+            android:orientation="horizontal"
+            android:paddingTop="@dimen/dimen_10dp">
+
+            <Button
+                android:id="@+id/activity_bookingassinged_btn_startnavigation"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginRight="@dimen/dimen_5dp"
+                android:layout_weight="@integer/int_1"
+                android:background="@drawable/bg_button_transparent_solidgreen"
+                android:text="@string/drivetodestination"
+                android:textColor="@drawable/button_text_color" />
+
+            <Button
+                android:id="@+id/activity_bookingassinged_btn_addtoll"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginRight="@dimen/dimen_5dp"
+                android:layout_weight="@integer/int_1"
+                android:background="@drawable/bg_button_transparent_solidgreen"
+                android:text="@string/addtoll"
+                android:textColor="@drawable/button_text_color" />
+
+            <Button
+                android:id="@+id/activity_bookingassinged_btn_endtrip"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="@integer/int_1"
+                android:background="@drawable/bg_button_transparent_solidgreen"
+                android:text="@string/endtrip"
+                android:textColor="@drawable/button_text_color" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,21 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res/me.rishabhkhanna.customtogglebutton"
+    >
+    <item
+        android:state_checked="false">
+        <shape android:shape="rectangle">
+            <corners android:radius="200dp" />
+            <stroke android:width="2dp" android:color="#a8c737" />
+            <solid android:color="@color/colorWhite" />
+            <!--<padding android:bottom="4dp" android:left="12dp" android:right="12dp" android:top="4dp" />-->
+        </shape>
+    </item>
+    <item android:state_checked="true">
+        <shape android:shape="rectangle">
+            <corners android:radius="200dp" />
+            <stroke android:width="2dp" android:color="#a8c737" />
+            <solid android:color="#a8c737" />
+            <!--<padding android:bottom="4dp" android:left="12dp" android:right="12dp" android:top="4dp" />-->
+        </shape>
+    </item>
+</selector>

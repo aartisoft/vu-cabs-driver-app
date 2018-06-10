@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_margin="@dimen/dimen_10dp"
+    app:cardCornerRadius="@dimen/dimen_2dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/dimen_10dp">
+
+        <TextView
+            android:id="@+id/rating_custname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/dimen_5dp"
+            android:text="SHkashf"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="@dimen/dimen_5dp">
+
+            <RatingBar
+                android:id="@+id/rating_ratingbar"
+                style="?android:attr/ratingBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:rating="4" />
+
+            <TextView
+                android:id="@+id/rating_ratingtext"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/dimen_10dp"
+                android:gravity="center"
+                android:text="4/5"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Small" />
+
+            <Space
+                android:layout_width="@dimen/dimen_0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="@integer/int_1" />
+
+            <TextView
+                android:id="@+id/rating_updatedate"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/dimen_10dp"
+                android:gravity="center"
+                android:text="April 14,2018"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Small" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/rating_comment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-light"
+            android:padding="@dimen/dimen_5dp"
+            android:text="lsjfafjslfj"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Small" />
+    </LinearLayout>    <!--<TextView-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="@dimen/dimen_1dp"-->
+    <!--android:background="@color/colorAccent" />-->
+</android.support.v7.widget.CardView>
