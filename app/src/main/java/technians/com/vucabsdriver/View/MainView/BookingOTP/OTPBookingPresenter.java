@@ -34,16 +34,15 @@ public class OTPBookingPresenter implements Presenter<OTPBookingMVPView> {
             public void onResponse(@NonNull Call<OTPResponce> call, @NonNull Response<OTPResponce> response) {
                 otpBookingMVPView.hideProgress();
                 if (response.body() != null) {
-                    otpBookingMVPView.gotoAssingedbooking();
 
                     //uncomment below code and remove above line
 
-//                    if (response.body().getStatus() == 200) {
-//                        otpBookingMVPView.gotoAssingedbooking();
-//                    }else {
-//                        String message = response.body().getMsg();
-//                        otpBookingMVPView.showMessage(message);
-//                    }
+                    if (response.body().getStatus() == 200) {
+                        otpBookingMVPView.gotoAssingedbooking();
+                    }else {
+                        String message = response.body().getMsg();
+                        otpBookingMVPView.showMessage(message);
+                    }
                 }
             }
 

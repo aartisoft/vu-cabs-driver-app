@@ -27,6 +27,7 @@ public class Profile extends RealmObject {
     private String Car_Seat;
     @SerializedName("car_type")
     private int Car_Type;
+    @SerializedName("car_type_name")
     private String Car_Type_Name;
     @SerializedName("car_img")
     private String CarURL;

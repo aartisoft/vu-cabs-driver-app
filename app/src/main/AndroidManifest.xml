@@ -27,17 +27,19 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
-
-        <!-- <activity -->
-        <!-- android:name=".MainActivity" -->
-        <!-- android:windowSoftInputMode="adjustPan" /> -->
         <activity android:name=".PayUMoneyIntegrate.PayUMoneyActivity" />
         <!-- <activity android:name=".BillDetailsActivity"> -->
         <!-- <meta-data -->
         <!-- android:name="android.support.PARENT_ACTIVITY" -->
         <!-- android:value=".MainActivity" /> -->
         <!-- </activity> -->
-        <activity android:name=".SplashScreenActivity" />
+        <activity android:name=".SplashScreenActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <!-- <activity android:name=".DashboardItems.DriverDuty.BookingOtpActivity"> -->
         <!-- <meta-data -->
         <!-- android:name="android.support.PARENT_ACTIVITY" -->
@@ -52,11 +54,7 @@
         <service android:name=".BackgroundFusedLocation" />
 
         <activity android:name=".View.Login.LoginWithPhone.LoginWithPhoneActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity android:name=".View.Login.LoginWithOTP.LoginWithOTPActivity" />
         <activity

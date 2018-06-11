@@ -98,8 +98,14 @@ public class NavigationActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            if(sessionManager.getCurrentFragment()!=R.id.nav_myduty){
+                displaySelectedScreen(R.id.nav_myduty);
+            }else {
+                super.onBackPressed();
+            }
         }
+
+
     }
 
     @Override

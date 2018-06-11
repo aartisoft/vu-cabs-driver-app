@@ -8,8 +8,8 @@ android {
         applicationId "technians.com.vucabsdriver"
         minSdkVersion 16
         targetSdkVersion 27
-        versionCode 8
-        versionName "1.5"
+        versionCode 9
+        versionName "1.6"
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -32,11 +32,8 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    implementation 'com.roughike:bottom-bar:2.3.1'
-    implementation 'me.relex:circleindicator:1.2.2@aar'
     implementation 'com.github.bumptech.glide:glide:3.7.0'
     implementation 'de.hdodenhof:circleimageview:2.1.0'
-    implementation 'com.android.volley:volley:1.1.0'
     //Play Services
     implementation 'com.google.android.gms:play-services-maps:15.0.1'
     implementation 'com.google.android.gms:play-services-location:15.0.1'
@@ -56,8 +53,6 @@ dependencies {
     //Splash Screen
     implementation 'com.github.wailbabou:Splasher:0.1.2'
 
-    // Custom Progress dialog
-    implementation 'com.github.javiersantos:MaterialStyledDialogs:2.1'
 
     // retrofit, gson
     implementation 'com.google.code.gson:gson:2.8.2'

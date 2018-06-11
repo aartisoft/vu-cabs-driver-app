@@ -11,6 +11,7 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 import io.realm.Realm;
 import retrofit2.Call;
@@ -18,6 +19,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import technians.com.vucabsdriver.Presenter.Presenter;
 import technians.com.vucabsdriver.R;
+import technians.com.vucabsdriver.Utilities.SessionManager;
 import technians.com.vucabsdriver.model.Profile.Profile;
 import technians.com.vucabsdriver.model.Profile.ProfileResponce;
 import technians.com.vucabsdriver.model.RetrofitError.NetworkError;
@@ -49,6 +51,8 @@ public class NavigationPresenter implements Presenter<NavigationMVPView> {
     }
 
     public void getProfile() {
+        Log.v("Profile123","Session: "+navigationMVPView.getSession().getToken());
+
         navigationMVPView.showProgress();
         ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
         Call<ProfileResponce> call = apiService.getProfile(navigationMVPView.getSession().getToken());

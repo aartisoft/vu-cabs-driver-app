@@ -77,52 +77,54 @@ public class BackgroundFusedLocation extends Service {
     protected void startLocationUpdates() {
         Log.v("Service123", "startLocationUpdates");
         profile = realm.where(Profile.class).findFirst();
-        DriverId = String.valueOf(profile.getDriver_ID());
+        if (profile!=null) {
+            DriverId = String.valueOf(profile.getDriver_ID());
 
-        Log.v("Service123", "DriverId: "+DriverId);
+            Log.v("Service123", "DriverId: " + DriverId);
 
-        final LocationRequest mLocationRequest = new LocationRequest();
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLocationRequest.setSmallestDisplacement(SMALLEST_DISPLACEMENT);
-        mLocationRequest.setInterval(UPDATE_INTERVAL);
-        mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
+            final LocationRequest mLocationRequest = new LocationRequest();
+            mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+            mLocationRequest.setSmallestDisplacement(SMALLEST_DISPLACEMENT);
+            mLocationRequest.setInterval(UPDATE_INTERVAL);
+            mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
 
-        mLocationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(LocationResult locationResult) {
-                // do work here
-                Log.v("Service123", "Result: "+locationResult);
-                onLocationChanged(locationResult.getLastLocation());
+            mLocationCallback = new LocationCallback() {
+                @Override
+                public void onLocationResult(LocationResult locationResult) {
+                    // do work here
+                    Log.v("Service123", "Result: " + locationResult);
+                    onLocationChanged(locationResult.getLastLocation());
 
-            }
-        };
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
-        builder.addLocationRequest(mLocationRequest);
-
-
-        DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
-        connectedRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                boolean connected = snapshot.getValue(Boolean.class);
-                if (connected) {
-                    if (ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                        return;
-                    }
-                    fusedLocationProviderClient.requestLocationUpdates(mLocationRequest, mLocationCallback,
-                            Looper.myLooper());
-
-                } else {
-                    mDatabase.child(getString(R.string.firebasenode))
-                            .child(DriverId).onDisconnect().removeValue();
-                    fusedLocationProviderClient.removeLocationUpdates(mLocationCallback);
                 }
-            }
+            };
+            LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
+            builder.addLocationRequest(mLocationRequest);
 
-            @Override
-            public void onCancelled(DatabaseError error) {
-            }
-        });
+
+            DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
+            connectedRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+                    boolean connected = snapshot.getValue(Boolean.class);
+                    if (connected) {
+                        if (ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                            return;
+                        }
+                        fusedLocationProviderClient.requestLocationUpdates(mLocationRequest, mLocationCallback,
+                                Looper.myLooper());
+
+                    } else {
+                        mDatabase.child(getString(R.string.firebasenode))
+                                .child(DriverId).onDisconnect().removeValue();
+                        fusedLocationProviderClient.removeLocationUpdates(mLocationCallback);
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError error) {
+                }
+            });
+        }
 
     }
 
