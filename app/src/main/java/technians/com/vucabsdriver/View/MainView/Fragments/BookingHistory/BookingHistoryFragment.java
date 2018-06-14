@@ -20,8 +20,7 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 import technians.com.vucabsdriver.R;
 import technians.com.vucabsdriver.Utilities.Constants;
-import technians.com.vucabsdriver.model.BookingHistory;
-import technians.com.vucabsdriver.model.PendingRequest.BookingData;
+import technians.com.vucabsdriver.Model.PendingRequest.BookingData;
 
 
 public class BookingHistoryFragment extends Fragment {
@@ -29,12 +28,8 @@ public class BookingHistoryFragment extends Fragment {
     private ProgressDialog mProgressDialogObj;
     private Realm realm;
 
-    public BookingHistoryFragment() {
-        // Required empty public constructor
-    }
-    List<BookingHistory> BookingList = new ArrayList<>();
     private RecyclerView recyclerView;
-    TextView mTextViewNoBooking;
+    private TextView mTextViewNoBooking;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -77,4 +72,9 @@ public class BookingHistoryFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onDestroyView() {
+        realm.close();
+        super.onDestroyView();
+    }
 }

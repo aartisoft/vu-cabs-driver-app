@@ -68,10 +68,10 @@ import technians.com.vucabsdriver.R;
 import technians.com.vucabsdriver.Utilities.Constants;
 import technians.com.vucabsdriver.Utilities.SessionManager;
 import technians.com.vucabsdriver.View.MainView.BookingOTP.OTPBookingActivity;
-import technians.com.vucabsdriver.model.DriverLocationPackage.DriverCurrentLocation;
-import technians.com.vucabsdriver.model.DriverLocationPackage.DriverLocation;
-import technians.com.vucabsdriver.model.PendingRequest.BookingData;
-import technians.com.vucabsdriver.model.DriverLocationPackage.ResumeMap;
+import technians.com.vucabsdriver.Model.DriverLocationPackage.DriverCurrentLocation;
+import technians.com.vucabsdriver.Model.DriverLocationPackage.DriverLocation;
+import technians.com.vucabsdriver.Model.PendingRequest.BookingData;
+import technians.com.vucabsdriver.Model.DriverLocationPackage.ResumeMap;
 
 
 public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View.OnClickListener, MyDutyMVPView {
@@ -79,28 +79,25 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
     public static final int LOCATION_PERMISSION_REQUEST_CODE = 858;
     public static final int REQUEST_CHECK_SETTINGS = 100;
 
-    GoogleMap mMap;
-    Location userLocation;
+    private GoogleMap mMap;
+    private Location userLocation;
 
     private CustomToggleButton customToggleButton;
-    InfoWindowData info = new InfoWindowData();
-    ProgressDialog progressDialog;
-    SessionManager sessionManager;
-    MyDutyPresenter presenter;
-    Realm realm;
-    SupportMapFragment mapFragment;
+    private InfoWindowData info = new InfoWindowData();
+    private ProgressDialog progressDialog;
+    private SessionManager sessionManager;
+    private MyDutyPresenter presenter;
+    private Realm realm;
+    private SupportMapFragment mapFragment;
 
-    ImageView Refreshbtn;
-    TextView BookingId, BookingDate, Destination, NoBooking;
-    Button btn_PickCustomer, btn_starttrip;
-    BookingData bookingData;
-    LinearLayout linearLayout_booking;
+    private  TextView BookingId, BookingDate, Destination, NoBooking;
+    private BookingData bookingData;
+    private LinearLayout linearLayout_booking;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        Log.v("Duty1234", "onCreateView");
         View view = inflater.inflate(R.layout.fragment_my_duty, container, false);
         progressDialog = Constants.showProgressDialog(getActivity());
         presenter = new MyDutyPresenter();
@@ -114,15 +111,15 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
 
 
         customToggleButton = view.findViewById(R.id.fragment_myduty_togglebtn);
-        Refreshbtn = view.findViewById(R.id.fragment_myduty_btn_refresh);
+        ImageView refreshbtn = view.findViewById(R.id.fragment_myduty_btn_refresh);
         BookingId = view.findViewById(R.id.fragment_myduty_tv_bookingid);
         BookingDate = view.findViewById(R.id.fragment_myduty_tv_date);
         Destination = view.findViewById(R.id.fragment_myduty_tv_destination);
         NoBooking = view.findViewById(R.id.fragment_myduty_tv_nobooking);
-        btn_PickCustomer = view.findViewById(R.id.fragment_myduty_btn_pickcutomer);
-        btn_starttrip = view.findViewById(R.id.fragment_myduty_btn_starttrip);
+        Button btn_PickCustomer = view.findViewById(R.id.fragment_myduty_btn_pickcutomer);
+        Button btn_starttrip = view.findViewById(R.id.fragment_myduty_btn_starttrip);
         linearLayout_booking = view.findViewById(R.id.fragment_myduty_layoutbooking);
-        Refreshbtn.setOnClickListener(this);
+        refreshbtn.setOnClickListener(this);
         btn_PickCustomer.setOnClickListener(this);
         btn_starttrip.setOnClickListener(this);
 
@@ -137,12 +134,10 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
                 if (isChecked) {
-                    Log.v("Duty1234", "if checked");
                     startService();
                     changedriverstatus(true);
                     Toast.makeText(getActivity(), getString(R.string.online), Toast.LENGTH_LONG).show();
                 } else {
-                    Log.v("Duty1234", "if unchecked");
                     stopService();
                     changedriverstatus(false);
                     Toast.makeText(getActivity(), getString(R.string.offline), Toast.LENGTH_LONG).show();
@@ -154,21 +149,15 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
     }
 
     private void changedriverstatus(Boolean status) {
-        if (!String.valueOf(realm.where(ResumeMap.class).findFirst()).equals("null")) {
-            realm.beginTransaction();
-            realm.where(ResumeMap.class).findFirst().setDriverStatus(status);
-            realm.commitTransaction();
-        }
-    }
-
-    private boolean isMyServiceRunning(Class<?> serviceClass) {
-        ActivityManager manager = (ActivityManager) getActivity().getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (serviceClass.getName().equals(service.service.getClassName())) {
-                return true;
+        try {
+            if (!String.valueOf(realm.where(ResumeMap.class).findFirst()).equals("null")) {
+                realm.beginTransaction();
+                realm.where(ResumeMap.class).findFirst().setDriverStatus(status);
+                realm.commitTransaction();
             }
+        } catch (Exception e) {
+            Toast.makeText(getActivity(), getString(R.string.label_something_went_wrong), Toast.LENGTH_SHORT).show();
         }
-        return false;
     }
 
     @Override
@@ -181,14 +170,12 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
                 getActivity(), R.raw.maps_style);
         googleMap.setMapStyle(style);
         if (checkPermission()) onLocationPermissionGranted();
-        Log.v("Duty1234", "OnMapReady");
 
     }
 
 
     @RequiresPermission(Manifest.permission.ACCESS_FINE_LOCATION)
     private void onLocationPermissionGranted() {
-        Log.v("Duty1234", "onLocationPermissionGranted");
 
         if (!checkPermission()) return;
 
@@ -207,16 +194,19 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
         task.addOnSuccessListener(getActivity(), new OnSuccessListener<LocationSettingsResponse>() {
             @Override
             public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
-
-                if (!String.valueOf(realm.where(ResumeMap.class).findFirst()).equals("null")) {
+                try {
+                    if (!String.valueOf(realm.where(ResumeMap.class).findFirst()).equals("null")) {
 //
-                    ResumeMap resumeMap = realm.where(ResumeMap.class).findFirst();
-                    if (resumeMap.getDriverStatus()) {
-                        startService();
-                    } else {
-                        stopService();
+                        ResumeMap resumeMap = realm.where(ResumeMap.class).findFirst();
+                        if (resumeMap.getDriverStatus()) {
+                            startService();
+                        } else {
+                            stopService();
+                        }
+//
                     }
-//
+                } catch (Exception e) {
+                    Toast.makeText(getActivity(), getString(R.string.label_something_went_wrong), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -228,8 +218,6 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
                     // Location settings are not satisfied, but this can be fixed
                     // by showing the user a dialog.
                     try {
-                        // Show the dialog by calling startResolutionForResult(),
-                        // and check the result in onActivityResult().
                         ResolvableApiException resolvable = (ResolvableApiException) e;
                         resolvable.startResolutionForResult(getActivity(),
                                 REQUEST_CHECK_SETTINGS);
@@ -245,40 +233,42 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
     @Override
     public void onResume() {
         super.onResume();
-        Log.v("Duty1234", "onResume");
         mapFragment.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(GoogleMap googleMap) {
-                Log.v("Duty1234", "resume" + String.valueOf(realm.where(ResumeMap.class).findFirst()));
-                if (!String.valueOf(realm.where(ResumeMap.class).findFirst()).equals("null")) {
+                try {
+                    if (!String.valueOf(realm.where(ResumeMap.class).findFirst()).equals("null")) {
 
-                    ResumeMap resumeMap = realm.where(ResumeMap.class).findFirst();
-                    if (resumeMap.getDriverStatus() == null) {
-                        customToggleButton.setChecked(true);
-                    } else {
-                        customToggleButton.setChecked(resumeMap.getDriverStatus());
-                    }
+                        ResumeMap resumeMap = realm.where(ResumeMap.class).findFirst();
+                        if (resumeMap.getDriverStatus() == null) {
+                            customToggleButton.setChecked(true);
+                        } else {
+                            customToggleButton.setChecked(resumeMap.getDriverStatus());
+                        }
 //
-                    CameraPosition cameraPosition = new CameraPosition.Builder()
-                            .target(new LatLng(resumeMap.getLatitude(), resumeMap.getLongitude()))
-                            .zoom(17)
-                            .build();
+                        CameraPosition cameraPosition = new CameraPosition.Builder()
+                                .target(new LatLng(resumeMap.getLatitude(), resumeMap.getLongitude()))
+                                .zoom(17)
+                                .build();
 
-                    addOverlay(new LatLng(resumeMap.getLatitude(), resumeMap.getLongitude()));
-                    mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-                    MarkerOptions markerOpt = new MarkerOptions();
-                    markerOpt.position(new LatLng(resumeMap.getLatitude(), resumeMap.getLongitude()))
-                            .snippet(resumeMap.getAddress())
-                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                        addOverlay(new LatLng(resumeMap.getLatitude(), resumeMap.getLongitude()));
+                        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                        MarkerOptions markerOpt = new MarkerOptions();
+                        markerOpt.position(new LatLng(resumeMap.getLatitude(), resumeMap.getLongitude()))
+                                .snippet(resumeMap.getAddress())
+                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
 
-                    info.setLast_updated(resumeMap.getLastupdated());
+                        info.setLast_updated(resumeMap.getLastupdated());
 
-                    CustomInfoWindowGoogleMap customInfoWindow = new CustomInfoWindowGoogleMap(getActivity());
-                    mMap.setInfoWindowAdapter(customInfoWindow);
+                        CustomInfoWindowGoogleMap customInfoWindow = new CustomInfoWindowGoogleMap(getActivity());
+                        mMap.setInfoWindowAdapter(customInfoWindow);
 
-                    Marker marker = mMap.addMarker(markerOpt);
-                    marker.setTag(info);
-                    marker.showInfoWindow();
+                        Marker marker = mMap.addMarker(markerOpt);
+                        marker.setTag(info);
+                        marker.showInfoWindow();
+                    }
+                } catch (Exception e) {
+                    Toast.makeText(getActivity(), getString(R.string.label_something_went_wrong), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -299,28 +289,32 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            mMap.clear();
-            Location location = intent.getParcelableExtra("Location");
-            DriverCurrentLocation driverLocation = (DriverCurrentLocation) intent.getSerializableExtra("DriverLocation");
-            userLocation = location;
+            try {
+                mMap.clear();
+                Location location = intent.getParcelableExtra("Location");
+                DriverCurrentLocation driverLocation = (DriverCurrentLocation) intent.getSerializableExtra("DriverLocation");
+                userLocation = location;
 
-            realm.beginTransaction();
-            realm.copyToRealmOrUpdate(new DriverLocation(1, location.getLatitude(), location.getLongitude()));
-            realm.commitTransaction();
+                realm.beginTransaction();
+                realm.copyToRealmOrUpdate(new DriverLocation(1, location.getLatitude(), location.getLongitude()));
+                realm.commitTransaction();
 
-            CameraPosition cameraPosition = new CameraPosition.Builder()
-                    .target(new LatLng(userLocation.getLatitude(), userLocation.getLongitude()))
-                    .zoom(17)
-                    .build();
+                CameraPosition cameraPosition = new CameraPosition.Builder()
+                        .target(new LatLng(userLocation.getLatitude(), userLocation.getLongitude()))
+                        .zoom(17)
+                        .build();
 
-            addOverlay(new LatLng(userLocation.getLatitude(), userLocation.getLongitude()));
-            mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-            addMarker(driverLocation);
-            ResumeMap resumeMap = new ResumeMap(1, driverLocation.getAddress(), driverLocation.getUpdated_at(), true,
-                    location.getLatitude(), location.getLongitude());
-            realm.beginTransaction();
-            realm.copyToRealmOrUpdate(resumeMap);
-            realm.commitTransaction();
+                addOverlay(new LatLng(userLocation.getLatitude(), userLocation.getLongitude()));
+                mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                addMarker(driverLocation);
+                ResumeMap resumeMap = new ResumeMap(1, driverLocation.getAddress(), driverLocation.getUpdated_at(), true,
+                        location.getLatitude(), location.getLongitude());
+                realm.beginTransaction();
+                realm.copyToRealmOrUpdate(resumeMap);
+                realm.commitTransaction();
+            } catch (Exception e) {
+                Toast.makeText(getActivity(), getString(R.string.label_something_went_wrong), Toast.LENGTH_SHORT).show();
+            }
         }
     };
 
@@ -338,13 +332,6 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
         return true;
     }
 
-    public Location getUserLocation() {
-        if (userLocation != null)
-            return userLocation;
-
-        return null;
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
@@ -359,21 +346,24 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
     }
 
     private void addMarker(DriverCurrentLocation driverLocation) {
-        //Marker
-        MarkerOptions markerOpt = new MarkerOptions();
-        markerOpt.position(new LatLng(userLocation.getLatitude(), userLocation.getLongitude()))
-                .snippet(driverLocation.getAddress())
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+        try {
+            MarkerOptions markerOpt = new MarkerOptions();
+            markerOpt.position(new LatLng(userLocation.getLatitude(), userLocation.getLongitude()))
+                    .snippet(driverLocation.getAddress())
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
 
-        info.setLast_updated(driverLocation.getUpdated_at());
+            info.setLast_updated(driverLocation.getUpdated_at());
 //        info.setStatus(DriverStatus);
 
-        CustomInfoWindowGoogleMap customInfoWindow = new CustomInfoWindowGoogleMap(getActivity());
-        mMap.setInfoWindowAdapter(customInfoWindow);
+            CustomInfoWindowGoogleMap customInfoWindow = new CustomInfoWindowGoogleMap(getActivity());
+            mMap.setInfoWindowAdapter(customInfoWindow);
 
-        Marker marker = mMap.addMarker(markerOpt);
-        marker.setTag(info);
-        marker.showInfoWindow();
+            Marker marker = mMap.addMarker(markerOpt);
+            marker.setTag(info);
+            marker.showInfoWindow();
+        } catch (Exception e) {
+            Toast.makeText(getActivity(), getString(R.string.label_something_went_wrong), Toast.LENGTH_SHORT).show();
+        }
     }
 
     private Bitmap drawableToBitmap(Drawable drawable) {
@@ -457,16 +447,12 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
 
     @Override
     public void onDestroyView() {
-
+        realm.close();
+        presenter.detachView();
         getActivity().unregisterReceiver(broadcastReceiver);
         super.onDestroyView();
     }
 
-    @Override
-    public void onDestroy() {
-        presenter.detachView();
-        super.onDestroy();
-    }
 
     @Override
     public SessionManager getSession() {
@@ -501,16 +487,20 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
                 break;
             }
             case R.id.fragment_myduty_btn_pickcutomer: {
-                DriverLocation driverLocation = realm.where(DriverLocation.class).findFirst();
-                Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
-                        Uri.parse("http://maps.google.com/maps?saddr=" + driverLocation.getLatitude() + "," + driverLocation.getLongitude() +
-                                "&daddr=" + bookingData.getPickup_latitude() + "," + bookingData.getPickup_longitude() + ""));
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
+                try {
+                    DriverLocation driverLocation = realm.where(DriverLocation.class).findFirst();
+                    Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
+                            Uri.parse("http://maps.google.com/maps?saddr=" + driverLocation.getLatitude() + "," + driverLocation.getLongitude() +
+                                    "&daddr=" + bookingData.getPickup_latitude() + "," + bookingData.getPickup_longitude() + ""));
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                } catch (Exception e) {
+                    Toast.makeText(getActivity(), getString(R.string.label_something_went_wrong), Toast.LENGTH_SHORT).show();
+                }
                 break;
             }
             case R.id.fragment_myduty_btn_starttrip: {
-                startActivity(new Intent(getActivity(), OTPBookingActivity.class).putExtra("ID",bookingData.getId()));
+                startActivity(new Intent(getActivity(), OTPBookingActivity.class).putExtra("ID", bookingData.getId()));
                 break;
             }
         }
@@ -518,18 +508,23 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
 
     @Override
     public void setData(BookingData bookingData) {
-        this.bookingData = bookingData;
-        NoBooking.setVisibility(View.GONE);
-        linearLayout_booking.setVisibility(View.VISIBLE);
-        BookingId.setText(String.valueOf(bookingData.getId()));
-        Destination.setText(bookingData.getDrop_location());
-        BookingDate.setText(Constants.formateDateFromstring("mm-dd-yyyy", "dd.MMM.yyyy hh:mm aaa", bookingData.getDate()));
+        try {
+            this.bookingData = bookingData;
+            NoBooking.setVisibility(View.GONE);
+            linearLayout_booking.setVisibility(View.VISIBLE);
+            BookingId.setText(String.valueOf(bookingData.getId()));
+            Destination.setText(bookingData.getDrop_location());
+            BookingDate.setText(Constants.formateDateFromstring("mm-dd-yyyy", "dd.MMM.yyyy hh:mm aaa", bookingData.getDate()));
+        } catch (Exception e) {
+            Toast.makeText(getActivity(), getString(R.string.label_something_went_wrong), Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
     public Realm getRealm() {
         return realm;
     }
+
 
     @Override
     public void nobooking() {

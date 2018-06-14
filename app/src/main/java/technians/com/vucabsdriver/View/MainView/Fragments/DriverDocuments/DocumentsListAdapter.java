@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Objects;
 
 import technians.com.vucabsdriver.R;
-import technians.com.vucabsdriver.model.Documents.DocumentsList;
+import technians.com.vucabsdriver.Model.Documents.DocumentsList;
 
 /**
  * Created by vineet on 10/27/2017.
@@ -73,11 +73,6 @@ public class DocumentsListAdapter extends RecyclerView.Adapter<DocumentsListAdap
             holder.TextViewDocStatus.setCompoundDrawablePadding(5);
 
         }
-        holder.ImageViewDocument.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            }
-        });
     }
 
     @Override

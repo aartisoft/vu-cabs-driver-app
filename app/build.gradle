@@ -44,6 +44,7 @@ dependencies {
         exclude module: 'payumoney-sdk'
     }
     implementation 'com.payumoney.core:payumoney-sdk:7.0.1'
+    
     //Firebase dependencies
     implementation 'com.google.firebase:firebase-database:16.0.1'
     implementation 'com.google.firebase:firebase-core:16.0.0'
@@ -62,6 +63,14 @@ dependencies {
 //    Ticket View
     implementation 'com.vipulasri:ticketview:1.0.5'
 
+    implementation 'com.github.javiersantos:MaterialStyledDialogs:2.1'
     implementation 'com.github.d-max:spots-dialog:0.7@aar'
 }
 apply plugin: 'com.google.gms.google-services'
+
+
+
+
+
+
+

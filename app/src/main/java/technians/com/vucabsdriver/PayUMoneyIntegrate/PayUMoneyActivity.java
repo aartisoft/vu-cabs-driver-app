@@ -58,9 +58,9 @@ import technians.com.vucabsdriver.AppController;
 import technians.com.vucabsdriver.R;
 import technians.com.vucabsdriver.Utilities.Constants;
 import technians.com.vucabsdriver.Utilities.SessionManager;
-import technians.com.vucabsdriver.model.PassesRecharge.PassesRechargeResponce;
-import technians.com.vucabsdriver.model.Profile.Profile;
-import technians.com.vucabsdriver.model.RetrofitError.NetworkError;
+import technians.com.vucabsdriver.Model.PassesRecharge.PassesRechargeResponce;
+import technians.com.vucabsdriver.Model.Profile.Profile;
+import technians.com.vucabsdriver.Model.RetrofitError.NetworkError;
 import technians.com.vucabsdriver.rest.ApiClient;
 import technians.com.vucabsdriver.rest.ApiInterface;
 
@@ -235,8 +235,6 @@ public class PayUMoneyActivity extends AppCompatActivity implements View.OnClick
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        // Result Code is -1 send from Payumoney activity
-        Log.d("PayUMoneyActivity", "request code " + requestCode + " resultcode " + resultCode);
         if (requestCode == PayUmoneyFlowManager.REQUEST_CODE_PAYMENT && resultCode == RESULT_OK && data !=
                 null) {
             TransactionResponse transactionResponse = data.getParcelableExtra(PayUmoneyFlowManager
@@ -248,7 +246,7 @@ public class PayUMoneyActivity extends AppCompatActivity implements View.OnClick
             if (transactionResponse != null && transactionResponse.getPayuResponse() != null) {
                 if (transactionResponse.getTransactionStatus().equals(TransactionResponse.TransactionStatus.SUCCESSFUL)) {
                     //Success Transaction
-                    AddPayment(driverid, name, ridequantity, Amount);
+                    AddPayment(name, ridequantity, Amount);
                 } else {
                     Intent intent = new Intent();
                     setResult(RESULT_OK, intent);
@@ -279,66 +277,70 @@ public class PayUMoneyActivity extends AppCompatActivity implements View.OnClick
         }
     }
 
-    private void AddPayment(final int DriverId, final String Name, final int RideQuantity, final int Amount) {
-        mProgressDialogObj.show();
-        ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
-        Call<PassesRechargeResponce> call = apiService.getRechargeDetails(new SessionManager(PayUMoneyActivity.this).getToken()
-                , String.valueOf(driverid), Name, String.valueOf(Amount), String.valueOf(RideQuantity));
-        call.enqueue(new Callback<PassesRechargeResponce>() {
-            @Override
-            public void onResponse(@NonNull Call<PassesRechargeResponce> call, @NonNull retrofit2.Response<PassesRechargeResponce> response) {
-                mProgressDialogObj.dismiss();
+    private void AddPayment(final String Name, final int RideQuantity, final int Amount) {
+        try {
+            mProgressDialogObj.show();
+            ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
+            Call<PassesRechargeResponce> call = apiService.getRechargeDetails(new SessionManager(PayUMoneyActivity.this).getToken()
+                    , String.valueOf(driverid), Name, String.valueOf(Amount), String.valueOf(RideQuantity));
+            call.enqueue(new Callback<PassesRechargeResponce>() {
+                @Override
+                public void onResponse(@NonNull Call<PassesRechargeResponce> call, @NonNull retrofit2.Response<PassesRechargeResponce> response) {
+                    mProgressDialogObj.dismiss();
 
-                if (response.body() != null) {
-                    if (response.body().getStatus() == 200) {
-                        final MaterialStyledDialog.Builder dialogHeader_1 = new MaterialStyledDialog.Builder(PayUMoneyActivity.this)
-                                .setIcon(R.drawable.ic_check_circle_coloraccent_50_48dp)
-                                .withDialogAnimation(true)
-                                .withIconAnimation(true)
-                                .setHeaderColorInt(Color.BLACK)
-                                .setTitle(getString(R.string.rechrgesuccess))
-                                .setDescription(getString(R.string.rechargedescription))
-                                .setPositiveText(getString(R.string.Continue))
-                                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                                    @Override
-                                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                        dialog.dismiss();
-                                        Intent intent = new Intent();
-                                        setResult(RESULT_OK, intent);
-                                        finish();
-                                    }
-                                });
-                        dialogHeader_1.show();
-                    } else {
-                        new MaterialStyledDialog.Builder(PayUMoneyActivity.this)
-                                .setIcon(R.drawable.ic_cancel_red_a700_24dp)
-                                .withDialogAnimation(true)
-                                .withIconAnimation(true)
-                                .setHeaderColorInt(Color.BLACK)
-                                .setTitle(getString(R.string.rechrgefail))
-                                .setDescription(getString(R.string.rechargefaildescription))
-                                .setPositiveText(getString(R.string.btn_ok))
-                                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                                    @Override
-                                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                        dialog.dismiss();
-                                        Intent intent = new Intent();
-                                        setResult(RESULT_OK, intent);
-                                        finish();
-                                    }
-                                })
-                                .show();
+                    if (response.body() != null) {
+                        if (response.body().getStatus() == 200) {
+                            final MaterialStyledDialog.Builder dialogHeader_1 = new MaterialStyledDialog.Builder(PayUMoneyActivity.this)
+                                    .setIcon(R.drawable.ic_check_circle_coloraccent_50_48dp)
+                                    .withDialogAnimation(true)
+                                    .withIconAnimation(true)
+                                    .setHeaderColorInt(Color.BLACK)
+                                    .setTitle(getString(R.string.rechrgesuccess))
+                                    .setDescription(getString(R.string.rechargedescription))
+                                    .setPositiveText(getString(R.string.Continue))
+                                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                        @Override
+                                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                            dialog.dismiss();
+                                            Intent intent = new Intent();
+                                            setResult(RESULT_OK, intent);
+                                            finish();
+                                        }
+                                    });
+                            dialogHeader_1.show();
+                        } else {
+                            new MaterialStyledDialog.Builder(PayUMoneyActivity.this)
+                                    .setIcon(R.drawable.ic_cancel_red_a700_24dp)
+                                    .withDialogAnimation(true)
+                                    .withIconAnimation(true)
+                                    .setHeaderColorInt(Color.BLACK)
+                                    .setTitle(getString(R.string.rechrgefail))
+                                    .setDescription(getString(R.string.rechargefaildescription))
+                                    .setPositiveText(getString(R.string.btn_ok))
+                                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                        @Override
+                                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                            dialog.dismiss();
+                                            Intent intent = new Intent();
+                                            setResult(RESULT_OK, intent);
+                                            finish();
+                                        }
+                                    })
+                                    .show();
+                        }
                     }
                 }
-            }
 
-            @Override
-            public void onFailure(@NonNull Call<PassesRechargeResponce> call, @NonNull Throwable t) {
-                mProgressDialogObj.dismiss();
-                String error = new NetworkError(t).getAppErrorMessage();
-                Toast.makeText(PayUMoneyActivity.this, error, Toast.LENGTH_SHORT).show();
-            }
-        });
+                @Override
+                public void onFailure(@NonNull Call<PassesRechargeResponce> call, @NonNull Throwable t) {
+                    mProgressDialogObj.dismiss();
+                    String error = new NetworkError(t).getAppErrorMessage();
+                    Toast.makeText(PayUMoneyActivity.this, error, Toast.LENGTH_SHORT).show();
+                }
+            });
+        }catch (Exception e){
+            Toast.makeText(this, getString(R.string.label_something_went_wrong), Toast.LENGTH_SHORT).show();
+        }
 
     }
 

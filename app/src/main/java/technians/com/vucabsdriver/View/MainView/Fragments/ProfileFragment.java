@@ -35,24 +35,21 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import technians.com.vucabsdriver.AppController;
 import technians.com.vucabsdriver.Utilities.SessionManager;
-import technians.com.vucabsdriver.model.Profile.Profile;
-import technians.com.vucabsdriver.model.Profile.ProfileResponce;
-import technians.com.vucabsdriver.model.RetrofitError.NetworkError;
-import technians.com.vucabsdriver.model.UserProfile;
+import technians.com.vucabsdriver.Model.Profile.Profile;
+import technians.com.vucabsdriver.Model.Profile.ProfileResponce;
+import technians.com.vucabsdriver.Model.RetrofitError.NetworkError;
 import technians.com.vucabsdriver.R;
 import technians.com.vucabsdriver.Utilities.Constants;
 import technians.com.vucabsdriver.rest.ApiClient;
 import technians.com.vucabsdriver.rest.ApiInterface;
 
-import static technians.com.vucabsdriver.Utilities.Constants.ShowError;
 
 public class ProfileFragment extends Fragment {
-    TextView mTextViewName,mTextViewStatus,mTextViewMobile,mTextViewEmail
-            ,mTextViewAddress,mTextViewCarName,mTextViewCarNumber,mTextViewCarType,mTextViewCarSeat;
+    private TextView mTextViewName, mTextViewStatus, mTextViewMobile, mTextViewEmail, mTextViewAddress, mTextViewCarName, mTextViewCarNumber, mTextViewCarType, mTextViewCarSeat;
 
-    CircleImageView circleImageView;
+    private CircleImageView circleImageView;
 
-    ProgressDialog progressDialog;
+    private ProgressDialog progressDialog;
     private Realm realm;
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -86,46 +83,50 @@ public class ProfileFragment extends Fragment {
     }
 
     private void getUserProfile() {
-        progressDialog.show();
-        ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
-        Call<ProfileResponce> call = apiService.getProfile(new SessionManager(getActivity()).getToken());
-        call.enqueue(new Callback<ProfileResponce>() {
-            @Override
-            public void onResponse(@NonNull Call<ProfileResponce> call, @NonNull retrofit2.Response<ProfileResponce> response) {
-                progressDialog.dismiss();
+        try {
+            progressDialog.show();
+            ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
+            Call<ProfileResponce> call = apiService.getProfile(new SessionManager(getActivity()).getToken());
+            call.enqueue(new Callback<ProfileResponce>() {
+                @Override
+                public void onResponse(@NonNull Call<ProfileResponce> call, @NonNull retrofit2.Response<ProfileResponce> response) {
+                    progressDialog.dismiss();
 
-                if (response.body() != null) {
-                    if (response.body().getStatus() == 200) {
-                        Profile profile = response.body().getProfile();
-                        realm.beginTransaction();
-                        realm.deleteAll();
-                        realm.copyToRealmOrUpdate(profile);
-                        realm.commitTransaction();
-                        mTextViewName.setText(profile.getName());
-                        if (profile.getDriver_Status()==0){
-                            mTextViewStatus.setText("Deactive");
-                        }else if (profile.getDriver_Status()==1){
-                            mTextViewStatus.setText("Active");
+                    if (response.body() != null) {
+                        if (response.body().getStatus() == 200) {
+                            Profile profile = response.body().getProfile();
+                            realm.beginTransaction();
+                            realm.deleteAll();
+                            realm.copyToRealmOrUpdate(profile);
+                            realm.commitTransaction();
+                            mTextViewName.setText(profile.getName());
+                            if (profile.getDriver_Status() == 0) {
+                                mTextViewStatus.setText("Deactive");
+                            } else if (profile.getDriver_Status() == 1) {
+                                mTextViewStatus.setText("Active");
+                            }
+                            mTextViewMobile.setText(profile.getMobileNumber());
+                            mTextViewEmail.setText(profile.getEmail());
+                            mTextViewAddress.setText(profile.getAddress());
+                            mTextViewCarName.setText(profile.getCar_Name());
+                            mTextViewCarNumber.setText(profile.getCar_Number());
+                            mTextViewCarType.setText(profile.getCar_Type_Name());
+                            mTextViewCarSeat.setText(profile.getCar_Seat());
+                            Glide.with(getActivity()).load(profile.getProfileURL()).placeholder(R.drawable.ic_user).dontAnimate().into(circleImageView);
                         }
-                        mTextViewMobile.setText(profile.getMobileNumber());
-                        mTextViewEmail.setText(profile.getEmail());
-                        mTextViewAddress.setText(profile.getAddress());
-                        mTextViewCarName.setText(profile.getCar_Name());
-                        mTextViewCarNumber.setText(profile.getCar_Number());
-                        mTextViewCarType.setText(profile.getCar_Type_Name());
-                        mTextViewCarSeat.setText(profile.getCar_Seat());
-                        Glide.with(getActivity()).load(profile.getProfileURL()).placeholder(R.drawable.ic_user).dontAnimate().into(circleImageView);
                     }
                 }
-            }
 
-            @Override
-            public void onFailure(@NonNull Call<ProfileResponce> call, @NonNull Throwable t) {
-                progressDialog.dismiss();
-                String error = new NetworkError(t).getAppErrorMessage();
-                Toast.makeText(getActivity(), error, Toast.LENGTH_SHORT).show();
-            }
-        });
+                @Override
+                public void onFailure(@NonNull Call<ProfileResponce> call, @NonNull Throwable t) {
+                    progressDialog.dismiss();
+                    String error = new NetworkError(t).getAppErrorMessage();
+                    Toast.makeText(getActivity(), error, Toast.LENGTH_SHORT).show();
+                }
+            });
+        }catch (Exception e) {
+            Toast.makeText(getActivity(), getString(R.string.label_something_went_wrong), Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override

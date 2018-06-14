@@ -21,6 +21,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -40,35 +41,33 @@ import technians.com.vucabsdriver.View.MainView.Fragments.MyDuty.MyDutyFragment;
 import technians.com.vucabsdriver.View.MainView.Fragments.Passes.MyPassFragment;
 import technians.com.vucabsdriver.View.MainView.Fragments.ProfileFragment;
 import technians.com.vucabsdriver.View.MainView.Fragments.RatingFeedback.RatingFeedbackFragment;
-import technians.com.vucabsdriver.model.Profile.Profile;
+import technians.com.vucabsdriver.Model.Profile.Profile;
 
 public class NavigationActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, NavigationMVPView {
-    private static final String TAG = "NavigationActivity";
     private TextView DriverName, DriverEmail;
     private Realm realm;
     private NavigationPresenter presenter;
     private SessionManager sessionManager;
-    DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-    Profile profile;
+    private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+    private Profile profile;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
-
+        sessionManager = new SessionManager(this);
         presenter = new NavigationPresenter();
         presenter.attachView(this);
 
-        sessionManager = new SessionManager(this);
+
         Realm.init(this);
         realm = Realm.getDefaultInstance();
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer =  findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -83,11 +82,7 @@ public class NavigationActivity extends AppCompatActivity
 
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.getMenu().getItem(0).setChecked(true);
-//        displaySelectedScreen(R.id.nav_myduty);
         sessionManager.setCurrentFragment(R.id.nav_myduty);
-
-//        this.startService(new Intent(this, BackgroundFusedLocation.class));
-//
     }
 
 
@@ -121,28 +116,6 @@ public class NavigationActivity extends AppCompatActivity
         super.onPause();
     }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.navigation, menu);
-//        return true;
-//    }
-
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle action bar item clicks here. The action bar will
-//        // automatically handle clicks on the Home/Up button, so long
-//        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-//
-//        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
-//
-//        return super.onOptionsItemSelected(item);
-//    }
-
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -156,53 +129,53 @@ public class NavigationActivity extends AppCompatActivity
 
 
     public void displaySelectedScreen(int id) {
-        //creating fragment object
-        Fragment fragment = null;
-        String tag = "";
-        sessionManager.setCurrentFragment(id);
-        //initializing the fragment object which is selected
-        switch (id) {
-            case R.id.nav_myduty:
-                fragment = new MyDutyFragment();
-                tag = getString(R.string.myduty);
-                break;
-            case R.id.nav_mypasses:
-                fragment = new MyPassFragment();
-                break;
-            case R.id.nav_documents:
-                fragment = new DocumentsFragment();
-                break;
-            case R.id.nav_profile:
-                fragment = new ProfileFragment();
-                break;
-            case R.id.nav_ridehistory:
-                fragment = new BookingHistoryFragment();
-                break;
-            case R.id.nav_ratingfeedback:
-                fragment = new RatingFeedbackFragment();
-                break;
-            case R.id.nav_logout:
-                sessionManager.setLogin(false);
-                startActivity(new Intent(NavigationActivity.this, LoginWithPhoneActivity.class));
-                stopService(new Intent(NavigationActivity.this,BackgroundFusedLocation.class));
-                finish();
-                break;
-            case R.id.nav_termscons:
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.url_terms)));
-                startActivity(browserIntent);
-                break;
-        }
+            //creating fragment object
+            Fragment fragment = null;
+            String tag = "";
+            sessionManager.setCurrentFragment(id);
+            //initializing the fragment object which is selected
+            switch (id) {
+                case R.id.nav_myduty:
+                    fragment = new MyDutyFragment();
+                    tag = getString(R.string.myduty);
+                    break;
+                case R.id.nav_mypasses:
+                    fragment = new MyPassFragment();
+                    break;
+                case R.id.nav_documents:
+                    fragment = new DocumentsFragment();
+                    break;
+                case R.id.nav_profile:
+                    fragment = new ProfileFragment();
+                    break;
+                case R.id.nav_ridehistory:
+                    fragment = new BookingHistoryFragment();
+                    break;
+                case R.id.nav_ratingfeedback:
+                    fragment = new RatingFeedbackFragment();
+                    break;
+                case R.id.nav_logout:
+                    sessionManager.setLogin(false);
+                    startActivity(new Intent(NavigationActivity.this, LoginWithPhoneActivity.class));
+                    stopService(new Intent(NavigationActivity.this, BackgroundFusedLocation.class));
+                    finish();
+                    break;
+                case R.id.nav_termscons:
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.url_terms)));
+                    startActivity(browserIntent);
+                    break;
+            }
 
-        //replacing the fragment
-        if (fragment != null) {
+            //replacing the fragment
+            if (fragment != null) {
 
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.contentframe, fragment, tag);
-            ft.commit();
-        }
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.replace(R.id.contentframe, fragment, tag);
+                ft.commit();
+            }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            drawer.closeDrawer(GravityCompat.START);
     }
 
     @Override
@@ -237,73 +210,82 @@ public class NavigationActivity extends AppCompatActivity
 
     @Override
     public void setProfileData() {
-        profile = realm.where(Profile.class).findFirst();
-        DriverName.setText(profile.getName().toUpperCase());
-        DriverEmail.setText(profile.getEmail());
-        final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference().child("driver_status").child(String.valueOf(profile.getDriver_ID()));
+        try {
+            profile = realm.where(Profile.class).findFirst();
+            DriverName.setText(profile.getName().toUpperCase());
+            DriverEmail.setText(profile.getEmail());
+            final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference().child("driver_status").child(String.valueOf(profile.getDriver_ID()));
 //
-        mDatabase.addValueEventListener(new ValueEventListener() {
-            @RequiresApi(api = Build.VERSION_CODES.M)
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.getValue() != null) {
-                    int status = Integer.valueOf(dataSnapshot.getValue().toString());
-                    Log.v("Nav123", "Status: " + dataSnapshot);
+            mDatabase.addValueEventListener(new ValueEventListener() {
+                @RequiresApi(api = Build.VERSION_CODES.M)
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.getValue() != null) {
+                        int status = Integer.valueOf(dataSnapshot.getValue().toString());
+                        Log.v("Nav123", "Status: " + dataSnapshot);
 
-                    if (status == 0) {
-                        if (!realm.isClosed()) {
-                            realm.beginTransaction();
-                            profile.setDriver_Status(0);
-                            realm.commitTransaction();
-                            presenter.createNotification();
-                            new SessionManager(NavigationActivity.this).setLogin(false);
-                            finishAffinity();
+                        if (status == 0) {
+                            if (!realm.isClosed()) {
+                                realm.beginTransaction();
+                                profile.setDriver_Status(0);
+                                realm.commitTransaction();
+                                presenter.createNotification();
+                                new SessionManager(NavigationActivity.this).setLogin(false);
+                                finishAffinity();
+                            }
+                        } else if (status == 1) {
+                            if (!realm.isClosed()) {
+                                realm.beginTransaction();
+                                profile.setDriver_Status(1);
+                                realm.commitTransaction();
+                            }
                         }
-                    } else if (status == 1) {
-                        if (!realm.isClosed()) {
-                            realm.beginTransaction();
-                            profile.setDriver_Status(1);
-                            realm.commitTransaction();
-                        }
+                    } else {
+                        mDatabase.setValue(profile.getDriver_Status());
                     }
-                } else {
-                    mDatabase.setValue(profile.getDriver_Status());
+
+
                 }
 
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+                }
+            });
+        }
+        catch (Exception e){
+            Toast.makeText(getContext(), getString(R.string.label_something_went_wrong), Toast.LENGTH_SHORT).show();
+        }
 
     }
 
     @Override
     public void getPushToken() {
-        profile = realm.where(Profile.class).findFirst();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // Create channel to show notifications.
-            String channelId = getString(R.string.default_notification_channel_id);
-            String channelName = getString(R.string.default_notification_channel_name);
-            NotificationManager notificationManager =
-                    getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(new NotificationChannel(channelId,
-                    channelName, NotificationManager.IMPORTANCE_LOW));
-        }
+        try {
+            profile = realm.where(Profile.class).findFirst();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                // Create channel to show notifications.
+                String channelId = getString(R.string.default_notification_channel_id);
+                String channelName = getString(R.string.default_notification_channel_name);
+                NotificationManager notificationManager =
+                        getSystemService(NotificationManager.class);
+                notificationManager.createNotificationChannel(new NotificationChannel(channelId,
+                        channelName, NotificationManager.IMPORTANCE_LOW));
+            }
 
 
-        String token = FirebaseInstanceId.getInstance().getToken();
-        sessionManager.setpushToken(token);
+            String token = FirebaseInstanceId.getInstance().getToken();
+            sessionManager.setpushToken(token);
 
-        mDatabase.child(getString(R.string.firebasepushnode))
-                .child(String.valueOf(profile.getDriver_ID()))
-                .setValue(token);
+            mDatabase.child(getString(R.string.firebasepushnode))
+                    .child(String.valueOf(profile.getDriver_ID()))
+                    .setValue(token);
 
 //        String msg = getString(R.string.msg_token_fmt, token);
 //        Log.v(TAG, msg);
+        }catch (Exception e){
+            Toast.makeText(getContext(), getString(R.string.label_something_went_wrong), Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override

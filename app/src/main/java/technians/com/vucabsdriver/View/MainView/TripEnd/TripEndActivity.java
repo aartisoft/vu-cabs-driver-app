@@ -11,22 +11,19 @@ import android.widget.TextView;
 import io.realm.Realm;
 import technians.com.vucabsdriver.R;
 import technians.com.vucabsdriver.View.MainView.ContainerActivity.NavigationActivity;
-import technians.com.vucabsdriver.model.PendingRequest.BookingData;
+import technians.com.vucabsdriver.Model.PendingRequest.BookingData;
 
 import static technians.com.vucabsdriver.Utilities.Constants.FormatAmount;
 
 public class TripEndActivity extends AppCompatActivity {
-    TextView mTextViewCustName,mTextViewAmount, mTextViewPaymentMode, mTextViewTotalPayable, mTextViewToll, mTextViewBaseamount, mTextViewTax;
-
-    Realm realm;
-    Button mBtnContinue;
+    private Realm realm;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trip_end);
 
         Realm.init(this);
-        realm = Realm.getDefaultInstance();
+        Realm realm = Realm.getDefaultInstance();
 
         Toolbar toolbar = findViewById(R.id.activity_tripend_toolbar);
         setSupportActionBar(toolbar);
@@ -34,14 +31,14 @@ public class TripEndActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         toolbar.setTitle(getString(R.string.billend));
-        mTextViewCustName = findViewById(R.id.activity_tripend_custname);
-        mTextViewAmount = findViewById(R.id.activity_tripend_amount);
-        mTextViewPaymentMode = findViewById(R.id.activity_tripend_paymentmode);
-        mTextViewTotalPayable = findViewById(R.id.activity_tripend_totalpayable);
-        mTextViewToll = findViewById(R.id.activity_tripend_taxes);
-        mTextViewTax = findViewById(R.id.activity_tripend_tax);
-        mTextViewBaseamount = findViewById(R.id.activity_tripend_baseamount);
-        mBtnContinue = findViewById(R.id.activity_enter_otp_btn_continue);
+        TextView mTextViewCustName = findViewById(R.id.activity_tripend_custname);
+        TextView mTextViewAmount = findViewById(R.id.activity_tripend_amount);
+        TextView mTextViewPaymentMode = findViewById(R.id.activity_tripend_paymentmode);
+        TextView mTextViewTotalPayable = findViewById(R.id.activity_tripend_totalpayable);
+        TextView mTextViewToll = findViewById(R.id.activity_tripend_taxes);
+        TextView mTextViewTax = findViewById(R.id.activity_tripend_tax);
+        TextView mTextViewBaseamount = findViewById(R.id.activity_tripend_baseamount);
+        Button mBtnContinue = findViewById(R.id.activity_enter_otp_btn_continue);
 
         int ID = getIntent().getIntExtra("ID",0);
         BookingData bookingData = realm.where(BookingData.class).equalTo("id",ID).findFirst();
@@ -62,5 +59,11 @@ public class TripEndActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        realm.close();
+        super.onDestroy();
     }
 }

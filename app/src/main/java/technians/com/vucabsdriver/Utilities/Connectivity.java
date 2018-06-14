@@ -11,7 +11,7 @@ public class Connectivity{
  * @param context
  * @return
  */
-public static NetworkInfo getNetworkInfo(Context context){
+private static NetworkInfo getNetworkInfo(Context context){
     ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
     return cm.getActiveNetworkInfo();
 }

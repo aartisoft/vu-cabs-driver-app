@@ -23,9 +23,9 @@ import retrofit2.Callback;
 import technians.com.vucabsdriver.R;
 import technians.com.vucabsdriver.Utilities.Constants;
 import technians.com.vucabsdriver.Utilities.SessionManager;
-import technians.com.vucabsdriver.model.Documents.DocumentResponce;
-import technians.com.vucabsdriver.model.Documents.DocumentsList;
-import technians.com.vucabsdriver.model.RetrofitError.NetworkError;
+import technians.com.vucabsdriver.Model.Documents.DocumentResponce;
+import technians.com.vucabsdriver.Model.Documents.DocumentsList;
+import technians.com.vucabsdriver.Model.RetrofitError.NetworkError;
 import technians.com.vucabsdriver.rest.ApiClient;
 import technians.com.vucabsdriver.rest.ApiInterface;
 
@@ -33,12 +33,8 @@ import technians.com.vucabsdriver.rest.ApiInterface;
 public class DocumentsFragment extends Fragment {
     private RecyclerView recyclerView;
     private DocumentsListAdapter mAdapter;
-    List<DocumentsListModel> DocumentList = new ArrayList<>();
     private ProgressDialog mProgressDialogObj;
 
-    public DocumentsFragment() {
-        // Required empty public constructor
-    }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
@@ -62,82 +58,32 @@ public class DocumentsFragment extends Fragment {
         getActivity().setTitle(getString(R.string.documents));
     }
     private void getDocumentsList() {
-        mProgressDialogObj.show();
-        ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
-        Call<DocumentResponce> call = apiService.getDocumentsList(new SessionManager(getActivity()).getToken());
-        call.enqueue(new Callback<DocumentResponce>() {
-            @Override
-            public void onResponse(@NonNull Call<DocumentResponce> call, @NonNull retrofit2.Response<DocumentResponce> response) {
-                mProgressDialogObj.dismiss();
-                if (response.body() != null) {
-                    if (response.body().getStatus() == 200) {
-                        ArrayList<DocumentsList> arrayList = response.body().getDocumentsLists();
-                        ShowDocuments(arrayList);
+        try {
+            mProgressDialogObj.show();
+            ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
+            Call<DocumentResponce> call = apiService.getDocumentsList(new SessionManager(getActivity()).getToken());
+            call.enqueue(new Callback<DocumentResponce>() {
+                @Override
+                public void onResponse(@NonNull Call<DocumentResponce> call, @NonNull retrofit2.Response<DocumentResponce> response) {
+                    mProgressDialogObj.dismiss();
+                    if (response.body() != null) {
+                        if (response.body().getStatus() == 200) {
+                            ArrayList<DocumentsList> arrayList = response.body().getDocumentsLists();
+                            ShowDocuments(arrayList);
+                        }
                     }
                 }
-            }
 
-            @Override
-            public void onFailure(@NonNull Call<DocumentResponce> call, @NonNull Throwable t) {
-                mProgressDialogObj.dismiss();
-                String error = new NetworkError(t).getAppErrorMessage();
-                Toast.makeText(getActivity(), error, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void getDocumentsDetails() {
-//        mProgressDialogObj.show();
-//        StringRequest strCommunityRequest = new StringRequest(Request.Method.POST, Constants.URL_DOCUMENTLIST+new Constants().getToken(getActivity()), new Response.Listener<String>() {
-//            @Override
-//            public void onResponse(String response) {
-//                mProgressDialogObj.dismiss();
-//
-//                try {
-//                    JSONObject jsonObject = new JSONObject(response);
-//                    Boolean success = jsonObject.getBoolean("success");
-//                    int status = jsonObject.getInt("status");
-//                    // Check for error node in json
-//                    if (success&&status==200) {
-//                        JSONArray data = jsonObject.getJSONArray("data");
-//                        for (int i=0;i<data.length();i++)
-//                        {
-//                            mProgressDialogObj.dismiss();
-//                            JSONObject json_data = data.getJSONObject(i);
-//                            String Doctitle = json_data.getString("doc_name");
-//                            String DocStatus = json_data.getString("image_upload");
-//                            String DocUrl = json_data.getString("img_path");
-////
-//                            DocumentList.add(new DocumentsListModel(Doctitle,DocStatus,DocUrl));
-//                            ShowDocuments(DocumentList);
-//
-//                        }
-//                    } else if (!success&&status==401){
-//                        mProgressDialogObj.dismiss();
-//                        Toast.makeText(getActivity(), "Could not load documents", Toast.LENGTH_SHORT).show();
-//                    }else {
-//                        mProgressDialogObj.dismiss();
-//                        ShowError("Some error occurred",getActivity());
-//                    }
-//
-//                } catch (JSONException e) {
-//                    mProgressDialogObj.dismiss();
-//                    ShowError("Some error occurred",getActivity());
-//                    e.printStackTrace();
-//                }
-//
-//            }
-//        }, new Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError error) {
-//                mProgressDialogObj.dismiss();
-//                String Error = getMessage(error,getActivity());
-//                ShowError(Error,getActivity());
-//            }
-//        }) ;
-////         Adding request to request queue
-//        AppController.getInstance().addToRequestQueue(strCommunityRequest, Constants.TAG_DRIVERDOC_REQ);
-
+                @Override
+                public void onFailure(@NonNull Call<DocumentResponce> call, @NonNull Throwable t) {
+                    mProgressDialogObj.dismiss();
+                    String error = new NetworkError(t).getAppErrorMessage();
+                    Toast.makeText(getActivity(), error, Toast.LENGTH_SHORT).show();
+                }
+            });
+        }catch (Exception e){
+            Toast.makeText(getActivity(), getString(R.string.label_something_went_wrong), Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void ShowDocuments(List<DocumentsList> DocumentList) {

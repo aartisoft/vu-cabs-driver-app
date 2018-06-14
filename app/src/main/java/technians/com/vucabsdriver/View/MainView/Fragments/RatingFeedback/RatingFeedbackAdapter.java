@@ -18,13 +18,8 @@ import java.util.List;
 import java.util.Objects;
 
 import technians.com.vucabsdriver.R;
-import technians.com.vucabsdriver.View.MainView.Fragments.BookingHistory.BookingHistoryAdapter;
-import technians.com.vucabsdriver.model.BookingHistory;
-import technians.com.vucabsdriver.model.RatingFeedback.Rating;
+import technians.com.vucabsdriver.Model.RatingFeedback.Rating;
 
-import static technians.com.vucabsdriver.Utilities.Constants.FormatAmount;
-import static technians.com.vucabsdriver.Utilities.Constants.formateDateFromstring;
-import static technians.com.vucabsdriver.Utilities.Constants.showProgressDialog;
 
 public class RatingFeedbackAdapter extends RecyclerView.Adapter<RatingFeedbackAdapter.MyViewHolder> {
 

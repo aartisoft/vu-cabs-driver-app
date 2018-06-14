@@ -29,14 +29,14 @@ import static technians.com.vucabsdriver.Utilities.Constants.showProgressDialog;
 
 public class MyPassFragment extends Fragment implements MyPassesMVPView, View.OnClickListener {
 
-    SessionManager sessionManager;
-    ProgressDialog progressDialog;
-    MyPassesPresenter presenter;
+    private SessionManager sessionManager;
+    private ProgressDialog progressDialog;
+    private MyPassesPresenter presenter;
     private Realm realm;
-    TextView tv_TotalRides, tv_Validity, tv_RidesAmount, tv_Ridesleft;
-    Button btn_renewPass;
-    int Amount = 0, Rides = 0;
-    TicketView ticketView;
+    private TextView tv_TotalRides, tv_Validity, tv_RidesAmount, tv_Ridesleft;
+    private Button btn_renewPass;
+    private int Amount = 0, Rides = 0;
+    private TicketView ticketView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -66,13 +66,6 @@ public class MyPassFragment extends Fragment implements MyPassesMVPView, View.On
         super.onViewCreated(view, savedInstanceState);
         //you can set the title for your toolbar here for different fragments different titles
         getActivity().setTitle(getString(R.string.mypasses));
-    }
-
-    @Override
-    public void onDestroy() {
-        realm.close();
-        presenter.detachView();
-        super.onDestroy();
     }
 
     @Override
@@ -115,33 +108,37 @@ public class MyPassFragment extends Fragment implements MyPassesMVPView, View.On
 
     @Override
     public void setdata(String ridesLeft, String totalRides, String rideAmount) {
-        Amount = Integer.valueOf(rideAmount);
-        Rides = Integer.valueOf(totalRides);
-        int RidesLeft = Integer.valueOf(ridesLeft);
-        int TotalRides = Integer.valueOf(totalRides);
-        tv_TotalRides.setText(String.format("%s Rides", totalRides));
-        tv_RidesAmount.setText(String.format("₹ %s", rideAmount));
-        if (RidesLeft < TotalRides && RidesLeft != 0 ||RidesLeft == TotalRides) {
-            tv_Ridesleft.setText(String.format("%s/%s", ridesLeft, totalRides));
-        } else if (RidesLeft > TotalRides) {
-            tv_Ridesleft.setText(String.format("%s/%s", ridesLeft, ridesLeft));
-        } else if (RidesLeft == 0) {
-            SpannableStringBuilder builder = new SpannableStringBuilder();
-            SpannableString redSpannable = new SpannableString(ridesLeft);
-            redSpannable.setSpan(new ForegroundColorSpan(Color.RED), 0, ridesLeft.length(), 0);
-            builder.append(redSpannable);
-            builder.append(String.format("/%s", totalRides));
-            tv_Ridesleft.setText(builder, TextView.BufferType.SPANNABLE);
+        try {
+            Amount = Integer.valueOf(rideAmount);
+            Rides = Integer.valueOf(totalRides);
+            int RidesLeft = Integer.valueOf(ridesLeft);
+            int TotalRides = Integer.valueOf(totalRides);
+            tv_TotalRides.setText(String.format("%s Rides", totalRides));
+            tv_RidesAmount.setText(String.format("₹ %s", rideAmount));
+            if (RidesLeft < TotalRides && RidesLeft != 0 || RidesLeft == TotalRides) {
+                tv_Ridesleft.setText(String.format("%s/%s", ridesLeft, totalRides));
+            } else if (RidesLeft > TotalRides) {
+                tv_Ridesleft.setText(String.format("%s/%s", ridesLeft, ridesLeft));
+            } else if (RidesLeft == 0) {
+                SpannableStringBuilder builder = new SpannableStringBuilder();
+                SpannableString redSpannable = new SpannableString(ridesLeft);
+                redSpannable.setSpan(new ForegroundColorSpan(Color.RED), 0, ridesLeft.length(), 0);
+                builder.append(redSpannable);
+                builder.append(String.format("/%s", totalRides));
+                tv_Ridesleft.setText(builder, TextView.BufferType.SPANNABLE);
 
-        }
-        if (RidesLeft == 0) {
+            }
+            if (RidesLeft == 0) {
 
-            tv_Validity.setText(getString(R.string.expired));
-            tv_Validity.setTextColor(Color.RED);
-            ticketView.setBorderColor(Color.RED);
-        } else if (RidesLeft > 0) {
-            tv_Validity.setText(getString(R.string.unlimitedvalidity));
-            ticketView.setBorderColor(getResources().getColor(R.color.colorAccent));
+                tv_Validity.setText(getString(R.string.expired));
+                tv_Validity.setTextColor(Color.RED);
+                ticketView.setBorderColor(Color.RED);
+            } else if (RidesLeft > 0) {
+                tv_Validity.setText(getString(R.string.unlimitedvalidity));
+                ticketView.setBorderColor(getResources().getColor(R.color.colorAccent));
+            }
+        }catch (Exception e) {
+            Toast.makeText(getActivity(), getString(R.string.label_something_went_wrong), Toast.LENGTH_SHORT).show();
         }
     }
 

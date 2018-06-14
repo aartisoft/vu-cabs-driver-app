@@ -32,12 +32,10 @@ import static technians.com.vucabsdriver.Utilities.Constants.showProgressDialog;
 
 public class LoginWithPhoneActivity extends BaseActivity implements LoginWithPhoneMVPView, View.OnClickListener {
 
-    EditText etphoneno;
-    Button btnlogin;
-    LoginWithPhonePresenter presenter;
-    ProgressDialog progressDialog;
-    ImageButton Call, Email;
-    DatabaseReference mDatabase;
+    private EditText etphoneno;
+    private LoginWithPhonePresenter presenter;
+    private ProgressDialog progressDialog;
+    private DatabaseReference mDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,11 +45,11 @@ public class LoginWithPhoneActivity extends BaseActivity implements LoginWithPho
         mDatabase = FirebaseDatabase.getInstance().getReference();
         progressDialog = showProgressDialog(this, getString(R.string.cb_please_wait));
         etphoneno = findViewById(R.id.loginwithphone_et_mobileno);
-        btnlogin = findViewById(R.id.loginwithphone_btn_login);
-        Call = findViewById(R.id.loginwithphone_ib_call);
-        Email = findViewById(R.id.loginwithphone_ib_mail);
-        Call.setOnClickListener(this);
-        Email.setOnClickListener(this);
+        Button btnlogin = findViewById(R.id.loginwithphone_btn_login);
+        ImageButton call = findViewById(R.id.loginwithphone_ib_call);
+        ImageButton email = findViewById(R.id.loginwithphone_ib_mail);
+        call.setOnClickListener(this);
+        email.setOnClickListener(this);
         presenter = new LoginWithPhonePresenter();
         presenter.attachView(this);
         if (new SessionManager(this).isLoggedIn()) {
@@ -116,24 +114,28 @@ public class LoginWithPhoneActivity extends BaseActivity implements LoginWithPho
                 break;
             }
             case R.id.loginwithphone_ib_call: {
-                mDatabase.child("support_number").addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        String support_number = dataSnapshot.getValue().toString();
-                        try {
-                            Intent callIntent = new Intent(Intent.ACTION_DIAL);
-                            callIntent.setData(Uri.parse("tel:" + support_number));
-                            startActivity(callIntent);
-                        } catch (ActivityNotFoundException activityException) {
-                            Toast.makeText(LoginWithPhoneActivity.this, "Call has failed", Toast.LENGTH_LONG).show();
+                try {
+                    mDatabase.child("support_number").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            String support_number = dataSnapshot.getValue().toString();
+                            try {
+                                Intent callIntent = new Intent(Intent.ACTION_DIAL);
+                                callIntent.setData(Uri.parse("tel:" + support_number));
+                                startActivity(callIntent);
+                            } catch (ActivityNotFoundException activityException) {
+                                Toast.makeText(LoginWithPhoneActivity.this, "Call has failed", Toast.LENGTH_LONG).show();
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
 
-                    }
-                });
+                        }
+                    });
+                }catch (Exception e){
+                    Toast.makeText(this, getString(R.string.label_something_went_wrong), Toast.LENGTH_SHORT).show();
+                }
 
                 break;
             }
@@ -181,7 +183,7 @@ public class LoginWithPhoneActivity extends BaseActivity implements LoginWithPho
     @Override
     public void gotoOTPActivity(String mobilenumber) {
         startActivity(new Intent(LoginWithPhoneActivity.this, LoginWithOTPActivity.class)
-                .putExtra("MobileNumber", mobilenumber));
+                .putExtra("MobileNumber",mobilenumber));
         finish();
     }
 

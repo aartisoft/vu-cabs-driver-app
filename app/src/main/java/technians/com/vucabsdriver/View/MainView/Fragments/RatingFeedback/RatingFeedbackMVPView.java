@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import io.realm.Realm;
 import technians.com.vucabsdriver.View.MVPView;
-import technians.com.vucabsdriver.model.RatingFeedback.Rating;
+import technians.com.vucabsdriver.Model.RatingFeedback.Rating;
 
 public interface RatingFeedbackMVPView extends MVPView{
     Realm getRealm();

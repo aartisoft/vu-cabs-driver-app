@@ -34,16 +34,14 @@ import technians.com.vucabsdriver.View.MainView.ContainerActivity.NavigationActi
 import static technians.com.vucabsdriver.Utilities.Constants.showProgressDialog;
 
 public class LoginWithOTPActivity extends AppCompatActivity implements LoginWithOTPMVPView, View.OnClickListener, OTPListener {
-    private static final String TAG = "OTPActivity";
     private EditText mOtpOneField, mOtpTwoField, mOtpThreeField, mOtpFourField, mCurrentlyFocusedEditText;
     private static final String FORMAT = "%02d:%02d";
-    TextView mMobileNumber, mTimer;
-    Button mBtnResendOTP;
+    private TextView mTimer;
 
-    LoginWithOTPPresenter presenter;
-    String MobileNumber;
-    ProgressDialog progressDialog;
-    CountDownTimer countDownTimer;
+    private LoginWithOTPPresenter presenter;
+    private String MobileNumber;
+    private ProgressDialog progressDialog;
+    private CountDownTimer countDownTimer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,15 +52,22 @@ public class LoginWithOTPActivity extends AppCompatActivity implements LoginWith
         presenter.attachView(this);
         progressDialog = showProgressDialog(this, getString(R.string.cb_please_wait));
         MobileNumber = getIntent().getStringExtra("MobileNumber");
-        mMobileNumber = findViewById(R.id.activity_enter_otp_mobilenumber);
-        mBtnResendOTP = findViewById(R.id.activity_enter_otp_btn_resendOTP);
+        TextView mMobileNumber = findViewById(R.id.activity_enter_otp_mobilenumber);
+        Button mBtnResendOTP = findViewById(R.id.activity_enter_otp_btn_resendOTP);
         mTimer = findViewById(R.id.activity_enter_otp_textView_timer);
         mOtpOneField = findViewById(R.id.otp_one_edit_text);
         mOtpTwoField = findViewById(R.id.otp_two_edit_text);
         mOtpThreeField = findViewById(R.id.otp_three_edit_text);
         mOtpFourField = findViewById(R.id.otp_four_edit_text);
-        mMobileNumber.setText(MobileNumber);
 
+
+        try {
+            mMobileNumber.setText(MobileNumber);
+        }
+        catch (Exception e){
+            Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
+            Log.v("OTP1234","Error " + e.getMessage());
+        }
         mMobileNumber.setOnClickListener(this);
         mBtnResendOTP.setOnClickListener(this);
         //-----------Start timer-----------
