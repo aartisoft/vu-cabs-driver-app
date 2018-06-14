@@ -2,10 +2,12 @@ package technians.com.vucabsdriver.Model.Profile;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class Profile extends RealmObject {
+public class Profile extends RealmObject implements Serializable{
     @PrimaryKey
     @SerializedName("id")
     private int Driver_ID;

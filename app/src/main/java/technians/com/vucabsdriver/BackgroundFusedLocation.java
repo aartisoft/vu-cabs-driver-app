@@ -6,10 +6,13 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.IBinder;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -35,22 +38,21 @@ import static technians.com.vucabsdriver.Utilities.Constants.getLocationAddress;
 
 public class BackgroundFusedLocation extends Service {
     public static final String BROADCAST_ACTION = "technians.com.vucabsdriver.displayevent";
-    Intent intent;
+    private static final String GEO_FIRE_DB = "https://vucabsdriverapp.firebaseio.com";
+    private static final String GEO_FIRE_REF = GEO_FIRE_DB + "/geofire";
+
 
     public BackgroundFusedLocation() {
     }
 
-    DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
-    // Write
-
-    long UPDATE_INTERVAL = 5000;
-    long FASTEST_INTERVAL = 5000;
-    int SMALLEST_DISPLACEMENT = 10;
-    String DriverId;
-    FusedLocationProviderClient fusedLocationProviderClient;
-    LocationCallback mLocationCallback;
+    private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+    private String DriverId;
+    private Intent intent;
+    private FusedLocationProviderClient fusedLocationProviderClient;
+    private LocationCallback mLocationCallback;
     private Realm realm;
-    Profile profile;
+    private Profile profile;
+    private GeoFire geoFire;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -64,6 +66,7 @@ public class BackgroundFusedLocation extends Service {
         Realm.init(this);
         realm = Realm.getDefaultInstance();
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        geoFire = new GeoFire(FirebaseDatabase.getInstance().getReferenceFromUrl(GEO_FIRE_REF));
         startLocationUpdates();
         intent = new Intent(BROADCAST_ACTION);
     }
@@ -75,13 +78,16 @@ public class BackgroundFusedLocation extends Service {
 
     protected void startLocationUpdates() {
         profile = realm.where(Profile.class).findFirst();
-        if (profile!=null) {
+        if (profile != null) {
             try {
                 DriverId = String.valueOf(profile.getDriver_ID());
                 final LocationRequest mLocationRequest = new LocationRequest();
                 mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+                int SMALLEST_DISPLACEMENT = 10;
                 mLocationRequest.setSmallestDisplacement(SMALLEST_DISPLACEMENT);
+                long UPDATE_INTERVAL = 5000;
                 mLocationRequest.setInterval(UPDATE_INTERVAL);
+                long FASTEST_INTERVAL = 5000;
                 mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
 
                 mLocationCallback = new LocationCallback() {
@@ -98,7 +104,7 @@ public class BackgroundFusedLocation extends Service {
                 DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
                 connectedRef.addValueEventListener(new ValueEventListener() {
                     @Override
-                    public void onDataChange(DataSnapshot snapshot) {
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
                         boolean connected = snapshot.getValue(Boolean.class);
                         if (connected) {
                             if (ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -118,7 +124,7 @@ public class BackgroundFusedLocation extends Service {
                     public void onCancelled(DatabaseError error) {
                     }
                 });
-            }catch (Exception e) {
+            } catch (Exception e) {
                 Toast.makeText(this, getString(R.string.label_something_went_wrong), Toast.LENGTH_SHORT).show();
             }
         }
@@ -129,19 +135,27 @@ public class BackgroundFusedLocation extends Service {
         try {
             if (location.getAccuracy() < 100.0 && location.getSpeed() < 6.95) {
 
-                String Address =
-                        getLocationAddress(location.getLatitude(), location.getLongitude(), BackgroundFusedLocation.this);
+                String Address = getLocationAddress(location.getLatitude(), location.getLongitude(), BackgroundFusedLocation.this);
                 Date currenttime = Calendar.getInstance().getTime();
                 SimpleDateFormat formatter = new SimpleDateFormat("dd.MMM.yyyy hh:mm aaa");
                 String updatedat = formatter.format(currenttime);
-                DriverCurrentLocation driverLocation = new DriverCurrentLocation(Address, updatedat, profile.getCar_Type()
-                        , profile.getDriver_ID(), profile.getDriver_Status(), location.getLatitude(), location.getLongitude());
+                DriverCurrentLocation driverLocation = new DriverCurrentLocation(Address, updatedat, profile);
                 mDatabase.child(getString(R.string.firebasenode))
                         .child(DriverId)
                         .setValue(driverLocation);
-                sendDataToActivity(location, driverLocation);
+                geoFire.setLocation(DriverId, new GeoLocation(location.getLatitude(), location.getLongitude()), new GeoFire.CompletionListener() {
+                    //            @Override
+                    public void onComplete(String key, DatabaseError error) {
+                        if (error != null) {
+                            Log.v("GeoQuery", "onComplete There was an error saving the location to GeoFire: " + error);
+                        } else {
+                            Log.v("GeoQuery", "onComplete Location saved on server successfully!");
+                        }
+                    }
+                });
+//                sendDataToActivity(location, driverLocation);
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             Toast.makeText(this, getString(R.string.label_something_went_wrong), Toast.LENGTH_SHORT).show();
         }
     }
@@ -158,6 +172,7 @@ public class BackgroundFusedLocation extends Service {
         realm.close();
         mDatabase.child(getString(R.string.firebasenode))
                 .child(DriverId).removeValue();
+        geoFire.removeLocation(DriverId);
         fusedLocationProviderClient.removeLocationUpdates(mLocationCallback);
         stopSelf();
         super.onDestroy();

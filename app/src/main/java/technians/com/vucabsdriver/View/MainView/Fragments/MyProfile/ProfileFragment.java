@@ -1,4 +1,4 @@
-package technians.com.vucabsdriver.View.MainView.Fragments;
+package technians.com.vucabsdriver.View.MainView.Fragments.MyProfile;
 
 import android.app.ProgressDialog;
 import android.graphics.Color;
@@ -8,32 +8,18 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
-import technians.com.vucabsdriver.AppController;
 import technians.com.vucabsdriver.Utilities.SessionManager;
 import technians.com.vucabsdriver.Model.Profile.Profile;
 import technians.com.vucabsdriver.Model.Profile.ProfileResponce;
@@ -132,7 +118,6 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        //you can set the title for your toolbar here for different fragments different titles
         getActivity().setTitle(getString(R.string.profile));
     }
 

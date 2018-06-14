@@ -2,23 +2,20 @@ package technians.com.vucabsdriver.Model.DriverLocationPackage;
 
 import java.io.Serializable;
 
+import technians.com.vucabsdriver.Model.Profile.Profile;
+
 /**
  * Created by vineet on 12/12/2017.
  */
 
 public class DriverCurrentLocation implements Serializable{
     private String address,updated_at;
-    private int car_type,driver_id,status;
-    private double latitude,longitude;
+    private Profile profile;
 
-    public DriverCurrentLocation(String address, String updated_at, int car_type, int driver_id, int status, double latitude, double longitude) {
+    public DriverCurrentLocation(String address, String updated_at, Profile profile) {
         this.address = address;
         this.updated_at = updated_at;
-        this.car_type = car_type;
-        this.driver_id = driver_id;
-        this.status = status;
-        this.latitude = latitude;
-        this.longitude = longitude;
+        this.profile = profile;
     }
 
     public String getAddress() {
@@ -37,43 +34,11 @@ public class DriverCurrentLocation implements Serializable{
         this.updated_at = updated_at;
     }
 
-    public int getCar_type() {
-        return car_type;
+    public Profile getProfile() {
+        return profile;
     }
 
-    public void setCar_type(int car_type) {
-        this.car_type = car_type;
-    }
-
-    public int getDriver_id() {
-        return driver_id;
-    }
-
-    public void setDriver_id(int driver_id) {
-        this.driver_id = driver_id;
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
-    }
-
-    public double getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
-
-    public double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
+    public void setProfile(Profile profile) {
+        this.profile = profile;
     }
 }

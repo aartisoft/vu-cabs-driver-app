@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -39,7 +38,7 @@ import technians.com.vucabsdriver.View.MainView.Fragments.BookingHistory.Booking
 import technians.com.vucabsdriver.View.MainView.Fragments.DriverDocuments.DocumentsFragment;
 import technians.com.vucabsdriver.View.MainView.Fragments.MyDuty.MyDutyFragment;
 import technians.com.vucabsdriver.View.MainView.Fragments.Passes.MyPassFragment;
-import technians.com.vucabsdriver.View.MainView.Fragments.ProfileFragment;
+import technians.com.vucabsdriver.View.MainView.Fragments.MyProfile.ProfileFragment;
 import technians.com.vucabsdriver.View.MainView.Fragments.RatingFeedback.RatingFeedbackFragment;
 import technians.com.vucabsdriver.Model.Profile.Profile;
 
@@ -156,6 +155,9 @@ public class NavigationActivity extends AppCompatActivity
                     break;
                 case R.id.nav_logout:
                     sessionManager.setLogin(false);
+//                    realm.beginTransaction();
+//                    realm.where(Profile.class).findFirst().deleteFromRealm();
+//                    realm.commitTransaction();
                     startActivity(new Intent(NavigationActivity.this, LoginWithPhoneActivity.class));
                     stopService(new Intent(NavigationActivity.this, BackgroundFusedLocation.class));
                     finish();

@@ -290,28 +290,28 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
         @Override
         public void onReceive(Context context, Intent intent) {
             try {
-                mMap.clear();
-                Location location = intent.getParcelableExtra("Location");
-                DriverCurrentLocation driverLocation = (DriverCurrentLocation) intent.getSerializableExtra("DriverLocation");
-                userLocation = location;
-
-                realm.beginTransaction();
-                realm.copyToRealmOrUpdate(new DriverLocation(1, location.getLatitude(), location.getLongitude()));
-                realm.commitTransaction();
-
-                CameraPosition cameraPosition = new CameraPosition.Builder()
-                        .target(new LatLng(userLocation.getLatitude(), userLocation.getLongitude()))
-                        .zoom(17)
-                        .build();
-
-                addOverlay(new LatLng(userLocation.getLatitude(), userLocation.getLongitude()));
-                mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-                addMarker(driverLocation);
-                ResumeMap resumeMap = new ResumeMap(1, driverLocation.getAddress(), driverLocation.getUpdated_at(), true,
-                        location.getLatitude(), location.getLongitude());
-                realm.beginTransaction();
-                realm.copyToRealmOrUpdate(resumeMap);
-                realm.commitTransaction();
+//                mMap.clear();
+//                Location location = intent.getParcelableExtra("Location");
+//                DriverCurrentLocation driverLocation = (DriverCurrentLocation) intent.getSerializableExtra("DriverLocation");
+//                userLocation = location;
+//
+//                realm.beginTransaction();
+//                realm.copyToRealmOrUpdate(new DriverLocation(1, location.getLatitude(), location.getLongitude()));
+//                realm.commitTransaction();
+//
+//                CameraPosition cameraPosition = new CameraPosition.Builder()
+//                        .target(new LatLng(userLocation.getLatitude(), userLocation.getLongitude()))
+//                        .zoom(17)
+//                        .build();
+//
+//                addOverlay(new LatLng(userLocation.getLatitude(), userLocation.getLongitude()));
+//                mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+//                addMarker(driverLocation);
+//                ResumeMap resumeMap = new ResumeMap(1, driverLocation.getAddress(), driverLocation.getUpdated_at(), true,
+//                        location.getLatitude(), location.getLongitude());
+//                realm.beginTransaction();
+//                realm.copyToRealmOrUpdate(resumeMap);
+//                realm.commitTransaction();
             } catch (Exception e) {
                 Toast.makeText(getActivity(), getString(R.string.label_something_went_wrong), Toast.LENGTH_SHORT).show();
             }
