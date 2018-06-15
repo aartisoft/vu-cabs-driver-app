@@ -7,6 +7,7 @@ import android.location.Location;
 import android.os.IBinder;
 import android.os.Looper;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.widget.Toast;
@@ -115,7 +116,19 @@ public class BackgroundFusedLocation extends Service {
 
                         } else {
                             mDatabase.child(getString(R.string.firebasenode))
-                                    .child(DriverId).onDisconnect().removeValue();
+                                    .child(DriverId).onDisconnect().removeValue(new DatabaseReference.CompletionListener() {
+                                @Override
+                                public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                                    Log.v("Background123", "complete");
+                                }
+                            });
+                            geoFire.removeLocation(DriverId, new GeoFire.CompletionListener() {
+                                @Override
+                                public void onComplete(String key, DatabaseError error) {
+                                    Log.v("Background123", "Key: " + key);
+                                    Log.v("Background123", "Error: " + error);
+                                }
+                            });
                             fusedLocationProviderClient.removeLocationUpdates(mLocationCallback);
                         }
                     }
@@ -139,10 +152,20 @@ public class BackgroundFusedLocation extends Service {
                 Date currenttime = Calendar.getInstance().getTime();
                 SimpleDateFormat formatter = new SimpleDateFormat("dd.MMM.yyyy hh:mm aaa");
                 String updatedat = formatter.format(currenttime);
-                DriverCurrentLocation driverLocation = new DriverCurrentLocation(Address, updatedat, profile);
+                DriverCurrentLocation driverLocation = new DriverCurrentLocation(Address, updatedat, profile.getCar_Type(),
+                        profile.getDriver_ID(), profile.getDriver_Status(), location.getLatitude(),
+                        location.getLongitude(), profile.getCar_Seat(), profile.getName(), profile.getMobileNumber(),
+                        profile.getProfileURL(), profile.getCar_Name(), profile.getCar_Number(), profile.getCarURL(),0);
                 mDatabase.child(getString(R.string.firebasenode))
                         .child(DriverId)
                         .setValue(driverLocation);
+                mDatabase.child(getString(R.string.firebasenode))
+                        .child("90")
+                        .setValue(new DriverCurrentLocation(Address, updatedat, 4,
+                                90, 1, location.getLatitude(), location.getLongitude(),
+                                "7", "Satya", "8860839491",
+                                "", "WagonR", "565656"
+                                , "",0));
                 geoFire.setLocation(DriverId, new GeoLocation(location.getLatitude(), location.getLongitude()), new GeoFire.CompletionListener() {
                     //            @Override
                     public void onComplete(String key, DatabaseError error) {
@@ -153,7 +176,17 @@ public class BackgroundFusedLocation extends Service {
                         }
                     }
                 });
-//                sendDataToActivity(location, driverLocation);
+                geoFire.setLocation("90", new GeoLocation(location.getLatitude(), location.getLongitude()), new GeoFire.CompletionListener() {
+                    //            @Override
+                    public void onComplete(String key, DatabaseError error) {
+                        if (error != null) {
+                            Log.v("GeoQuery", "onComplete There was an error saving the location to GeoFire: " + error);
+                        } else {
+                            Log.v("GeoQuery", "onComplete Location saved on server successfully!");
+                        }
+                    }
+                });
+                sendDataToActivity(location, driverLocation);
             }
         } catch (Exception e) {
             Toast.makeText(this, getString(R.string.label_something_went_wrong), Toast.LENGTH_SHORT).show();
@@ -169,10 +202,22 @@ public class BackgroundFusedLocation extends Service {
 
     @Override
     public void onDestroy() {
+        Log.v("Background123", "OnDestroy");
         realm.close();
         mDatabase.child(getString(R.string.firebasenode))
-                .child(DriverId).removeValue();
-        geoFire.removeLocation(DriverId);
+                .child(DriverId).removeValue(new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                Log.v("Background123", "Node removed");
+            }
+        });
+        geoFire.removeLocation(DriverId, new GeoFire.CompletionListener() {
+            @Override
+            public void onComplete(String key, DatabaseError error) {
+                Log.v("Background123", "Key: " + key);
+                Log.v("Background123", "Error: " + error);
+            }
+        });
         fusedLocationProviderClient.removeLocationUpdates(mLocationCallback);
         stopSelf();
         super.onDestroy();

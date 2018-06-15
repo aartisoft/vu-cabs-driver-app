@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
 import com.firebase.jobdispatcher.GooglePlayDriver;
@@ -33,6 +34,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
 
+        Log.v("FirebaseNotif","onMessageReceived");
         // [START_EXCLUDE]
         // There are two types of messages data messages and notification messages. Data messages are handled
         // here in onMessageReceived whether the app is in the foreground or background. Data messages are the type
@@ -48,7 +50,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
-
             if (/* Check if data needs to be processed by long running job */ true) {
                 // For long-running tasks (10 seconds or more) use Firebase Job Dispatcher.
                 scheduleJob();
@@ -74,6 +75,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      * Schedule a job using FirebaseJobDispatcher.
      */
     private void scheduleJob() {
+        Log.v("FirebaseNotif","scheduleJob");
         // [START dispatch_job]
         FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(this));
         Job myJob = dispatcher.newJobBuilder()
@@ -88,8 +90,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      * Handle time allotted to BroadcastReceivers.
      */
     private void handleNow() {
+        Toast.makeText(this, "Handle", Toast.LENGTH_SHORT).show();
+        Log.v("FirebaseNotif","handlenow");
         Log.d(TAG, "Short lived task is done.");
     }
+
 
     /**
      * Create and show a simple notification containing the received FCM message.
@@ -128,5 +133,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
     }
+
 }
 

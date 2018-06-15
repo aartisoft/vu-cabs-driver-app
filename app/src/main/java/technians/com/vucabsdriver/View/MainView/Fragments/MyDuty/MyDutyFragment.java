@@ -4,7 +4,6 @@ import android.Manifest;
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
-import android.app.ActivityManager;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -25,7 +24,6 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresPermission;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,14 +62,14 @@ import technians.com.vucabsdriver.BackgroundFusedLocation;
 import technians.com.vucabsdriver.CustomInfoWindow.CustomInfoWindowGoogleMap;
 import technians.com.vucabsdriver.CustomInfoWindow.InfoWindowData;
 import technians.com.vucabsdriver.CustomToggleButton.CustomToggleButton;
+import technians.com.vucabsdriver.Model.DriverLocationPackage.DriverCurrentLocation;
+import technians.com.vucabsdriver.Model.DriverLocationPackage.DriverLocation;
+import technians.com.vucabsdriver.Model.DriverLocationPackage.ResumeMap;
+import technians.com.vucabsdriver.Model.PendingRequest.BookingData;
 import technians.com.vucabsdriver.R;
 import technians.com.vucabsdriver.Utilities.Constants;
 import technians.com.vucabsdriver.Utilities.SessionManager;
 import technians.com.vucabsdriver.View.MainView.BookingOTP.OTPBookingActivity;
-import technians.com.vucabsdriver.Model.DriverLocationPackage.DriverCurrentLocation;
-import technians.com.vucabsdriver.Model.DriverLocationPackage.DriverLocation;
-import technians.com.vucabsdriver.Model.PendingRequest.BookingData;
-import technians.com.vucabsdriver.Model.DriverLocationPackage.ResumeMap;
 
 
 public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View.OnClickListener, MyDutyMVPView {
@@ -290,28 +288,28 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
         @Override
         public void onReceive(Context context, Intent intent) {
             try {
-//                mMap.clear();
-//                Location location = intent.getParcelableExtra("Location");
-//                DriverCurrentLocation driverLocation = (DriverCurrentLocation) intent.getSerializableExtra("DriverLocation");
-//                userLocation = location;
-//
-//                realm.beginTransaction();
-//                realm.copyToRealmOrUpdate(new DriverLocation(1, location.getLatitude(), location.getLongitude()));
-//                realm.commitTransaction();
-//
-//                CameraPosition cameraPosition = new CameraPosition.Builder()
-//                        .target(new LatLng(userLocation.getLatitude(), userLocation.getLongitude()))
-//                        .zoom(17)
-//                        .build();
-//
-//                addOverlay(new LatLng(userLocation.getLatitude(), userLocation.getLongitude()));
-//                mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-//                addMarker(driverLocation);
-//                ResumeMap resumeMap = new ResumeMap(1, driverLocation.getAddress(), driverLocation.getUpdated_at(), true,
-//                        location.getLatitude(), location.getLongitude());
-//                realm.beginTransaction();
-//                realm.copyToRealmOrUpdate(resumeMap);
-//                realm.commitTransaction();
+                mMap.clear();
+                Location location = intent.getParcelableExtra("Location");
+                DriverCurrentLocation driverLocation = (DriverCurrentLocation) intent.getSerializableExtra("DriverLocation");
+                userLocation = location;
+
+                realm.beginTransaction();
+                realm.copyToRealmOrUpdate(new DriverLocation(1, location.getLatitude(), location.getLongitude()));
+                realm.commitTransaction();
+
+                CameraPosition cameraPosition = new CameraPosition.Builder()
+                        .target(new LatLng(userLocation.getLatitude(), userLocation.getLongitude()))
+                        .zoom(17)
+                        .build();
+
+                addOverlay(new LatLng(userLocation.getLatitude(), userLocation.getLongitude()));
+                mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                addMarker(driverLocation);
+                ResumeMap resumeMap = new ResumeMap(1, driverLocation.getAddress(), driverLocation.getUpdated_at(), true,
+                        location.getLatitude(), location.getLongitude());
+                realm.beginTransaction();
+                realm.copyToRealmOrUpdate(resumeMap);
+                realm.commitTransaction();
             } catch (Exception e) {
                 Toast.makeText(getActivity(), getString(R.string.label_something_went_wrong), Toast.LENGTH_SHORT).show();
             }
