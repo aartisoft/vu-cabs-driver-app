@@ -159,24 +159,7 @@ public class BackgroundFusedLocation extends Service {
                 mDatabase.child(getString(R.string.firebasenode))
                         .child(DriverId)
                         .setValue(driverLocation);
-                mDatabase.child(getString(R.string.firebasenode))
-                        .child("90")
-                        .setValue(new DriverCurrentLocation(Address, updatedat, 4,
-                                90, 1, location.getLatitude(), location.getLongitude(),
-                                "7", "Satya", "8860839491",
-                                "", "WagonR", "565656"
-                                , "",0));
                 geoFire.setLocation(DriverId, new GeoLocation(location.getLatitude(), location.getLongitude()), new GeoFire.CompletionListener() {
-                    //            @Override
-                    public void onComplete(String key, DatabaseError error) {
-                        if (error != null) {
-                            Log.v("GeoQuery", "onComplete There was an error saving the location to GeoFire: " + error);
-                        } else {
-                            Log.v("GeoQuery", "onComplete Location saved on server successfully!");
-                        }
-                    }
-                });
-                geoFire.setLocation("90", new GeoLocation(location.getLatitude(), location.getLongitude()), new GeoFire.CompletionListener() {
                     //            @Override
                     public void onComplete(String key, DatabaseError error) {
                         if (error != null) {
