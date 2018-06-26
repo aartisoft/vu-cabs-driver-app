@@ -2,9 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/VUCabsDriverApplication.iml" filepath="$PROJECT_DIR$/VUCabsDriverApplication.iml" />
-      <module fileurl="file://$PROJECT_DIR$/VUCabsDriverNew.iml" filepath="$PROJECT_DIR$/VUCabsDriverNew.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/vucabsdrivernew.iml" filepath="$PROJECT_DIR$/vucabsdrivernew.iml" />
     </modules>
   </component>
 </project>
