@@ -30,17 +30,17 @@ public class BookingData extends RealmObject{
     @SerializedName("drop_lng")
     private double drop_longitude;
     @SerializedName("distance")
-    private String distance;
+    private float distance;
     @SerializedName("time_duration")
     private String time_duration;
     @SerializedName("payment_type")
     private String payment_type;
     @SerializedName("gst_amount")
-    private int gst_amount;
+    private float gst_amount;
     @SerializedName("ride_amount")
-    private int ride_amount;
+    private float ride_amount;
     @SerializedName("total_amount")
-    private int total_amount;
+    private float total_amount;
     @SerializedName("toll")
     private int toll;
     @SerializedName("status")
@@ -51,7 +51,8 @@ public class BookingData extends RealmObject{
     public BookingData(){
 
     }
-    public BookingData(String customer_name, String customer_mobile, String customer_email, int id, String order_id, String pickup_location, double pickup_latitude, double pickup_longitude, String drop_location, double drop_latitude, double drop_longitude, String distance, String time_duration, String payment_type, int gst_amount, int ride_amount, int total_amount, int toll, int status, String date) {
+
+    public BookingData(String customer_name, String customer_mobile, String customer_email, int id, String order_id, String pickup_location, double pickup_latitude, double pickup_longitude, String drop_location, double drop_latitude, double drop_longitude, float distance, String time_duration, String payment_type, float gst_amount, float ride_amount, float total_amount, int toll, int status, String date) {
         this.customer_name = customer_name;
         this.customer_mobile = customer_mobile;
         this.customer_email = customer_email;
@@ -162,11 +163,11 @@ public class BookingData extends RealmObject{
         this.drop_longitude = drop_longitude;
     }
 
-    public String getDistance() {
+    public float getDistance() {
         return distance;
     }
 
-    public void setDistance(String distance) {
+    public void setDistance(float distance) {
         this.distance = distance;
     }
 
@@ -186,27 +187,27 @@ public class BookingData extends RealmObject{
         this.payment_type = payment_type;
     }
 
-    public int getGst_amount() {
+    public float getGst_amount() {
         return gst_amount;
     }
 
-    public void setGst_amount(int gst_amount) {
+    public void setGst_amount(float gst_amount) {
         this.gst_amount = gst_amount;
     }
 
-    public int getRide_amount() {
+    public float getRide_amount() {
         return ride_amount;
     }
 
-    public void setRide_amount(int ride_amount) {
+    public void setRide_amount(float ride_amount) {
         this.ride_amount = ride_amount;
     }
 
-    public int getTotal_amount() {
+    public float getTotal_amount() {
         return total_amount;
     }
 
-    public void setTotal_amount(int total_amount) {
+    public void setTotal_amount(float total_amount) {
         this.total_amount = total_amount;
     }
 

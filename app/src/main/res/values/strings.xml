@@ -139,4 +139,7 @@
     <string name="nohistory">No Ride History Available!</string>
     <string name="norating">No Ratings Available!</string>
     <string name="url_terms">https://www.vucabs.com/driver-terms-and-conditions</string>
+    <string name="enablepermission">Missing Permission</string>
+    <string name="gotosetting">Allow SMS permission to auto-detect the SMS and have a seamless experience.</string>
+    <string name="allowLocation">Allow location permission to use features of this app.</string>
 </resources>

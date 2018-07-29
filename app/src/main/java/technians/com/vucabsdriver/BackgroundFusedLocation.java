@@ -64,6 +64,7 @@ public class BackgroundFusedLocation extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        Log.v("BackgroundFusedLocation","Service started");
         Realm.init(this);
         realm = Realm.getDefaultInstance();
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
@@ -78,6 +79,7 @@ public class BackgroundFusedLocation extends Service {
     }
 
     protected void startLocationUpdates() {
+        Log.v("BackgroundFusedLocation","startLocationUpdates");
         profile = realm.where(Profile.class).findFirst();
         if (profile != null) {
             try {
@@ -113,6 +115,7 @@ public class BackgroundFusedLocation extends Service {
                             }
                             fusedLocationProviderClient.requestLocationUpdates(mLocationRequest, mLocationCallback,
                                     Looper.myLooper());
+                            Log.v("BackgroundFusedLocation","Connected");
 
                         } else {
                             mDatabase.child(getString(R.string.firebasenode))
@@ -130,6 +133,7 @@ public class BackgroundFusedLocation extends Service {
                                 }
                             });
                             fusedLocationProviderClient.removeLocationUpdates(mLocationCallback);
+                            Log.v("BackgroundFusedLocation","Not connected");
                         }
                     }
 
@@ -145,6 +149,7 @@ public class BackgroundFusedLocation extends Service {
     }
 
     public void onLocationChanged(Location location) {
+        Log.v("BackgroundFusedLocation","OnLocation Change");
         try {
             if (location.getAccuracy() < 100.0 && location.getSpeed() < 6.95) {
 

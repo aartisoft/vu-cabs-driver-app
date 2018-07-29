@@ -10,6 +10,7 @@
     <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <application
         android:name=".AppController"
@@ -60,7 +61,6 @@
         <activity
             android:name=".View.MainView.ContainerActivity.NavigationActivity"
             android:theme="@style/AppTheme" />
-        <activity android:name=".View.Login.BaseActivity" />
         <activity android:name=".View.MainView.BookingOTP.OTPBookingActivity" />
 
         <receiver android:name=".OTPReceivers.OtpReader">

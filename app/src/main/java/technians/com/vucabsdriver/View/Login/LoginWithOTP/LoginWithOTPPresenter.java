@@ -1,18 +1,16 @@
 package technians.com.vucabsdriver.View.Login.LoginWithOTP;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
-import android.widget.Toast;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import technians.com.vucabsdriver.Presenter.Presenter;
-import technians.com.vucabsdriver.R;
-import technians.com.vucabsdriver.Utilities.SessionManager;
 import technians.com.vucabsdriver.Model.Login.LoginResponce;
 import technians.com.vucabsdriver.Model.Login.OTPResponce;
 import technians.com.vucabsdriver.Model.RetrofitError.NetworkError;
+import technians.com.vucabsdriver.Presenter.Presenter;
+import technians.com.vucabsdriver.R;
+import technians.com.vucabsdriver.Utilities.SessionManager;
 import technians.com.vucabsdriver.rest.ApiClient;
 import technians.com.vucabsdriver.rest.ApiInterface;
 

@@ -6,25 +6,25 @@ import java.io.Serializable;
  * Created by vineet on 12/12/2017.
  */
 
-public class DriverCurrentLocation implements Serializable{
-    private String address,updated_at;
-    private int car_type,driver_id,status;
-    private double latitude,longitude;
-    private String car_seat,driver_name,driver_mobile,driver_profileurl,car_name,car_number,car_picurl;
+public class DriverCurrentLocation implements Serializable {
+    private String address, updated_at;
+    private int car_type, driver_id, status;
+    private double lat, lng;
+    private String car_seat, driver_name, driver_mobile, driver_profileurl, car_name, car_number, car_picurl;
     private int drivingStatus;
 
-  public DriverCurrentLocation(){
+    public DriverCurrentLocation() {
 
-  }
+    }
 
-    public DriverCurrentLocation(String address, String updated_at, int car_type, int driver_id, int status, double latitude, double longitude, String car_seat, String driver_name, String driver_mobile, String driver_profileurl, String car_name, String car_number, String car_picurl, int drivingStatus) {
+    public DriverCurrentLocation(String address, String updated_at, int car_type, int driver_id, int status, double lat, double lng, String car_seat, String driver_name, String driver_mobile, String driver_profileurl, String car_name, String car_number, String car_picurl, int drivingStatus) {
         this.address = address;
         this.updated_at = updated_at;
         this.car_type = car_type;
         this.driver_id = driver_id;
         this.status = status;
-        this.latitude = latitude;
-        this.longitude = longitude;
+        this.lat = lat;
+        this.lng = lng;
         this.car_seat = car_seat;
         this.driver_name = driver_name;
         this.driver_mobile = driver_mobile;
@@ -75,20 +75,20 @@ public class DriverCurrentLocation implements Serializable{
         this.status = status;
     }
 
-    public double getLatitude() {
-        return latitude;
+    public double getLat() {
+        return lat;
     }
 
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
+    public void setLat(double lat) {
+        this.lat = lat;
     }
 
-    public double getLongitude() {
-        return longitude;
+    public double getLng() {
+        return lng;
     }
 
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
+    public void setLng(double lng) {
+        this.lng = lng;
     }
 
     public String getCar_seat() {

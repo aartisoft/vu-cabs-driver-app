@@ -21,13 +21,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import io.realm.Realm;
+import technians.com.vucabsdriver.Model.DriverLocationPackage.DriverLocation;
+import technians.com.vucabsdriver.Model.PendingRequest.BookingData;
+import technians.com.vucabsdriver.Model.Profile.Profile;
 import technians.com.vucabsdriver.R;
 import technians.com.vucabsdriver.Utilities.Constants;
 import technians.com.vucabsdriver.Utilities.SessionManager;
 import technians.com.vucabsdriver.View.MainView.TripEnd.TripEndActivity;
-import technians.com.vucabsdriver.Model.DriverLocationPackage.DriverLocation;
-import technians.com.vucabsdriver.Model.PendingRequest.BookingData;
-import technians.com.vucabsdriver.Model.Profile.Profile;
 
 public class BookingAssingedActivity extends AppCompatActivity implements View.OnClickListener, BookingAssingedMVPView {
 
@@ -51,6 +51,15 @@ public class BookingAssingedActivity extends AppCompatActivity implements View.O
         sessionManager = new SessionManager(this);
         ID = getIntent().getIntExtra("ID", ID);
         Realm.init(this);
+
+//        final RealmConfiguration configuration = new RealmConfiguration.Builder()
+//                .name(Realm.DEFAULT_REALM_NAME)
+//                .schemaVersion(2)
+//                .migration(new RealmMigrations())
+//                .deleteRealmIfMigrationNeeded()
+//                .build();
+//        Realm.setDefaultConfiguration(configuration);
+//        Realm.getInstance(configuration);
         realm = Realm.getDefaultInstance();
 
         presenter = new BookingAssingedPresenter();

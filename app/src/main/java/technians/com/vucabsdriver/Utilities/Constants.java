@@ -1,18 +1,9 @@
 package technians.com.vucabsdriver.Utilities;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
-import android.support.design.widget.Snackbar;
-import android.view.View;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -20,9 +11,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-
-
-import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Created by vineet on 10/18/2017.
@@ -94,7 +82,7 @@ public class Constants {
 //    }
 
 
-    public static String FormatAmount(int amount) {
+    public static String FormatAmount(float amount) {
         return String.format("₹ %s", amount);
     }
 

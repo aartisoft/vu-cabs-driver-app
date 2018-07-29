@@ -1,17 +1,17 @@
 package technians.com.vucabsdriver.View.MainView.Fragments.MyDuty;
 
 import android.support.annotation.NonNull;
-import android.widget.Toast;
+import android.util.Log;
 
 import java.util.ArrayList;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import technians.com.vucabsdriver.Presenter.Presenter;
 import technians.com.vucabsdriver.Model.PendingRequest.BookingData;
 import technians.com.vucabsdriver.Model.PendingRequest.PendingRequestResponce;
 import technians.com.vucabsdriver.Model.RetrofitError.NetworkError;
+import technians.com.vucabsdriver.Presenter.Presenter;
 import technians.com.vucabsdriver.R;
 import technians.com.vucabsdriver.rest.ApiClient;
 import technians.com.vucabsdriver.rest.ApiInterface;
@@ -33,10 +33,14 @@ public class MyDutyPresenter implements Presenter<MyDutyMVPView> {
         try {
             myDutyMVPView.showProgress();
             ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
+            Log.v("MyDuty123","Token: "+myDutyMVPView.getSession().getToken());
             Call<PendingRequestResponce> call = apiService.getPendingRequest(myDutyMVPView.getSession().getToken());
             call.enqueue(new Callback<PendingRequestResponce>() {
                 @Override
-                public void onResponse(@NonNull Call<PendingRequestResponce> call, @NonNull Response<PendingRequestResponce> response) {
+                public void onResponse(@NonNull Call<PendingRequestResponce> call, @NonNull Response<PendingRequestResponce> response)
+                {
+                    Log.v("MyDuty123","Exception: "+response.message()
+                    );
                     myDutyMVPView.hideProgress();
                     if (response.body() != null) {
                         if (response.body().getStatus() == 200) {
@@ -69,12 +73,14 @@ public class MyDutyPresenter implements Presenter<MyDutyMVPView> {
 
                 @Override
                 public void onFailure(@NonNull Call<PendingRequestResponce> call, @NonNull Throwable t) {
+                    Log.v("MyDuty123","Exception: "+t.getMessage());
                     myDutyMVPView.hideProgress();
                     String error = new NetworkError(t).getAppErrorMessage();
                     myDutyMVPView.showApiError(error);
                 }
             });
         }catch (Exception e){
+            Log.v("MyDuty123","Exception: "+e.getMessage());
             myDutyMVPView.showApiError(myDutyMVPView.getContext().getString(R.string.label_something_went_wrong));
         }
     }

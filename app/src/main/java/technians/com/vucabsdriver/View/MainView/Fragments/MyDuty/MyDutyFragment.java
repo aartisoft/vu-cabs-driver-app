@@ -1,28 +1,22 @@
 package technians.com.vucabsdriver.View.MainView.Fragments.MyDuty;
 
-import android.Manifest;
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
-import android.annotation.TargetApi;
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.IntentSender;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresPermission;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,12 +29,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.api.ResolvableApiException;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.LocationSettingsResponse;
-import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -53,9 +41,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 
 import io.realm.Realm;
 import technians.com.vucabsdriver.BackgroundFusedLocation;
@@ -75,7 +60,7 @@ import technians.com.vucabsdriver.View.MainView.BookingOTP.OTPBookingActivity;
 public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View.OnClickListener, MyDutyMVPView {
 
     public static final int LOCATION_PERMISSION_REQUEST_CODE = 858;
-    public static final int REQUEST_CHECK_SETTINGS = 100;
+
 
     private GoogleMap mMap;
     private Location userLocation;
@@ -92,6 +77,7 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
     private BookingData bookingData;
     private LinearLayout linearLayout_booking;
 
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -105,6 +91,7 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
         mapFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
         sessionManager = new SessionManager(getActivity());
 
 
@@ -122,11 +109,11 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
         btn_starttrip.setOnClickListener(this);
 
         getActivity().registerReceiver(broadcastReceiver, new IntentFilter(BackgroundFusedLocation.BROADCAST_ACTION));
-        if (String.valueOf(realm.where(ResumeMap.class).findFirst()).equals("null")) {
-            startService();
-        }
-
-
+//        if (String.valueOf(realm.where(ResumeMap.class).findFirst()).equals("null")) {
+//            startService();
+//        }
+//
+//
         customToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -143,6 +130,8 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
             }
         });
         presenter.loadpendingrequest();
+
+
         return view;
     }
 
@@ -167,64 +156,108 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
         MapStyleOptions style = MapStyleOptions.loadRawResourceStyle(
                 getActivity(), R.raw.maps_style);
         googleMap.setMapStyle(style);
-        if (checkPermission()) onLocationPermissionGranted();
+//        if (checkPermission()) checkgpsstatus();
 
     }
 
 
-    @RequiresPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-    private void onLocationPermissionGranted() {
+    @SuppressLint("MissingPermission")
+    private void checkgpsstatus() {
 
-        if (!checkPermission()) return;
+//        if (!checkPermission()) return;
 
-        mMap.getUiSettings().setMyLocationButtonEnabled(true);
-        mMap.setMyLocationEnabled(true);
-
-        LocationRequest mLocationRequest = new LocationRequest();
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
-                .addLocationRequest(mLocationRequest);
-
-        SettingsClient client = LocationServices.getSettingsClient(getActivity());
-        Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
-
-        task.addOnSuccessListener(getActivity(), new OnSuccessListener<LocationSettingsResponse>() {
-            @Override
-            public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
-                try {
-                    if (!String.valueOf(realm.where(ResumeMap.class).findFirst()).equals("null")) {
+//        mMap.getUiSettings().setMyLocationButtonEnabled(true);
+//        mMap.setMyLocationEnabled(true);
 //
-                        ResumeMap resumeMap = realm.where(ResumeMap.class).findFirst();
-                        if (resumeMap.getDriverStatus()) {
-                            startService();
-                        } else {
-                            stopService();
-                        }
+//        LocationRequest mLocationRequest = new LocationRequest();
+//        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+////
+//        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+//                .addLocationRequest(mLocationRequest);
+//        mLocationSettingsRequest = builder.build();
+////
+//        SettingsClient client = LocationServices.getSettingsClient(getActivity());
+//        client
+//                .checkLocationSettings(mLocationSettingsRequest)
+//                .addOnSuccessListener(getActivity(), new OnSuccessListener<LocationSettingsResponse>() {
+//                    @SuppressLint("MissingPermission")
+//                    @Override
+//                    public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
 //
-                    }
-                } catch (Exception e) {
-                    Toast.makeText(getActivity(), getString(R.string.label_something_went_wrong), Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+//                        Log.v("MyDutyFragment", "Started location updates ");
+//
+////                        //noinspection MissingPermission
+////                        mFusedLocationClient.requestLocationUpdates(mLocationRequest,
+////                                mLocationCallback, Looper.myLooper());
+////
+////                        updateLocationUI();
+//                    }
+//                })
+//                .addOnFailureListener(getActivity(), new OnFailureListener() {
+//                    @Override
+//                    public void onFailure(@NonNull Exception e) {
+//                        int statusCode = ((ApiException) e).getStatusCode();
+//                        switch (statusCode) {
+//                            case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+//                                Log.v("MyDutyFragment", "Location settings are not satisfied. Attempting to upgrade " +
+//                                        "location settings ");
+//                                try {
+//                                    // Show the dialog by calling startResolutionForResult(), and check the
+//                                    // result in onActivityResult().
+//                                    ResolvableApiException rae = (ResolvableApiException) e;
+//                                    rae.startResolutionForResult(getActivity(), REQUEST_CHECK_SETTINGS);
+//                                } catch (IntentSender.SendIntentException sie) {
+//                                    Log.v("MyDutyFragment", "PendingIntent unable to execute request.");
+//                                }
+//                                break;
+//                            case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+//                                String errorMessage = "Location settings are inadequate, and cannot be " +
+//                                        "fixed here. Fix in Settings.";
+//
+//                                Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_LONG).show();
+//                        }
+//
+//                    }
+//                });
 
-        task.addOnFailureListener(getActivity(), new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                if (e instanceof ResolvableApiException) {
-                    // Location settings are not satisfied, but this can be fixed
-                    // by showing the user a dialog.
-                    try {
-                        ResolvableApiException resolvable = (ResolvableApiException) e;
-                        resolvable.startResolutionForResult(getActivity(),
-                                REQUEST_CHECK_SETTINGS);
-                    } catch (IntentSender.SendIntentException sendEx) {
-                        // Ignore the error.
-                    }
-                }
-            }
-        });
+//        Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
+//
+//        task.addOnSuccessListener(getActivity(), new OnSuccessListener<LocationSettingsResponse>() {
+//            @Override
+//            public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
+//                try {
+//                    if (!String.valueOf(realm.where(ResumeMap.class).findFirst()).equals("null")) {
+////
+//                        ResumeMap resumeMap = realm.where(ResumeMap.class).findFirst();
+//                        if (resumeMap.getDriverStatus()) {
+//                            startService();
+//                        } else {
+//                            stopService();
+//                        }
+////
+//                    }
+//                } catch (Exception e) {
+//                    Toast.makeText(getActivity(), getString(R.string.label_something_went_wrong), Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//        });
+//
+//        task.addOnFailureListener(getActivity(), new OnFailureListener() {
+//            @Override
+//            public void onFailure(@NonNull Exception e) {
+//                if (e instanceof ResolvableApiException) {
+//                    // Location settings are not satisfied, but this can be fixed
+//                    // by showing the user a dialog.
+//                    try {
+//                        ResolvableApiException resolvable = (ResolvableApiException) e;
+//                        resolvable.startResolutionForResult(getActivity(),
+//                                REQUEST_CHECK_SETTINGS);
+//                    } catch (IntentSender.SendIntentException sendEx) {
+//                        // Ignore the error.
+//                    }
+//                }
+//            }
+//        });
 
     }
 
@@ -316,32 +349,31 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
         }
     };
 
-    private boolean checkPermission() {
+//    private boolean checkPermission() {
+//        if (Build.VERSION.SDK_INT >= 23) {
+//            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+//                    ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+//                return false;
+//            }else {
+//                return true;
+//            }
+//        }
+//        return true;
+//    }
 
-        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-            //Ask for the permission
-            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
-            Toast.makeText(getActivity(), "Please give location permission", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-
-        return true;
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-            if (checkPermission()) {
-                onLocationPermissionGranted();
-            } else {
-                getActivity().finishAffinity();
-            }
-        } else {
-            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
-    }
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+//            if (checkPermission()) {
+////                checkgpsstatus();
+//            } else {
+//                getActivity().finishAffinity();
+//            }
+//        } else {
+//            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+//        }
+//    }
 
     private void addMarker(DriverCurrentLocation driverLocation) {
         try {
@@ -386,7 +418,6 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
         return bitmap;
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void addOverlay(LatLng place) {
 
         GroundOverlay groundOverlay = mMap.addGroundOverlay(new
@@ -394,7 +425,7 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
                 .position(place, 100)
                 .transparency(0.5f)
                 .zIndex(3)
-                .image(BitmapDescriptorFactory.fromBitmap(drawableToBitmap(getActivity().getDrawable(R.drawable.map_overlay)))));
+                .image(BitmapDescriptorFactory.fromBitmap(drawableToBitmap(getResources().getDrawable(R.drawable.map_overlay)))));
 
         startOverlayAnimation(groundOverlay);
     }
@@ -530,3 +561,4 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
         linearLayout_booking.setVisibility(View.GONE);
     }
 }
+

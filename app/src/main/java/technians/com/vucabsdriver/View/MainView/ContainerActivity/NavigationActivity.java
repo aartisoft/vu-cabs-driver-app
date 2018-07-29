@@ -1,14 +1,20 @@
 package technians.com.vucabsdriver.View.MainView.ContainerActivity;
 
+import android.Manifest;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
+import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -22,6 +28,17 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.ResolvableApiException;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.android.gms.location.SettingsClient;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -31,16 +48,19 @@ import com.google.firebase.iid.FirebaseInstanceId;
 
 import io.realm.Realm;
 import technians.com.vucabsdriver.BackgroundFusedLocation;
+import technians.com.vucabsdriver.Model.DriverLocationPackage.ResumeMap;
+import technians.com.vucabsdriver.Model.Profile.Profile;
 import technians.com.vucabsdriver.R;
 import technians.com.vucabsdriver.Utilities.SessionManager;
 import technians.com.vucabsdriver.View.Login.LoginWithPhone.LoginWithPhoneActivity;
 import technians.com.vucabsdriver.View.MainView.Fragments.BookingHistory.BookingHistoryFragment;
 import technians.com.vucabsdriver.View.MainView.Fragments.DriverDocuments.DocumentsFragment;
 import technians.com.vucabsdriver.View.MainView.Fragments.MyDuty.MyDutyFragment;
-import technians.com.vucabsdriver.View.MainView.Fragments.Passes.MyPassFragment;
 import technians.com.vucabsdriver.View.MainView.Fragments.MyProfile.ProfileFragment;
+import technians.com.vucabsdriver.View.MainView.Fragments.Passes.MyPassFragment;
 import technians.com.vucabsdriver.View.MainView.Fragments.RatingFeedback.RatingFeedbackFragment;
-import technians.com.vucabsdriver.Model.Profile.Profile;
+
+import static technians.com.vucabsdriver.View.MainView.Fragments.MyDuty.MyDutyFragment.LOCATION_PERMISSION_REQUEST_CODE;
 
 public class NavigationActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, NavigationMVPView {
@@ -50,10 +70,15 @@ public class NavigationActivity extends AppCompatActivity
     private SessionManager sessionManager;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private Profile profile;
+    LocationSettingsRequest mLocationSettingsRequest;
+    LocationManager manager;
+    public static final int REQUEST_CHECK_SETTINGS = 100;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
+
         sessionManager = new SessionManager(this);
         presenter = new NavigationPresenter();
         presenter.attachView(this);
@@ -66,7 +91,7 @@ public class NavigationActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
 
-        DrawerLayout drawer =  findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -82,8 +107,63 @@ public class NavigationActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.getMenu().getItem(0).setChecked(true);
         sessionManager.setCurrentFragment(R.id.nav_myduty);
+        if (checkPermission()) {
+            manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                checkgpsstatus();
+            } else {
+                if (!String.valueOf(realm.where(ResumeMap.class).findFirst()).equals("null")) {
+////
+                        ResumeMap resumeMap = realm.where(ResumeMap.class).findFirst();
+                        if (resumeMap.getDriverStatus()) {
+                            startService(new Intent(NavigationActivity.this, BackgroundFusedLocation.class));
+                        } else {
+                            stopService(new Intent(NavigationActivity.this, BackgroundFusedLocation.class));
+                        }
+                }
+
+            }
+        }
     }
 
+    private void checkgpsstatus() {
+        LocationRequest mLocationRequest = new LocationRequest();
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+//
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(mLocationRequest);
+        mLocationSettingsRequest = builder.build();
+//
+        SettingsClient client = LocationServices.getSettingsClient(NavigationActivity.this);
+        client
+                .checkLocationSettings(mLocationSettingsRequest)
+                .addOnFailureListener(this, new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        int statusCode = ((ApiException) e).getStatusCode();
+                        switch (statusCode) {
+                            case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                                Log.v("MyDutyFragment", "Location settings are not satisfied. Attempting to upgrade " +
+                                        "location settings ");
+                                try {
+                                    // Show the dialog by calling startResolutionForResult(), and check the
+                                    // result in onActivityResult().
+                                    ResolvableApiException rae = (ResolvableApiException) e;
+                                    rae.startResolutionForResult(NavigationActivity.this, REQUEST_CHECK_SETTINGS);
+                                } catch (IntentSender.SendIntentException sie) {
+                                    Log.v("MyDutyFragment", "PendingIntent unable to execute request.");
+                                }
+                                break;
+                            case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                                String errorMessage = "Location settings are inadequate, and cannot be " +
+                                        "fixed here. Fix in Settings.";
+
+                                Toast.makeText(NavigationActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+                        }
+
+                    }
+                });
+    }
 
 
     @Override
@@ -92,14 +172,58 @@ public class NavigationActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            if(sessionManager.getCurrentFragment()!=R.id.nav_myduty){
+            if (sessionManager.getCurrentFragment() != R.id.nav_myduty) {
                 displaySelectedScreen(R.id.nav_myduty);
-            }else {
+            } else {
                 super.onBackPressed();
             }
         }
 
 
+    }
+
+    public boolean checkPermission() {
+        Log.v("NavigationActivity", "checkPermission");
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                    ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        Log.v("NavigationActivity", "onRequestPermissionsResult");
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+            } else {
+                final MaterialStyledDialog.Builder dialogHeader_1 = new MaterialStyledDialog.Builder(NavigationActivity.this)
+                        .setIcon(R.drawable.ic_if_setting)
+                        .withDialogAnimation(true)
+                        .withIconAnimation(true)
+                        .setHeaderColorInt(getResources().getColor(R.color.colorAccent))
+                        .setDescription(getString(R.string.allowLocation))
+                        .setPositiveText(getString(R.string.action_settings))
+                        .setNegativeText(getString(R.string.cb_b_cancel))
+                        .onNegative(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                finishAffinity();
+                            }
+                        })
+                        .onPositive(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                startActivityForResult(new Intent(android.provider.Settings.ACTION_SETTINGS), 0);
+                            }
+                        });
+                dialogHeader_1.show();
+            }
+        }
     }
 
     @Override
@@ -128,56 +252,53 @@ public class NavigationActivity extends AppCompatActivity
 
 
     public void displaySelectedScreen(int id) {
-            //creating fragment object
-            Fragment fragment = null;
-            String tag = "";
-            sessionManager.setCurrentFragment(id);
-            //initializing the fragment object which is selected
-            switch (id) {
-                case R.id.nav_myduty:
-                    fragment = new MyDutyFragment();
-                    tag = getString(R.string.myduty);
-                    break;
-                case R.id.nav_mypasses:
-                    fragment = new MyPassFragment();
-                    break;
-                case R.id.nav_documents:
-                    fragment = new DocumentsFragment();
-                    break;
-                case R.id.nav_profile:
-                    fragment = new ProfileFragment();
-                    break;
-                case R.id.nav_ridehistory:
-                    fragment = new BookingHistoryFragment();
-                    break;
-                case R.id.nav_ratingfeedback:
-                    fragment = new RatingFeedbackFragment();
-                    break;
-                case R.id.nav_logout:
-                    sessionManager.setLogin(false);
-//                    realm.beginTransaction();
-//                    realm.where(Profile.class).findFirst().deleteFromRealm();
-//                    realm.commitTransaction();
-                    startActivity(new Intent(NavigationActivity.this, LoginWithPhoneActivity.class));
-                    stopService(new Intent(NavigationActivity.this, BackgroundFusedLocation.class));
-                    finish();
-                    break;
-                case R.id.nav_termscons:
-                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.url_terms)));
-                    startActivity(browserIntent);
-                    break;
-            }
+        //creating fragment object
+        Fragment fragment = null;
+        String tag = "";
+        sessionManager.setCurrentFragment(id);
+        //initializing the fragment object which is selected
+        switch (id) {
+            case R.id.nav_myduty:
+                fragment = new MyDutyFragment();
+                tag = getString(R.string.myduty);
+                break;
+            case R.id.nav_mypasses:
+                fragment = new MyPassFragment();
+                break;
+            case R.id.nav_documents:
+                fragment = new DocumentsFragment();
+                break;
+            case R.id.nav_profile:
+                fragment = new ProfileFragment();
+                break;
+            case R.id.nav_ridehistory:
+                fragment = new BookingHistoryFragment();
+                break;
+            case R.id.nav_ratingfeedback:
+                fragment = new RatingFeedbackFragment();
+                break;
+            case R.id.nav_logout:
+                sessionManager.setLogin(false);
+                startActivity(new Intent(NavigationActivity.this, LoginWithPhoneActivity.class));
+                stopService(new Intent(NavigationActivity.this, BackgroundFusedLocation.class));
+                finish();
+                break;
+            case R.id.nav_termscons:
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.url_terms)));
+                startActivity(browserIntent);
+                break;
+        }
 
-            //replacing the fragment
-            if (fragment != null) {
+        //replacing the fragment
+        if (fragment != null) {
 
-                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                ft.replace(R.id.contentframe, fragment, tag);
-                ft.commit();
-            }
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.contentframe, fragment, tag);
+            ft.commit();
+        }
 
-            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-            drawer.closeDrawer(GravityCompat.START);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
     }
 
     @Override
@@ -254,8 +375,7 @@ public class NavigationActivity extends AppCompatActivity
 
                 }
             });
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             Toast.makeText(getContext(), getString(R.string.label_something_went_wrong), Toast.LENGTH_SHORT).show();
         }
 
@@ -285,7 +405,7 @@ public class NavigationActivity extends AppCompatActivity
 
 //        String msg = getString(R.string.msg_token_fmt, token);
 //        Log.v(TAG, msg);
-        }catch (Exception e){
+        } catch (Exception e) {
             Toast.makeText(getContext(), getString(R.string.label_something_went_wrong), Toast.LENGTH_SHORT).show();
         }
     }
@@ -301,11 +421,16 @@ public class NavigationActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
 
         // check if the request code is same as what is passed  here it is 2
-        if (resultCode == RESULT_OK) {
-            switch (requestCode) {
-                case MyDutyFragment.REQUEST_CHECK_SETTINGS: {
+        if (requestCode == REQUEST_CHECK_SETTINGS) {
+            switch (resultCode) {
+                case RESULT_OK: {
                     MyDutyFragment fragment = (MyDutyFragment) getSupportFragmentManager().findFragmentByTag(getString(R.string.myduty));
                     fragment.startService();
+                    break;
+                }
+                case RESULT_CANCELED: {
+                    Toast.makeText(this, "Cancelled", Toast.LENGTH_SHORT).show();
+//                    finishAffinity();
                     break;
                 }
             }
