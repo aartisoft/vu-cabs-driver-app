@@ -1,7 +1,6 @@
 package technians.com.vucabsdriver;
 
 import android.content.Context;
-import android.support.v7.app.AppCompatActivity;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;

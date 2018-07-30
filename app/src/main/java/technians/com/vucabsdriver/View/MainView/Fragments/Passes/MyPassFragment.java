@@ -19,8 +19,8 @@ import android.widget.Toast;
 import com.vipulasri.ticketview.TicketView;
 
 import io.realm.Realm;
-import technians.com.vucabsdriver.PayUMoneyIntegrate.PayUMoneyActivity;
 import technians.com.vucabsdriver.R;
+import technians.com.vucabsdriver.RealmController1;
 import technians.com.vucabsdriver.Utilities.SessionManager;
 
 import static technians.com.vucabsdriver.Utilities.Constants.PayUMoneyRequestCode;
@@ -43,8 +43,8 @@ public class MyPassFragment extends Fragment implements MyPassesMVPView, View.On
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_my_pass, container, false);
-        Realm.init(getActivity());
-        realm = Realm.getDefaultInstance();
+        RealmController1 realmController1 = new RealmController1(getContext());
+        realm= Realm.getInstance(realmController1.initializeDB());
         sessionManager = new SessionManager(getActivity());
         progressDialog = showProgressDialog(getActivity());
         presenter = new MyPassesPresenter();
@@ -146,9 +146,12 @@ public class MyPassFragment extends Fragment implements MyPassesMVPView, View.On
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.fragment_btn_renewpass: {
-                getActivity().startActivityForResult(new Intent(getActivity(), PayUMoneyActivity.class)
+                getActivity().startActivityForResult(new Intent(getActivity(), GatewayChooseActivity.class)
                         .putExtra("Amount", Amount)
                         .putExtra("Rides_qty", Rides), PayUMoneyRequestCode);
+//                getActivity().startActivityForResult(new Intent(getActivity(), PayUMoneyActivity.class)
+//                        .putExtra("Amount", Amount)
+//                        .putExtra("Rides_qty", Rides), PayUMoneyRequestCode);
                 break;
             }
         }

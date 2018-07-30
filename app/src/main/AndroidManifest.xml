@@ -28,13 +28,14 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
+
         <activity android:name=".PayUMoneyIntegrate.PayUMoneyActivity" />
         <!-- <activity android:name=".BillDetailsActivity"> -->
         <!-- <meta-data -->
         <!-- android:name="android.support.PARENT_ACTIVITY" -->
         <!-- android:value=".MainActivity" /> -->
         <!-- </activity> -->
-        <activity android:name=".SplashScreenActivity" >
+        <activity android:name=".SplashScreenActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -54,9 +55,7 @@
 
         <service android:name=".BackgroundFusedLocation" />
 
-        <activity android:name=".View.Login.LoginWithPhone.LoginWithPhoneActivity">
-
-        </activity>
+        <activity android:name=".View.Login.LoginWithPhone.LoginWithPhoneActivity" />
         <activity android:name=".View.Login.LoginWithOTP.LoginWithOTPActivity" />
         <activity
             android:name=".View.MainView.ContainerActivity.NavigationActivity"
@@ -113,7 +112,9 @@
         <!-- [END fcm_default_channel] -->
 
         <activity android:name=".View.MainView.AssingedBooking.BookingAssingedActivity" />
-        <activity android:name=".View.MainView.TripEnd.TripEndActivity"></activity>
+        <activity android:name=".View.MainView.TripEnd.TripEndActivity" />
+        <activity android:name=".View.MainView.Fragments.Passes.PayTmActivity" />
+        <activity android:name=".View.MainView.Fragments.Passes.GatewayChooseActivity"></activity>
     </application>
 
 </manifest>

@@ -25,6 +25,7 @@ import technians.com.vucabsdriver.Model.DriverLocationPackage.DriverLocation;
 import technians.com.vucabsdriver.Model.PendingRequest.BookingData;
 import technians.com.vucabsdriver.Model.Profile.Profile;
 import technians.com.vucabsdriver.R;
+import technians.com.vucabsdriver.RealmController1;
 import technians.com.vucabsdriver.Utilities.Constants;
 import technians.com.vucabsdriver.Utilities.SessionManager;
 import technians.com.vucabsdriver.View.MainView.TripEnd.TripEndActivity;
@@ -50,17 +51,8 @@ public class BookingAssingedActivity extends AppCompatActivity implements View.O
         progressDialog = Constants.showProgressDialog(this);
         sessionManager = new SessionManager(this);
         ID = getIntent().getIntExtra("ID", ID);
-        Realm.init(this);
-
-//        final RealmConfiguration configuration = new RealmConfiguration.Builder()
-//                .name(Realm.DEFAULT_REALM_NAME)
-//                .schemaVersion(2)
-//                .migration(new RealmMigrations())
-//                .deleteRealmIfMigrationNeeded()
-//                .build();
-//        Realm.setDefaultConfiguration(configuration);
-//        Realm.getInstance(configuration);
-        realm = Realm.getDefaultInstance();
+        RealmController1 realmController1 = new RealmController1(this);
+        realm= Realm.getInstance(realmController1.initializeDB());
 
         presenter = new BookingAssingedPresenter();
         presenter.attachView(this);

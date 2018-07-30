@@ -9,9 +9,10 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import io.realm.Realm;
-import technians.com.vucabsdriver.R;
-import technians.com.vucabsdriver.View.MainView.ContainerActivity.NavigationActivity;
 import technians.com.vucabsdriver.Model.PendingRequest.BookingData;
+import technians.com.vucabsdriver.R;
+import technians.com.vucabsdriver.RealmController1;
+import technians.com.vucabsdriver.View.MainView.ContainerActivity.NavigationActivity;
 
 import static technians.com.vucabsdriver.Utilities.Constants.FormatAmount;
 
@@ -22,9 +23,8 @@ public class TripEndActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trip_end);
 
-        Realm.init(this);
-        Realm realm = Realm.getDefaultInstance();
-
+        RealmController1 realmController1 = new RealmController1(this);
+        realm= Realm.getInstance(realmController1.initializeDB());
         Toolbar toolbar = findViewById(R.id.activity_tripend_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);

@@ -36,7 +36,7 @@ public class OTPBookingPresenter implements Presenter<OTPBookingMVPView> {
                 @Override
                 public void onResponse(@NonNull Call<OTPResponce> call, @NonNull Response<OTPResponce> response) {
                     otpBookingMVPView.hideProgress();
-                    Log.v("OTPVerify","Responce: "+response);
+                    Log.v("OTPVerify","Responce: "+response.message());
                     if (response.body() != null) {
 
                         //uncomment below code and remove above line

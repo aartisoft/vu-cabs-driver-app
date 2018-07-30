@@ -39,7 +39,7 @@ public class ProfileFragment extends Fragment {
 
     private ProgressDialog progressDialog;
     private Realm realm;
-    RealmHelper helper;
+    private RealmHelper helper;
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

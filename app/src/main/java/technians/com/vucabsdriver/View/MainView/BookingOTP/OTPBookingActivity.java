@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import io.realm.Realm;
 import technians.com.vucabsdriver.R;
+import technians.com.vucabsdriver.RealmController1;
 import technians.com.vucabsdriver.Utilities.Constants;
 import technians.com.vucabsdriver.Utilities.SessionManager;
 import technians.com.vucabsdriver.View.MainView.AssingedBooking.BookingAssingedActivity;
@@ -36,8 +37,8 @@ public class OTPBookingActivity extends AppCompatActivity implements OTPBookingM
         setContentView(R.layout.activity_otpbooking);
         sessionManager = new SessionManager(this);
         ID = getIntent().getIntExtra("ID",0);
-        Realm.init(this);
-        realm = Realm.getDefaultInstance();
+        RealmController1 realmController1 = new RealmController1(this);
+        realm= Realm.getInstance(realmController1.initializeDB());
         progressDialog = Constants.showProgressDialog(this);
         mOtpOneField = findViewById(R.id.bookingotp_one_edit_text);
         mOtpTwoField = findViewById(R.id.bookingotp_two_edit_text);

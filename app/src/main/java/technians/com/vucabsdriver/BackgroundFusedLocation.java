@@ -66,8 +66,8 @@ public class BackgroundFusedLocation extends Service {
     public void onCreate() {
         super.onCreate();
         Log.v("NavigationActivity","Service started");
-        Realm.init(this);
-        realm = Realm.getDefaultInstance();
+        RealmController1 realmController1 = new RealmController1(this);
+        realm= Realm.getInstance(realmController1.initializeDB());
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         geoFire = new GeoFire(FirebaseDatabase.getInstance().getReferenceFromUrl(GEO_FIRE_REF));
         startLocationUpdates();

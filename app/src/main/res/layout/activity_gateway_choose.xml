@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".View.MainView.Fragments.Passes.GatewayChooseActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/activity_bookingassinged_appbarlayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/activity_bookingassinged_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+    </android.support.design.widget.AppBarLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorWhite"
+        android:padding="@dimen/dimen_20dp"
+        android:text="Payment methods"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+        android:textColor="@color/cb_dark_grey" />
+
+    <TextView
+        android:id="@+id/paymentButton_paytm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorWhite"
+        android:drawableLeft="@drawable/ic_if_paytm_1220356"
+        android:drawablePadding="@dimen/dimen_20dp"
+        android:gravity="left|center_vertical"
+        android:padding="@dimen/dimen_20dp"
+        android:textColor="@color/cb_dark_grey"
+        android:text="Paytm" />
+
+    <TextView
+        android:id="@+id/paymentButton_payU"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorWhite"
+        android:drawableLeft="@drawable/ic_if_payu_money_742719"
+        android:drawablePadding="@dimen/dimen_20dp"
+        android:gravity="left|center_vertical"
+        android:padding="@dimen/dimen_20dp"
+        android:textColor="@color/cb_dark_grey"
+        android:text="Payu" />
+</LinearLayout>

@@ -16,10 +16,11 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import io.realm.Realm;
+import technians.com.vucabsdriver.Model.RatingFeedback.Rating;
 import technians.com.vucabsdriver.R;
+import technians.com.vucabsdriver.RealmController1;
 import technians.com.vucabsdriver.Utilities.Constants;
 import technians.com.vucabsdriver.Utilities.SessionManager;
-import technians.com.vucabsdriver.Model.RatingFeedback.Rating;
 
 
 public class RatingFeedbackFragment extends Fragment implements RatingFeedbackMVPView{
@@ -34,8 +35,8 @@ public class RatingFeedbackFragment extends Fragment implements RatingFeedbackMV
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_rating_feedback, container, false);
-        Realm.init(getActivity());
-        realm = Realm.getDefaultInstance();
+        RealmController1 realmController1 = new RealmController1(getContext());
+        realm= Realm.getInstance(realmController1.initializeDB());
         progressDialog = Constants.showProgressDialog(getActivity());
         recyclerView = view.findViewById(R.id.rating_recyclerview);
         textViewNoratings = view.findViewById(R.id.fragment_rating_tv_norating);

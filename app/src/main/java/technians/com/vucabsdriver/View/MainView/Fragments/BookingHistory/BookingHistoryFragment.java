@@ -18,9 +18,10 @@ import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
-import technians.com.vucabsdriver.R;
-import technians.com.vucabsdriver.Utilities.Constants;
 import technians.com.vucabsdriver.Model.PendingRequest.BookingData;
+import technians.com.vucabsdriver.R;
+import technians.com.vucabsdriver.RealmController1;
+import technians.com.vucabsdriver.Utilities.Constants;
 
 
 public class BookingHistoryFragment extends Fragment {
@@ -35,8 +36,8 @@ public class BookingHistoryFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_booking_history, container, false);
-        Realm.init(getActivity());
-        realm = Realm.getDefaultInstance();
+        RealmController1 realmController1 = new RealmController1(getContext());
+        realm= Realm.getInstance(realmController1.initializeDB());
         RealmResults<BookingData> bookingData  = realm.where(BookingData.class).findAll();
         ArrayList<BookingData> list = new ArrayList<>();
         list.addAll(bookingData);

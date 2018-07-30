@@ -2,7 +2,6 @@ package technians.com.vucabsdriver.View.MainView.Fragments.MyDuty;
 
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
-import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -58,9 +57,12 @@ import technians.com.vucabsdriver.Model.DriverLocationPackage.DriverLocation;
 import technians.com.vucabsdriver.Model.DriverLocationPackage.ResumeMap;
 import technians.com.vucabsdriver.Model.PendingRequest.BookingData;
 import technians.com.vucabsdriver.R;
+import technians.com.vucabsdriver.RealmController1;
 import technians.com.vucabsdriver.Utilities.Constants;
 import technians.com.vucabsdriver.Utilities.SessionManager;
 import technians.com.vucabsdriver.View.MainView.BookingOTP.OTPBookingActivity;
+
+import static technians.com.vucabsdriver.Utilities.Constants.formateDateFromstring;
 
 
 public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View.OnClickListener, MyDutyMVPView {
@@ -92,8 +94,8 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
         progressDialog = Constants.showProgressDialog(getActivity());
         presenter = new MyDutyPresenter();
         presenter.attachView(this);
-        Realm.init(getActivity());
-        realm = Realm.getDefaultInstance();
+        RealmController1 realmController1 = new RealmController1(getContext());
+        realm= Realm.getInstance(realmController1.initializeDB());
         mapFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -133,6 +135,7 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
 
 
         presenter.loadpendingrequest();
+
         Log.v("Token123","Token: "+sessionManager.getToken());
         return view;
     }
@@ -420,7 +423,7 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
             linearLayout_booking.setVisibility(View.VISIBLE);
             BookingId.setText(String.valueOf(bookingData.getId()));
             Destination.setText(bookingData.getPickup_location());
-            BookingDate.setText(Constants.formateDateFromstring("mm-dd-yyyy", "dd.MMM.yyyy hh:mm aaa", bookingData.getDate()));
+            BookingDate.setText(formateDateFromstring("dd-MM-yyyy hh:mm:ss", "MMM dd yyyy, hh:mm a", bookingData.getDate()));
         } catch (Exception e) {
             Toast.makeText(getActivity(), getString(R.string.label_something_went_wrong), Toast.LENGTH_SHORT).show();
         }

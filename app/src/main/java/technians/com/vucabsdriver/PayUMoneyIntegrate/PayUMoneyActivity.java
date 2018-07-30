@@ -55,12 +55,13 @@ import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
 import technians.com.vucabsdriver.AppController;
-import technians.com.vucabsdriver.R;
-import technians.com.vucabsdriver.Utilities.Constants;
-import technians.com.vucabsdriver.Utilities.SessionManager;
 import technians.com.vucabsdriver.Model.PassesRecharge.PassesRechargeResponce;
 import technians.com.vucabsdriver.Model.Profile.Profile;
 import technians.com.vucabsdriver.Model.RetrofitError.NetworkError;
+import technians.com.vucabsdriver.R;
+import technians.com.vucabsdriver.RealmController1;
+import technians.com.vucabsdriver.Utilities.Constants;
+import technians.com.vucabsdriver.Utilities.SessionManager;
 import technians.com.vucabsdriver.rest.ApiClient;
 import technians.com.vucabsdriver.rest.ApiInterface;
 
@@ -100,8 +101,8 @@ public class PayUMoneyActivity extends AppCompatActivity implements View.OnClick
         mProgressDialogObj = Constants.showProgressDialog(PayUMoneyActivity.this);
         mAppPreference = new AppPreference();
         settings = getSharedPreferences("settings", MODE_PRIVATE);
-        Realm.init(this);
-        realm = Realm.getDefaultInstance();
+        RealmController1 realmController1 = new RealmController1(this);
+        realm= Realm.getInstance(realmController1.initializeDB());
         Profile profile = realm.where(Profile.class).findFirst();
         if (profile != null) {
             driverid = profile.getDriver_ID();

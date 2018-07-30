@@ -12,7 +12,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -85,8 +84,8 @@ public class NavigationActivity extends AppCompatActivity
         presenter.attachView(this);
 
 
-        Realm.init(this);
-        realm= Realm.getInstance(new RealmController1(NavigationActivity.this).initializeDB());
+        RealmController1 realmController1 = new RealmController1(this);
+        realm= Realm.getInstance(realmController1.initializeDB());
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -392,6 +391,22 @@ public class NavigationActivity extends AppCompatActivity
         } catch (Exception e) {
             Toast.makeText(getContext(), getString(R.string.label_something_went_wrong), Toast.LENGTH_SHORT).show();
         }
+
+        final DatabaseReference mDatabase1 = FirebaseDatabase.getInstance().getReference()
+                .child("driver_current_location").child(String.valueOf(profile.getDriver_ID())).child("status");
+        mDatabase1.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue()!=null){
+                    sessionManager.setDriverStatus(Integer.valueOf(dataSnapshot.getValue().toString()));
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
     }
 
