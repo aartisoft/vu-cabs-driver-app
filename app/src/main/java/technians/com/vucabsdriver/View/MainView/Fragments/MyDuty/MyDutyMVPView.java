@@ -10,4 +10,6 @@ public interface MyDutyMVPView extends MVPView {
     Realm getRealm();
 
     void nobooking();
+
+    void updatestatus(int i);
 }

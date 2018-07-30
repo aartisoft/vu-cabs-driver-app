@@ -20,8 +20,9 @@ public class SessionManager {
     private static final String KEY_IS_LOGGEDIN = "isLoggedIn";
     private static final String KEY_TOKEN = "token";
     private static final String KEY_PUSH_TOKEN = "push_token";
-    private static final String KEY_DRIVER_STATUS = "driver_status";
+    private static final String KEY_DRIVER_STATUS = "status";
     private static final String KEY_CURRENT_FRAGMENT = "current_fragment";
+    private static final String KEY_DRIVER_ID = "driver_id";
 
     public SessionManager(Context context) {
         int PRIVATE_MODE = 0;
@@ -56,6 +57,17 @@ public class SessionManager {
         editor.commit();
     }
 
+    public void setDriverStatus(int driverStatus) {
+        editor.putInt(KEY_DRIVER_STATUS, driverStatus);
+        // commit changes
+        editor.commit();
+    }
+    public void setDriverId(int driverId) {
+        editor.putInt(KEY_DRIVER_ID, driverId);
+        // commit changes
+        editor.commit();
+    }
+
 
     public boolean isLoggedIn() {
         return pref.getBoolean(KEY_IS_LOGGEDIN, false);
@@ -72,4 +84,12 @@ public class SessionManager {
     public int getCurrentFragment() {
         return pref.getInt(KEY_CURRENT_FRAGMENT, -1);
     }
+
+    public int getDriverStatus() {
+        return pref.getInt(KEY_DRIVER_STATUS, -1);
+    }
+    public int getDriverId() {
+        return pref.getInt(KEY_DRIVER_ID, -1);
+    }
+
 }

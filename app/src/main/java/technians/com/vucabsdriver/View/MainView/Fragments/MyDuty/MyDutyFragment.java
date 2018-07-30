@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,6 +42,11 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import io.realm.Realm;
 import technians.com.vucabsdriver.BackgroundFusedLocation;
@@ -73,7 +79,7 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
     private Realm realm;
     private SupportMapFragment mapFragment;
 
-    private  TextView BookingId, BookingDate, Destination, NoBooking;
+    private TextView BookingId, BookingDate, Destination, NoBooking;
     private BookingData bookingData;
     private LinearLayout linearLayout_booking;
 
@@ -109,11 +115,6 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
         btn_starttrip.setOnClickListener(this);
 
         getActivity().registerReceiver(broadcastReceiver, new IntentFilter(BackgroundFusedLocation.BROADCAST_ACTION));
-//        if (String.valueOf(realm.where(ResumeMap.class).findFirst()).equals("null")) {
-//            startService();
-//        }
-//
-//
         customToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -129,9 +130,10 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
                 }
             }
         });
+
+
         presenter.loadpendingrequest();
-
-
+        Log.v("Token123","Token: "+sessionManager.getToken());
         return view;
     }
 
@@ -158,106 +160,6 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
         googleMap.setMapStyle(style);
 //        if (checkPermission()) checkgpsstatus();
 
-    }
-
-
-    @SuppressLint("MissingPermission")
-    private void checkgpsstatus() {
-
-//        if (!checkPermission()) return;
-
-//        mMap.getUiSettings().setMyLocationButtonEnabled(true);
-//        mMap.setMyLocationEnabled(true);
-//
-//        LocationRequest mLocationRequest = new LocationRequest();
-//        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-////
-//        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
-//                .addLocationRequest(mLocationRequest);
-//        mLocationSettingsRequest = builder.build();
-////
-//        SettingsClient client = LocationServices.getSettingsClient(getActivity());
-//        client
-//                .checkLocationSettings(mLocationSettingsRequest)
-//                .addOnSuccessListener(getActivity(), new OnSuccessListener<LocationSettingsResponse>() {
-//                    @SuppressLint("MissingPermission")
-//                    @Override
-//                    public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
-//
-//                        Log.v("MyDutyFragment", "Started location updates ");
-//
-////                        //noinspection MissingPermission
-////                        mFusedLocationClient.requestLocationUpdates(mLocationRequest,
-////                                mLocationCallback, Looper.myLooper());
-////
-////                        updateLocationUI();
-//                    }
-//                })
-//                .addOnFailureListener(getActivity(), new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception e) {
-//                        int statusCode = ((ApiException) e).getStatusCode();
-//                        switch (statusCode) {
-//                            case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-//                                Log.v("MyDutyFragment", "Location settings are not satisfied. Attempting to upgrade " +
-//                                        "location settings ");
-//                                try {
-//                                    // Show the dialog by calling startResolutionForResult(), and check the
-//                                    // result in onActivityResult().
-//                                    ResolvableApiException rae = (ResolvableApiException) e;
-//                                    rae.startResolutionForResult(getActivity(), REQUEST_CHECK_SETTINGS);
-//                                } catch (IntentSender.SendIntentException sie) {
-//                                    Log.v("MyDutyFragment", "PendingIntent unable to execute request.");
-//                                }
-//                                break;
-//                            case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-//                                String errorMessage = "Location settings are inadequate, and cannot be " +
-//                                        "fixed here. Fix in Settings.";
-//
-//                                Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_LONG).show();
-//                        }
-//
-//                    }
-//                });
-
-//        Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
-//
-//        task.addOnSuccessListener(getActivity(), new OnSuccessListener<LocationSettingsResponse>() {
-//            @Override
-//            public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
-//                try {
-//                    if (!String.valueOf(realm.where(ResumeMap.class).findFirst()).equals("null")) {
-////
-//                        ResumeMap resumeMap = realm.where(ResumeMap.class).findFirst();
-//                        if (resumeMap.getDriverStatus()) {
-//                            startService();
-//                        } else {
-//                            stopService();
-//                        }
-////
-//                    }
-//                } catch (Exception e) {
-//                    Toast.makeText(getActivity(), getString(R.string.label_something_went_wrong), Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        });
-//
-//        task.addOnFailureListener(getActivity(), new OnFailureListener() {
-//            @Override
-//            public void onFailure(@NonNull Exception e) {
-//                if (e instanceof ResolvableApiException) {
-//                    // Location settings are not satisfied, but this can be fixed
-//                    // by showing the user a dialog.
-//                    try {
-//                        ResolvableApiException resolvable = (ResolvableApiException) e;
-//                        resolvable.startResolutionForResult(getActivity(),
-//                                REQUEST_CHECK_SETTINGS);
-//                    } catch (IntentSender.SendIntentException sendEx) {
-//                        // Ignore the error.
-//                    }
-//                }
-//            }
-//        });
 
     }
 
@@ -349,31 +251,6 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
         }
     };
 
-//    private boolean checkPermission() {
-//        if (Build.VERSION.SDK_INT >= 23) {
-//            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-//                    ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
-//                return false;
-//            }else {
-//                return true;
-//            }
-//        }
-//        return true;
-//    }
-
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-//        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-//            if (checkPermission()) {
-////                checkgpsstatus();
-//            } else {
-//                getActivity().finishAffinity();
-//            }
-//        } else {
-//            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//        }
-//    }
 
     private void addMarker(DriverCurrentLocation driverLocation) {
         try {
@@ -542,7 +419,7 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
             NoBooking.setVisibility(View.GONE);
             linearLayout_booking.setVisibility(View.VISIBLE);
             BookingId.setText(String.valueOf(bookingData.getId()));
-            Destination.setText(bookingData.getDrop_location());
+            Destination.setText(bookingData.getPickup_location());
             BookingDate.setText(Constants.formateDateFromstring("mm-dd-yyyy", "dd.MMM.yyyy hh:mm aaa", bookingData.getDate()));
         } catch (Exception e) {
             Toast.makeText(getActivity(), getString(R.string.label_something_went_wrong), Toast.LENGTH_SHORT).show();
@@ -559,6 +436,27 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
     public void nobooking() {
         NoBooking.setVisibility(View.VISIBLE);
         linearLayout_booking.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void updatestatus(final int i) {
+        final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference()
+                .child("driver_current_location").child(String.valueOf(sessionManager.getDriverId())).child("status");
+        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.getValue()!=null){
+                    mDatabase.setValue(i);
+                }
+                Log.v("MyDutyFragment","DataSnapshot: "+dataSnapshot);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
     }
 }
 

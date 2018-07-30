@@ -35,11 +35,14 @@ public class Profile extends RealmObject implements Serializable{
     private String CarURL;
     @SerializedName("profile_img")
     private String profileURL;
+    @SerializedName("aadhar_no")
+    private String aadhar_no;
 
     public Profile(){
 
     }
-    public Profile(int driver_ID, int driver_Status, String name, String email, String mobileNumber, String address, String car_Name, String car_Number, String car_Seat, int car_Type, String car_Type_Name, String carURL, String profileURL) {
+
+    public Profile(int driver_ID, int driver_Status, String name, String email, String mobileNumber, String address, String car_Name, String car_Number, String car_Seat, int car_Type, String car_Type_Name, String carURL, String profileURL, String aadhar_no) {
         Driver_ID = driver_ID;
         Driver_Status = driver_Status;
         Name = name;
@@ -53,6 +56,7 @@ public class Profile extends RealmObject implements Serializable{
         Car_Type_Name = car_Type_Name;
         CarURL = carURL;
         this.profileURL = profileURL;
+        this.aadhar_no = aadhar_no;
     }
 
     public int getDriver_ID() {
@@ -157,5 +161,13 @@ public class Profile extends RealmObject implements Serializable{
 
     public void setProfileURL(String profileURL) {
         this.profileURL = profileURL;
+    }
+
+    public String getAadhar_no() {
+        return aadhar_no;
+    }
+
+    public void setAadhar_no(String aadhar_no) {
+        this.aadhar_no = aadhar_no;
     }
 }

@@ -1,13 +1,13 @@
 package technians.com.vucabsdriver.View.MainView.Fragments.MyProfile;
 
 import android.app.ProgressDialog;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +20,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
+import technians.com.vucabsdriver.RealmController1;
+import technians.com.vucabsdriver.RealmHelper;
 import technians.com.vucabsdriver.Utilities.SessionManager;
 import technians.com.vucabsdriver.Model.Profile.Profile;
 import technians.com.vucabsdriver.Model.Profile.ProfileResponce;
@@ -31,13 +33,13 @@ import technians.com.vucabsdriver.rest.ApiInterface;
 
 
 public class ProfileFragment extends Fragment {
-    private TextView mTextViewName, mTextViewStatus, mTextViewMobile, mTextViewEmail, mTextViewAddress, mTextViewCarName, mTextViewCarNumber, mTextViewCarType, mTextViewCarSeat;
+    private TextView mTextViewName, mTextViewStatus, mTextViewMobile, mTextViewEmail, mTextViewAddress,mTextViewAadhar, mTextViewCarName, mTextViewCarNumber, mTextViewCarType, mTextViewCarSeat;
 
     private CircleImageView circleImageView;
 
     private ProgressDialog progressDialog;
     private Realm realm;
-
+    RealmHelper helper;
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -50,13 +52,20 @@ public class ProfileFragment extends Fragment {
         mTextViewMobile = view.findViewById(R.id.fragment_profile_mobile);
         mTextViewEmail = view.findViewById(R.id.fragment_profile_email);
         mTextViewAddress = view.findViewById(R.id.fragment_profile_address);
+        mTextViewAadhar = view.findViewById(R.id.fragment_profile_aadharno);
         mTextViewCarName = view.findViewById(R.id.fragment_profile_carname);
         mTextViewCarNumber = view.findViewById(R.id.fragment_profile_carnumber);
         mTextViewCarType = view.findViewById(R.id.fragment_profile_cartype);
         mTextViewCarSeat = view.findViewById(R.id.fragment_profile_carseat);
         circleImageView = view.findViewById(R.id.fragment_profile_userimage);
-        Realm.init(getActivity());
-        realm = Realm.getDefaultInstance();
+        RealmController1 realmController1 = new RealmController1(getContext());
+        realm= Realm.getInstance(realmController1.initializeDB());
+        helper=new RealmHelper(realm);
+
+
+//        Realm.init(getActivity());
+//        realm = RealmController.getInstance().getRealm();
+//        realm = Realm.getDefaultInstance();
         getUserProfile();
 
         return view;
@@ -77,14 +86,14 @@ public class ProfileFragment extends Fragment {
                 @Override
                 public void onResponse(@NonNull Call<ProfileResponce> call, @NonNull retrofit2.Response<ProfileResponce> response) {
                     progressDialog.dismiss();
-
+                    Log.v("ProfileFragment","Responce: "+new SessionManager(getActivity()).getToken());
                     if (response.body() != null) {
                         if (response.body().getStatus() == 200) {
                             Profile profile = response.body().getProfile();
-                            realm.beginTransaction();
-                            realm.deleteAll();
-                            realm.copyToRealmOrUpdate(profile);
-                            realm.commitTransaction();
+                            helper.saveProfile(profile);
+//                            realm.beginTransaction();
+//                            realm.copyToRealmOrUpdate(profile);
+//                            realm.commitTransaction();
                             mTextViewName.setText(profile.getName());
                             if (profile.getDriver_Status() == 0) {
                                 mTextViewStatus.setText("Deactive");
@@ -98,6 +107,7 @@ public class ProfileFragment extends Fragment {
                             mTextViewCarNumber.setText(profile.getCar_Number());
                             mTextViewCarType.setText(profile.getCar_Type_Name());
                             mTextViewCarSeat.setText(profile.getCar_Seat());
+                            mTextViewAadhar.setText(profile.getAadhar_no());
                             Glide.with(getActivity()).load(profile.getProfileURL()).placeholder(R.drawable.ic_user).dontAnimate().into(circleImageView);
                         }
                     }

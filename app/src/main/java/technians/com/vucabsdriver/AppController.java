@@ -8,6 +8,8 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import technians.com.vucabsdriver.PayUMoneyIntegrate.AppEnvironment;
 
 /**
@@ -26,6 +28,7 @@ public class AppController extends MultiDexApplication {
         super.onCreate();
         mInstance = this;
         appEnvironment = AppEnvironment.PRODUCTION;
+
     }
 
     public static synchronized AppController getInstance() {

@@ -1,6 +1,7 @@
 package technians.com.vucabsdriver.View.MainView.BookingOTP;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -35,6 +36,7 @@ public class OTPBookingPresenter implements Presenter<OTPBookingMVPView> {
                 @Override
                 public void onResponse(@NonNull Call<OTPResponce> call, @NonNull Response<OTPResponce> response) {
                     otpBookingMVPView.hideProgress();
+                    Log.v("OTPVerify","Responce: "+response);
                     if (response.body() != null) {
 
                         //uncomment below code and remove above line

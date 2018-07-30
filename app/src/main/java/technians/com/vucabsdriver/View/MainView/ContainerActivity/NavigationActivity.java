@@ -51,6 +51,7 @@ import technians.com.vucabsdriver.BackgroundFusedLocation;
 import technians.com.vucabsdriver.Model.DriverLocationPackage.ResumeMap;
 import technians.com.vucabsdriver.Model.Profile.Profile;
 import technians.com.vucabsdriver.R;
+import technians.com.vucabsdriver.RealmController1;
 import technians.com.vucabsdriver.Utilities.SessionManager;
 import technians.com.vucabsdriver.View.Login.LoginWithPhone.LoginWithPhoneActivity;
 import technians.com.vucabsdriver.View.MainView.Fragments.BookingHistory.BookingHistoryFragment;
@@ -85,7 +86,7 @@ public class NavigationActivity extends AppCompatActivity
 
 
         Realm.init(this);
-        realm = Realm.getDefaultInstance();
+        realm= Realm.getInstance(new RealmController1(NavigationActivity.this).initializeDB());
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -108,18 +109,22 @@ public class NavigationActivity extends AppCompatActivity
         navigationView.getMenu().getItem(0).setChecked(true);
         sessionManager.setCurrentFragment(R.id.nav_myduty);
         if (checkPermission()) {
+            Log.v("NavigationActivity", "checkPermission: true");
             manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
             if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                 checkgpsstatus();
             } else {
+                Log.v("NavigationActivity", "checkPermission: else");
+//                startService(new Intent(NavigationActivity.this, BackgroundFusedLocation.class));
                 if (!String.valueOf(realm.where(ResumeMap.class).findFirst()).equals("null")) {
-////
-                        ResumeMap resumeMap = realm.where(ResumeMap.class).findFirst();
-                        if (resumeMap.getDriverStatus()) {
-                            startService(new Intent(NavigationActivity.this, BackgroundFusedLocation.class));
-                        } else {
-                            stopService(new Intent(NavigationActivity.this, BackgroundFusedLocation.class));
-                        }
+                    Log.v("NavigationActivity", "checkPermission: resume map");
+                    ResumeMap resumeMap = realm.where(ResumeMap.class).findFirst();
+                    Log.v("NavigationActivity", "checkPermission: resume map status: " + resumeMap.getDriverStatus());
+                    if (!resumeMap.getDriverStatus()) {
+                        stopService(new Intent(NavigationActivity.this, BackgroundFusedLocation.class));
+                    } else {
+                        startService(new Intent(NavigationActivity.this, BackgroundFusedLocation.class));
+                    }
                 }
 
             }
@@ -143,7 +148,7 @@ public class NavigationActivity extends AppCompatActivity
                         int statusCode = ((ApiException) e).getStatusCode();
                         switch (statusCode) {
                             case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                                Log.v("MyDutyFragment", "Location settings are not satisfied. Attempting to upgrade " +
+                                Log.v("NavigationActivity", "Location settings are not satisfied. Attempting to upgrade " +
                                         "location settings ");
                                 try {
                                     // Show the dialog by calling startResolutionForResult(), and check the
@@ -151,7 +156,7 @@ public class NavigationActivity extends AppCompatActivity
                                     ResolvableApiException rae = (ResolvableApiException) e;
                                     rae.startResolutionForResult(NavigationActivity.this, REQUEST_CHECK_SETTINGS);
                                 } catch (IntentSender.SendIntentException sie) {
-                                    Log.v("MyDutyFragment", "PendingIntent unable to execute request.");
+                                    Log.v("NavigationActivity", "PendingIntent unable to execute request.");
                                 }
                                 break;
                             case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
@@ -279,8 +284,11 @@ public class NavigationActivity extends AppCompatActivity
                 break;
             case R.id.nav_logout:
                 sessionManager.setLogin(false);
-                startActivity(new Intent(NavigationActivity.this, LoginWithPhoneActivity.class));
                 stopService(new Intent(NavigationActivity.this, BackgroundFusedLocation.class));
+                realm.beginTransaction();
+                realm.deleteAll();
+                realm.commitTransaction();
+                startActivity(new Intent(NavigationActivity.this, LoginWithPhoneActivity.class));
                 finish();
                 break;
             case R.id.nav_termscons:
@@ -333,19 +341,25 @@ public class NavigationActivity extends AppCompatActivity
 
     @Override
     public void setProfileData() {
+        Log.v("NavigationActivity", "setProfileData");
         try {
             profile = realm.where(Profile.class).findFirst();
             DriverName.setText(profile.getName().toUpperCase());
             DriverEmail.setText(profile.getEmail());
-            final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference().child("driver_status").child(String.valueOf(profile.getDriver_ID()));
-//
+            sessionManager.setDriverId(profile.getDriver_ID());
+
+            if (String.valueOf(realm.where(ResumeMap.class).findFirst()).equals("null")) {
+                Log.v("NavigationActivity", "Resume Null");
+                startService(new Intent(NavigationActivity.this, BackgroundFusedLocation.class));
+            }
+            final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference()
+                    .child("driver_status").child(String.valueOf(profile.getDriver_ID()));
+
             mDatabase.addValueEventListener(new ValueEventListener() {
-                @RequiresApi(api = Build.VERSION_CODES.M)
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     if (dataSnapshot.getValue() != null) {
                         int status = Integer.valueOf(dataSnapshot.getValue().toString());
-                        Log.v("Nav123", "Status: " + dataSnapshot);
 
                         if (status == 0) {
                             if (!realm.isClosed()) {

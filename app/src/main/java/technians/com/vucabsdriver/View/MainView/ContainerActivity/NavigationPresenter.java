@@ -91,7 +91,6 @@ public class NavigationPresenter implements Presenter<NavigationMVPView> {
 
 
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     public void createNotification() {
         try {
             // define sound URI, the sound to be played when there's a notification

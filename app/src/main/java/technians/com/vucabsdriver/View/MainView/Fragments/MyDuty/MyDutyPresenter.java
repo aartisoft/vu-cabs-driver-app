@@ -33,7 +33,7 @@ public class MyDutyPresenter implements Presenter<MyDutyMVPView> {
         try {
             myDutyMVPView.showProgress();
             ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
-            Log.v("MyDuty123","Token: "+myDutyMVPView.getSession().getToken());
+            Log.v("loadpendingrequest","Pending Request");
             Call<PendingRequestResponce> call = apiService.getPendingRequest(myDutyMVPView.getSession().getToken());
             call.enqueue(new Callback<PendingRequestResponce>() {
                 @Override
@@ -60,10 +60,13 @@ public class MyDutyPresenter implements Presenter<MyDutyMVPView> {
                                     if (arrayList.get(i).getStatus() == 0) {
                                         BookingData pendingdata = arrayList.get(i);
                                         myDutyMVPView.setData(pendingdata);
+                                        myDutyMVPView.updatestatus(3);
                                         break;
                                     } else {
                                         myDutyMVPView.nobooking();
+                                        myDutyMVPView.updatestatus(1);
                                     }
+
                                 }
                             }
 
