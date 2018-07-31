@@ -16,6 +16,7 @@ import technians.com.vucabsdriver.rest.ApiInterface;
 
 public class OTPBookingPresenter implements Presenter<OTPBookingMVPView> {
     private OTPBookingMVPView otpBookingMVPView;
+
     @Override
     public void attachView(OTPBookingMVPView view) {
         this.otpBookingMVPView = view;
@@ -36,17 +37,21 @@ public class OTPBookingPresenter implements Presenter<OTPBookingMVPView> {
                 @Override
                 public void onResponse(@NonNull Call<OTPResponce> call, @NonNull Response<OTPResponce> response) {
                     otpBookingMVPView.hideProgress();
-                    Log.v("OTPVerify","Responce: "+response.message());
+                    Log.v("OTPVerify", "Responce: " + response.body().getMsg());
+                    Log.v("OTPVerify", "Responce: " + response.body().getSuccess());
                     if (response.body() != null) {
 
                         //uncomment below code and remove above line
 
-                        if (response.body().getStatus() == 200) {
-                            otpBookingMVPView.gotoAssingedbooking();
-                        } else {
-                            String message = response.body().getMsg();
-                            otpBookingMVPView.showMessage(message);
-                        }
+//                        if (response.body().getStatus() == 200) {
+                        otpBookingMVPView.gotoAssingedbooking();
+                        otpBookingMVPView.getSession().setDrivingActive(true);
+                        otpBookingMVPView.startService();
+//
+//                        } else {
+//                            String message = response.body().getMsg();
+//                            otpBookingMVPView.showMessage(message);
+//                        }
                     }
                 }
 
@@ -57,7 +62,7 @@ public class OTPBookingPresenter implements Presenter<OTPBookingMVPView> {
                     otpBookingMVPView.showApiError(error);
                 }
             });
-        }catch (Exception e) {
+        } catch (Exception e) {
             otpBookingMVPView.showApiError(otpBookingMVPView.getContext().getString(R.string.label_something_went_wrong));
         }
     }

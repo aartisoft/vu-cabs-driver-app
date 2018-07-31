@@ -16,6 +16,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
+import android.util.Log;
+import android.widget.Toast;
+
+import technians.com.vucabsdriver.Utilities.SessionManager;
 
 public class GpsService extends Service {
     public static final String BROADCAST_ACTION = "com.jayadev.distance_using_gps.updateUI";
@@ -25,22 +29,22 @@ public class GpsService extends Service {
     static Double lon1 = null;
     static Double lat2 = null;
     static Double lon2 = null;
-    static Double distance = 0.0;
+    static Double distance;
     static int status = 0;
     Intent intent;
-    private final Handler UIhandler = new Handler();
+    SessionManager sessionManager;
 
     @Override
     public void onCreate() {
         super.onCreate();
         intent = new Intent(BROADCAST_ACTION);
+        sessionManager = new SessionManager(GpsService.this);
+        distance = Double.parseDouble(sessionManager.getRideDistance());
     }
 
     @Override
-    public void onStart(Intent intent, int startId) {
-
-        UIhandler.removeCallbacks(sendUpdatesToUI);
-        UIhandler.postDelayed(sendUpdatesToUI, 0);
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.v("GPSService", "Service statted");
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         listener = new MyLocationListener();
 
@@ -52,19 +56,12 @@ public class GpsService extends Service {
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
-            return;
+            return super.onStartCommand(intent, flags, startId);
         }
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10000, 10, listener);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10, listener);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 10, listener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 10, listener);
+        return super.onStartCommand(intent, flags, startId);
     }
-
-    private Runnable sendUpdatesToUI = new Runnable() {
-        public void run() {
-            intent.putExtra("distance", distance+"");
-            sendBroadcast(intent);
-            UIhandler.postDelayed(this, 0);
-        }
-    };
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -73,7 +70,8 @@ public class GpsService extends Service {
 
     @Override
     public void onDestroy() {
-        UIhandler.removeCallbacks(sendUpdatesToUI);
+        Log.v("GPSService", "Destroy");
+//        UIhandler.removeCallbacks(sendUpdatesToUI);
         super.onDestroy();
         locationManager.removeUpdates(listener);
     }
@@ -81,6 +79,7 @@ public class GpsService extends Service {
     public class MyLocationListener implements LocationListener {
         @Override
         public void onLocationChanged(Location location) {
+            Log.v("GPSService", "Location change");
             if (status == 0) {
                 lat1 = location.getLatitude();
                 lon1 = location.getLongitude();
@@ -94,7 +93,8 @@ public class GpsService extends Service {
                 distance += distanceBetweenTwoPoint(lat2, lon2, lat1, lon1);
             }
             status++;
-            UIhandler.postDelayed(sendUpdatesToUI, 0);
+            sessionManager.setRideDistance(String.valueOf(distance));
+            Toast.makeText(GpsService.this, "Distnace: " + distance, Toast.LENGTH_SHORT).show();
         }
 
         double distanceBetweenTwoPoint(double srcLat, double srcLng, double desLat, double desLng) {

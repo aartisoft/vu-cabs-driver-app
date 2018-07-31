@@ -12,19 +12,20 @@ import io.realm.Realm;
 import technians.com.vucabsdriver.Model.PendingRequest.BookingData;
 import technians.com.vucabsdriver.R;
 import technians.com.vucabsdriver.RealmController1;
+import technians.com.vucabsdriver.Utilities.SessionManager;
 import technians.com.vucabsdriver.View.MainView.ContainerActivity.NavigationActivity;
 
 import static technians.com.vucabsdriver.Utilities.Constants.FormatAmount;
 
 public class TripEndActivity extends AppCompatActivity {
     private Realm realm;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trip_end);
-
         RealmController1 realmController1 = new RealmController1(this);
-        realm= Realm.getInstance(realmController1.initializeDB());
+        realm = Realm.getInstance(realmController1.initializeDB());
         Toolbar toolbar = findViewById(R.id.activity_tripend_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -40,8 +41,8 @@ public class TripEndActivity extends AppCompatActivity {
         TextView mTextViewBaseamount = findViewById(R.id.activity_tripend_baseamount);
         Button mBtnContinue = findViewById(R.id.activity_enter_otp_btn_continue);
 
-        int ID = getIntent().getIntExtra("ID",0);
-        BookingData bookingData = realm.where(BookingData.class).equalTo("id",ID).findFirst();
+        int ID = getIntent().getIntExtra("ID", 0);
+        BookingData bookingData = realm.where(BookingData.class).equalTo("id", ID).findFirst();
 
         mTextViewCustName.setText(bookingData.getCustomer_name());
         mTextViewAmount.setText(FormatAmount(bookingData.getTotal_amount()));
@@ -52,6 +53,7 @@ public class TripEndActivity extends AppCompatActivity {
         String upperString = bookingData.getPayment_type().substring(0, 1).toUpperCase() + bookingData.getPayment_type().substring(1);
         mTextViewPaymentMode.setText(upperString);
 
+        new SessionManager(TripEndActivity.this).setDrivingActive(false);
         mBtnContinue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

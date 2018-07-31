@@ -6,6 +6,7 @@ import android.widget.Toast;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import technians.com.vucabsdriver.Model.TripEnd.DataResponce;
 import technians.com.vucabsdriver.Presenter.Presenter;
 import technians.com.vucabsdriver.Model.DriverLocationPackage.DriverLocation;
 import technians.com.vucabsdriver.Model.Login.LoginResponce;
@@ -67,11 +68,16 @@ public class BookingAssingedPresenter implements Presenter<BookingAssingedMVPVie
 
     public void endTrip(Profile profile, DriverLocation driverLocation, final BookingData bookingData) {
         try {
+
+            double Distance = Float.valueOf(bookingAssingedMVPView.getSession().getRideDistance()) * 0.001;
+            int carid = bookingAssingedMVPView.getRealm().where(Profile.class).findFirst().getCar_Type();
             bookingAssingedMVPView.showProgress();
             ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
             Call<TripEndResponce> call = apiService.tripEnd(bookingAssingedMVPView.getSession().getToken(), String.valueOf(profile.getDriver_ID())
                     , String.valueOf(bookingData.getId()), getLocationAddress(driverLocation.getLatitude(), driverLocation.getLongitude(),
-                            bookingAssingedMVPView.getContext()), driverLocation.getLatitude(), driverLocation.getLongitude(), 1);
+                            bookingAssingedMVPView.getContext()), driverLocation.getLatitude(), driverLocation.getLongitude(), 1,
+                    Distance,bookingData.getTime_duration(),carid);
+
             call.enqueue(new Callback<TripEndResponce>() {
                 @Override
                 public void onResponse(@NonNull Call<TripEndResponce> call, @NonNull Response<TripEndResponce> response) {
@@ -79,7 +85,8 @@ public class BookingAssingedPresenter implements Presenter<BookingAssingedMVPVie
                     if (response.body() != null) {
                         if (response.body().getStatus() == 200) {
                             if (response.body() != null) {
-                                TripEndData data = response.body().getTripEndData();
+
+                                TripEndData data = response.body().getResponce().getInvoice();
                                 bookingAssingedMVPView.getRealm().beginTransaction();
                                 BookingData booking = bookingAssingedMVPView.getRealm().where(BookingData.class).equalTo("id", bookingData.getId()).findFirst();
                                 booking.setGst_amount(Math.round(Float.valueOf(data.getGst_amount())));

@@ -115,6 +115,11 @@
         <activity android:name=".View.MainView.TripEnd.TripEndActivity" />
         <activity android:name=".View.MainView.Fragments.Passes.PayTmActivity" />
         <activity android:name=".View.MainView.Fragments.Passes.GatewayChooseActivity"></activity>
+        <service android:name=".distance_using_gps.GpsService">
+            <intent-filter>
+                <action android:name="com.package.name.START_SERVICE" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

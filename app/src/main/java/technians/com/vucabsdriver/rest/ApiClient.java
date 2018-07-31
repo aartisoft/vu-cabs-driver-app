@@ -19,4 +19,13 @@ public class ApiClient {
         }
         return retrofit;
     }
+    public static Retrofit getPaytmClient() {
+        if (retrofit==null) {
+            retrofit = new Retrofit.Builder()
+                    .baseUrl("https://www.vucabs.com/api/")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+        }
+        return retrofit;
+    }
 }

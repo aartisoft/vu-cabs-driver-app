@@ -3,6 +3,8 @@ package technians.com.vucabsdriver.Utilities;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import java.util.Date;
+
 /**
  * Created by vineet on 9/25/2017.
  */
@@ -23,6 +25,9 @@ public class SessionManager {
     private static final String KEY_DRIVER_STATUS = "status";
     private static final String KEY_CURRENT_FRAGMENT = "current_fragment";
     private static final String KEY_DRIVER_ID = "driver_id";
+    private static final String KEY_DRIVING_ACTIVE = "driver_active";
+    private static final String KEY_RIDE_DISTANCE = "driver_distance";
+    private static final String KEY_RIDE_TIME = "driver_time";
 
     public SessionManager(Context context) {
         int PRIVATE_MODE = 0;
@@ -62,12 +67,35 @@ public class SessionManager {
         // commit changes
         editor.commit();
     }
+
     public void setDriverId(int driverId) {
         editor.putInt(KEY_DRIVER_ID, driverId);
         // commit changes
         editor.commit();
     }
 
+    public void setDrivingActive(Boolean active) {
+        editor.putBoolean(KEY_DRIVING_ACTIVE, active);
+        // commit changes
+        editor.commit();
+    }
+
+    public void setRideDistance(String Distance) {
+        editor.putString(KEY_RIDE_DISTANCE, Distance);
+        // commit changes
+        editor.commit();
+    }
+//    public void setRidestartTime(Date date) {
+//        editor.putString(KEY_RIDE_TIME, date);
+//        // commit changes
+//        editor.commit();
+//    }
+
+
+
+    public boolean isDriving() {
+        return pref.getBoolean(KEY_DRIVING_ACTIVE, false);
+    }
 
     public boolean isLoggedIn() {
         return pref.getBoolean(KEY_IS_LOGGEDIN, false);
@@ -88,8 +116,16 @@ public class SessionManager {
     public int getDriverStatus() {
         return pref.getInt(KEY_DRIVER_STATUS, -1);
     }
+
     public int getDriverId() {
         return pref.getInt(KEY_DRIVER_ID, -1);
     }
 
+    public String getRideDistance() {
+        return pref.getString(KEY_RIDE_DISTANCE,"0.0");
+    }
+
+    public int getRideTime() {
+        return pref.getInt(KEY_RIDE_TIME, -1);
+    }
 }

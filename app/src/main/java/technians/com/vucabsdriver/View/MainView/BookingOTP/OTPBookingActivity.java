@@ -21,6 +21,7 @@ import technians.com.vucabsdriver.RealmController1;
 import technians.com.vucabsdriver.Utilities.Constants;
 import technians.com.vucabsdriver.Utilities.SessionManager;
 import technians.com.vucabsdriver.View.MainView.AssingedBooking.BookingAssingedActivity;
+import technians.com.vucabsdriver.distance_using_gps.GpsService;
 
 public class OTPBookingActivity extends AppCompatActivity implements OTPBookingMVPView, View.OnClickListener {
     private EditText mOtpOneField, mOtpTwoField, mOtpThreeField, mOtpFourField, mCurrentlyFocusedEditText;
@@ -36,9 +37,9 @@ public class OTPBookingActivity extends AppCompatActivity implements OTPBookingM
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_otpbooking);
         sessionManager = new SessionManager(this);
-        ID = getIntent().getIntExtra("ID",0);
+        ID = getIntent().getIntExtra("ID", 0);
         RealmController1 realmController1 = new RealmController1(this);
-        realm= Realm.getInstance(realmController1.initializeDB());
+        realm = Realm.getInstance(realmController1.initializeDB());
         progressDialog = Constants.showProgressDialog(this);
         mOtpOneField = findViewById(R.id.bookingotp_one_edit_text);
         mOtpTwoField = findViewById(R.id.bookingotp_two_edit_text);
@@ -171,9 +172,9 @@ public class OTPBookingActivity extends AppCompatActivity implements OTPBookingM
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.activity_booking_otp_btn_verifyotp: {
-                if (getOTP().length()==4) {
+                if (getOTP().length() == 4) {
                     presenter.verifyOTP(getOTP());
-                }else {
+                } else {
                     Toast.makeText(this, getString(R.string.validmobilenumber), Toast.LENGTH_SHORT).show();
                 }
                 break;
@@ -189,12 +190,18 @@ public class OTPBookingActivity extends AppCompatActivity implements OTPBookingM
     @Override
     public void gotoAssingedbooking() {
         startActivity(new Intent(OTPBookingActivity.this, BookingAssingedActivity.class)
-        .putExtra("ID",ID));
+                .putExtra("ID", ID));
         finish();
     }
 
     @Override
     public void showMessage(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void startService() {
+
+        startService(new Intent(OTPBookingActivity.this, GpsService.class));
     }
 }

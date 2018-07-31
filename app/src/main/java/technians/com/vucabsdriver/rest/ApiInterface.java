@@ -64,5 +64,13 @@ public interface ApiInterface {
     @POST("driver-ride")
     Call<TripEndResponce> tripEnd(@Query("token") String token, @Field("driver_id") String driver_id,
                                   @Field("order_id") String order_id
-            , @Field("address") String address, @Field("lat") double lat, @Field("lng") double lng, @Field("status") int status);
+            , @Field("address") String address, @Field("lat") double lat, @Field("lng") double lng, @Field("status") int status,
+                                  @Field("distance") double distance,@Field("time") String time,@Field("car_id") int car_id);
+
+    @FormUrlEncoded
+    @POST("paytm-genrate-checksum")
+    Call<String> paytmchecksum(@Field("MID") String mid,@Field("ORDER_ID") String orderid,@Field("CUST_ID") String cust_id,
+                               @Field("INDUSTRY_TYPE_ID") String industry,
+                               @Field("CHANNEL_ID") String channelid,@Field("TXN_AMOUNT") String tax_amount,
+                               @Field("WEBSITE") String website,@Field("CALLBACK_URL") String callback);
 }

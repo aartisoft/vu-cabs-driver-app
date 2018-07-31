@@ -146,9 +146,9 @@ public class MyPassFragment extends Fragment implements MyPassesMVPView, View.On
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.fragment_btn_renewpass: {
-                getActivity().startActivityForResult(new Intent(getActivity(), GatewayChooseActivity.class)
+                getActivity().startActivity(new Intent(getActivity(), GatewayChooseActivity.class)
                         .putExtra("Amount", Amount)
-                        .putExtra("Rides_qty", Rides), PayUMoneyRequestCode);
+                        .putExtra("Rides_qty", Rides));
 //                getActivity().startActivityForResult(new Intent(getActivity(), PayUMoneyActivity.class)
 //                        .putExtra("Amount", Amount)
 //                        .putExtra("Rides_qty", Rides), PayUMoneyRequestCode);

@@ -9,4 +9,6 @@ public interface OTPBookingMVPView extends MVPView{
     void gotoAssingedbooking();
 
     void showMessage(String message);
+
+    void startService();
 }

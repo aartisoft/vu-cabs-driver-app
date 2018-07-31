@@ -8,12 +8,16 @@ public class TripEndResponce {
     @SerializedName("status")
     private int status;
     @SerializedName("data")
-    private TripEndData tripEndData;
+    private DataResponce responce;
+//    private TripEndData tripEndData;
 
-    public TripEndResponce(Boolean success, int status, TripEndData tripEndData) {
+//    @SerializedName("data")
+//    private TripEndData tripEndData;
+
+    public TripEndResponce(Boolean success, int status, DataResponce responce) {
         this.success = success;
         this.status = status;
-        this.tripEndData = tripEndData;
+        this.responce = responce;
     }
 
     public Boolean getSuccess() {
@@ -32,11 +36,11 @@ public class TripEndResponce {
         this.status = status;
     }
 
-    public TripEndData getTripEndData() {
-        return tripEndData;
+    public DataResponce getResponce() {
+        return responce;
     }
 
-    public void setTripEndData(TripEndData tripEndData) {
-        this.tripEndData = tripEndData;
+    public void setResponce(DataResponce responce) {
+        this.responce = responce;
     }
 }
