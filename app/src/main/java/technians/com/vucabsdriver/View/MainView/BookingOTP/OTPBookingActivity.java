@@ -217,7 +217,6 @@ public class OTPBookingActivity extends AppCompatActivity implements OTPBookingM
 
     @Override
     public void startService() {
-
         startService(new Intent(OTPBookingActivity.this, GpsService.class));
     }
 }

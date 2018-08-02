@@ -13,10 +13,14 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import java.util.ArrayList;
+
 import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import technians.com.vucabsdriver.Model.PassesDetails.Passes;
+import technians.com.vucabsdriver.Model.PassesDetails.PassesDetailsResponce;
 import technians.com.vucabsdriver.Presenter.Presenter;
 import technians.com.vucabsdriver.R;
 import technians.com.vucabsdriver.Utilities.SessionManager;
@@ -45,13 +49,44 @@ public class NavigationPresenter implements Presenter<NavigationMVPView> {
         Profile profile = navigationMVPView.getRealm().where(Profile.class).findFirst();
         if (profile == null) {
             getProfile();
+            getPassesCount();
         } else {
             navigationMVPView.setProfileData();
         }
     }
 
-    public void getProfile() {
+    private void getPassesCount() {
+        try {
+            navigationMVPView.showProgress();
+            ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
+            Call<PassesDetailsResponce> call = apiService.getPassesDetails(navigationMVPView.getSession().getToken());
+            call.enqueue(new Callback<PassesDetailsResponce>() {
+                @Override
+                public void onResponse(@NonNull Call<PassesDetailsResponce> call, @NonNull Response<PassesDetailsResponce> response) {
 
+                    navigationMVPView.hideProgress();
+
+                    if (response.body() != null) {
+                        if (response.body().getStatus() == 200) {
+                            String RidesLeft = response.body().getPassesData().getRecharge_count();
+                            navigationMVPView.getSession().setPassesCount(Integer.parseInt(RidesLeft));
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<PassesDetailsResponce> call, @NonNull Throwable t) {
+                    navigationMVPView.hideProgress();
+                    String error = new NetworkError(t).getAppErrorMessage();
+                    navigationMVPView.showApiError(error);
+                }
+            });
+        } catch (Exception e) {
+            navigationMVPView.showApiError(navigationMVPView.getContext().getString(R.string.label_something_went_wrong));
+        }
+    }
+
+    public void getProfile() {
         try {
             navigationMVPView.showProgress();
             ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);

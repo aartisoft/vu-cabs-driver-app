@@ -94,7 +94,6 @@ public class GpsService extends Service {
             }
             status++;
             sessionManager.setRideDistance(String.valueOf(distance));
-            Toast.makeText(GpsService.this, "Distnace: " + distance, Toast.LENGTH_SHORT).show();
         }
 
         double distanceBetweenTwoPoint(double srcLat, double srcLng, double desLat, double desLng) {

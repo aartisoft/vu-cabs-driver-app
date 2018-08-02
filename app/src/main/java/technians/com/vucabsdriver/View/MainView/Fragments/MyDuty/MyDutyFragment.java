@@ -455,6 +455,7 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
 
     @Override
     public void updatestatus(final int i) {
+
         final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference()
                 .child("driver_current_location").child(String.valueOf(sessionManager.getDriverId())).child("status");
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -463,8 +464,9 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
                 if(dataSnapshot.getValue()!=null){
                     mDatabase.setValue(i);
                 }
-                Log.v("VUCABSDRIVER","DataSnapshot: "+dataSnapshot);
             }
+
+
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {

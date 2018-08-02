@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.nfc.Tag;
 import android.os.IBinder;
 import android.os.Looper;
 import android.support.annotation.NonNull;
@@ -92,7 +93,7 @@ public class BackgroundFusedLocation extends Service {
                 mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
                 int SMALLEST_DISPLACEMENT = 10;
                 mLocationRequest.setSmallestDisplacement(SMALLEST_DISPLACEMENT);
-                long UPDATE_INTERVAL = 5000;
+                long UPDATE_INTERVAL = 10000;
                 mLocationRequest.setInterval(UPDATE_INTERVAL);
                 long FASTEST_INTERVAL = 5000;
                 mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
@@ -166,7 +167,7 @@ public class BackgroundFusedLocation extends Service {
                 DriverCurrentLocation driverLocation = new DriverCurrentLocation(Address, updatedat, profile.getCar_Type(),
                         profile.getDriver_ID(), sessionManager.getDriverStatus(), location.getLatitude(),
                         location.getLongitude(), profile.getCar_Seat(), profile.getName(), profile.getMobileNumber(),
-                        profile.getProfileURL(), profile.getCar_Name(), profile.getCar_Number(), profile.getCarURL(), 0);
+                        profile.getProfileURL(), profile.getCar_Name(), profile.getCar_Number(), profile.getCarURL(), sessionManager.getPassesCount());
                 mDatabase.child(getString(R.string.firebasenode))
                         .child(DriverId)
                         .setValue(driverLocation);
@@ -196,14 +197,14 @@ public class BackgroundFusedLocation extends Service {
 
     @Override
     public void onDestroy() {
-        Log.v(TAG, "OnDestroy");
 
         final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference()
                 .child("driver_current_location").child(String.valueOf(profile.getDriver_ID())).child("status");
 
-        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Log.v(TAG,"Datssnapshot: "+dataSnapshot);
                 if (dataSnapshot.getValue() != null) {
                     int status = Integer.valueOf(dataSnapshot.getValue().toString());
                     try {

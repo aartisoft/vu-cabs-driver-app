@@ -78,7 +78,7 @@ public class BookingAssingedPresenter implements Presenter<BookingAssingedMVPVie
             Call<TripEndResponce> call = apiService.tripEnd(bookingAssingedMVPView.getSession().getToken(), String.valueOf(profile.getDriver_ID())
                     , String.valueOf(bookingData.getId()), getLocationAddress(driverLocation.getLatitude(), driverLocation.getLongitude(),
                             bookingAssingedMVPView.getContext()), driverLocation.getLatitude(), driverLocation.getLongitude(), 1,
-                    0.05, bookingData.getTime_duration(), carid);
+                    Distance, bookingData.getTime_duration(), carid);
 
             call.enqueue(new Callback<TripEndResponce>() {
                 @Override

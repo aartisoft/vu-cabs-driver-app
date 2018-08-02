@@ -107,13 +107,6 @@
                 android:gravity="center"
                 android:orientation="vertical">
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:padding="@dimen/dimen_5dp"
-                    android:text="@string/message2" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -134,6 +127,14 @@
                         android:layout_height="wrap_content"
                         android:padding="@dimen/dimen_5dp" />
                 </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:padding="@dimen/dimen_5dp"
+                    android:text="@string/message2" />
             </LinearLayout>
 
 

@@ -11,13 +11,13 @@ public class DriverCurrentLocation implements Serializable {
     private int car_type, driver_id, status;
     private double lat, lng;
     private String car_seat, driver_name, driver_mobile, driver_profileurl, car_name, car_number, car_picurl;
-    private int drivingStatus;
+    private int passes;
 
     public DriverCurrentLocation() {
 
     }
 
-    public DriverCurrentLocation(String address, String updated_at, int car_type, int driver_id, int status, double lat, double lng, String car_seat, String driver_name, String driver_mobile, String driver_profileurl, String car_name, String car_number, String car_picurl, int drivingStatus) {
+    public DriverCurrentLocation(String address, String updated_at, int car_type, int driver_id, int status, double lat, double lng, String car_seat, String driver_name, String driver_mobile, String driver_profileurl, String car_name, String car_number, String car_picurl, int passes) {
         this.address = address;
         this.updated_at = updated_at;
         this.car_type = car_type;
@@ -32,7 +32,7 @@ public class DriverCurrentLocation implements Serializable {
         this.car_name = car_name;
         this.car_number = car_number;
         this.car_picurl = car_picurl;
-        this.drivingStatus = drivingStatus;
+        this.passes = passes;
     }
 
     public String getAddress() {
@@ -147,11 +147,11 @@ public class DriverCurrentLocation implements Serializable {
         this.car_picurl = car_picurl;
     }
 
-    public int getDrivingStatus() {
-        return drivingStatus;
+    public int getPasses() {
+        return passes;
     }
 
-    public void setDrivingStatus(int drivingStatus) {
-        this.drivingStatus = drivingStatus;
+    public void setPasses(int passes) {
+        this.passes = passes;
     }
 }

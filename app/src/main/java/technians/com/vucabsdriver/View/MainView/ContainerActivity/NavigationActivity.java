@@ -194,6 +194,10 @@ public class NavigationActivity extends AppCompatActivity
                     ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
             }
+        }else {
+            if (String.valueOf(realm.where(ResumeMap.class).findFirst()).equals("null")) {
+                startService(new Intent(NavigationActivity.this, BackgroundFusedLocation.class));
+            }
         }
         return true;
     }
@@ -352,9 +356,7 @@ public class NavigationActivity extends AppCompatActivity
             sessionManager.setDriverId(profile.getDriver_ID());
             Intent intent = new Intent(BROADCAST_ACTION);
             sendBroadcast(intent);
-            if (String.valueOf(realm.where(ResumeMap.class).findFirst()).equals("null")) {
-                startService(new Intent(NavigationActivity.this, BackgroundFusedLocation.class));
-            }
+
             final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference()
                     .child("driver_status").child(String.valueOf(profile.getDriver_ID()));
 

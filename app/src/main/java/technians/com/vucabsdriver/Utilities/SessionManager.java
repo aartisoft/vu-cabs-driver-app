@@ -28,6 +28,7 @@ public class SessionManager {
     private static final String KEY_DRIVING_ACTIVE = "driver_active";
     private static final String KEY_RIDE_DISTANCE = "driver_distance";
     private static final String KEY_RIDE_TIME = "driver_time";
+    private static final String KEY_PASSES_COUNT= "passescount";
 
     public SessionManager(Context context) {
         int PRIVATE_MODE = 0;
@@ -64,6 +65,11 @@ public class SessionManager {
 
     public void setDriverStatus(int driverStatus) {
         editor.putInt(KEY_DRIVER_STATUS, driverStatus);
+        // commit changes
+        editor.commit();
+    }
+    public void setPassesCount(int passesCount) {
+        editor.putInt(KEY_PASSES_COUNT, passesCount);
         // commit changes
         editor.commit();
     }
@@ -127,5 +133,8 @@ public class SessionManager {
 
     public int getRideTime() {
         return pref.getInt(KEY_RIDE_TIME, -1);
+    }
+    public int getPassesCount() {
+        return pref.getInt(KEY_PASSES_COUNT, -1);
     }
 }
