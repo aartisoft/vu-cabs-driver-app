@@ -8,8 +8,11 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 
+import java.util.concurrent.TimeUnit;
+
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import okhttp3.OkHttpClient;
 import technians.com.vucabsdriver.PayUMoneyIntegrate.AppEnvironment;
 
 /**
@@ -19,15 +22,25 @@ import technians.com.vucabsdriver.PayUMoneyIntegrate.AppEnvironment;
 public class AppController extends MultiDexApplication {
 
     public static final String TAG = AppController.class.getSimpleName();
-    AppEnvironment appEnvironment;
-    private RequestQueue mRequestQueue;
+
+    private OkHttpClient okHttpClient;
     private static AppController mInstance;
+    AppEnvironment appEnvironment;
+
+    private RequestQueue mRequestQueue;
     static public boolean uiInForeground = false;
     @Override
     public void onCreate() {
         super.onCreate();
+
+        okHttpClient = new OkHttpClient.Builder().
+                connectTimeout(100, TimeUnit.SECONDS).
+                writeTimeout(10, TimeUnit.SECONDS).
+                readTimeout(30, TimeUnit.SECONDS).
+                build();
         mInstance = this;
-        appEnvironment = AppEnvironment.PRODUCTION;
+
+        appEnvironment = AppEnvironment.SANDBOX;
 
     }
 
@@ -43,25 +56,16 @@ public class AppController extends MultiDexApplication {
         return mRequestQueue;
     }
 
-    public <T> void addToRequestQueue(Request<T> req, String tag) {
-        // set the default tag if tag is empty
-        req.setTag(TextUtils.isEmpty(tag) ? TAG : tag);
-        getRequestQueue().add(req);
+    public OkHttpClient getOkHttpClient() {
+        return okHttpClient;
     }
 
-    public <T> void addToRequestQueue(Request<T> req)  {
-//        req.setTag(TAG);
-        req.setTag(TAG);
-        getRequestQueue().add(req);
 
+//    public void setConnectivityListener(ConnectivityReceiver.ConnectivityReceiverListener listener)
+//    {
+//        ConnectivityReceiver.connectivityReceiverListener = listener;
+//    }
 
-    }
-
-    public void cancelPendingRequests(Object tag) {
-        if (mRequestQueue != null) {
-            mRequestQueue.cancelAll(tag);
-        }
-    }
     public AppEnvironment getAppEnvironment() {
         return appEnvironment;
     }
@@ -69,5 +73,4 @@ public class AppController extends MultiDexApplication {
     public void setAppEnvironment(AppEnvironment appEnvironment) {
         this.appEnvironment = appEnvironment;
     }
-
 }

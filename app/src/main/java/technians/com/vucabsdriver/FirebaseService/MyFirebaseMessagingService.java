@@ -24,7 +24,9 @@ import technians.com.vucabsdriver.View.MainView.ContainerActivity.NavigationActi
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private static final String TAG = "MyFirebaseMsgService";
+    public static final String BROADCAST_ACTION = "technians.com.vucabsdriver.reloadrequest";
 
+    private Intent intent;
     /**
      * Called when message is received.
      *
@@ -33,7 +35,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     // [START receive_message]
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-
         Log.v("FirebaseNotif","onMessageReceived");
         // [START_EXCLUDE]
         // There are two types of messages data messages and notification messages. Data messages are handled
@@ -103,6 +104,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      * @param title
      */
     private void sendNotification(String messageBody, String title) {
+        intent = new Intent(BROADCAST_ACTION);
+        sendBroadcast(intent);
         Intent intent = new Intent(this, NavigationActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
@@ -132,6 +135,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
 
         notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+
     }
 
 }

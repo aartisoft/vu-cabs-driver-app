@@ -42,7 +42,7 @@ public class BackgroundFusedLocation extends Service {
     public static final String BROADCAST_ACTION = "technians.com.vucabsdriver.displayevent";
     private static final String GEO_FIRE_DB = "https://vucabsdriverapp.firebaseio.com";
     private static final String GEO_FIRE_REF = GEO_FIRE_DB + "/geofire";
-
+    String TAG = "BACKGROUNDFUSED";
 
     public BackgroundFusedLocation() {
     }
@@ -67,7 +67,7 @@ public class BackgroundFusedLocation extends Service {
     public void onCreate() {
         super.onCreate();
         sessionManager = new SessionManager(BackgroundFusedLocation.this);
-        Log.v("NavigationActivity", "Service started");
+        Log.v(TAG, "Service started");
         RealmController1 realmController1 = new RealmController1(this);
         realm = Realm.getInstance(realmController1.initializeDB());
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
@@ -82,11 +82,11 @@ public class BackgroundFusedLocation extends Service {
     }
 
     protected void startLocationUpdates() {
-        Log.v("NavigationActivity", "startLocationUpdates");
-        Log.v("NavigationActivity", "Profile: " + realm.where(Profile.class).findFirst());
+        Log.v(TAG, "startLocationUpdates");
         profile = realm.where(Profile.class).findFirst();
         if (profile != null) {
             try {
+                Log.v(TAG, "try block");
                 DriverId = String.valueOf(profile.getDriver_ID());
                 final LocationRequest mLocationRequest = new LocationRequest();
                 mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
@@ -101,6 +101,7 @@ public class BackgroundFusedLocation extends Service {
                     @Override
                     public void onLocationResult(LocationResult locationResult) {
                         // do work here
+                        Log.v(TAG, "location result");
                         onLocationChanged(locationResult.getLastLocation());
 
                     }
@@ -112,6 +113,7 @@ public class BackgroundFusedLocation extends Service {
                 connectedRef.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        Log.v(TAG, "onDataChange");
                         boolean connected = snapshot.getValue(Boolean.class);
                         if (connected) {
                             if (ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -119,25 +121,25 @@ public class BackgroundFusedLocation extends Service {
                             }
                             fusedLocationProviderClient.requestLocationUpdates(mLocationRequest, mLocationCallback,
                                     Looper.myLooper());
-                            Log.v("NavigationActivity", "Connected");
+                            Log.v(TAG, "Connected");
 
                         } else {
+                            Log.v(TAG, "NOT Connected");
                             mDatabase.child(getString(R.string.firebasenode))
                                     .child(DriverId).onDisconnect().removeValue(new DatabaseReference.CompletionListener() {
                                 @Override
                                 public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-                                    Log.v("Background123", "complete");
+                                    Log.v(TAG, "complete");
                                 }
                             });
                             geoFire.removeLocation(DriverId, new GeoFire.CompletionListener() {
                                 @Override
                                 public void onComplete(String key, DatabaseError error) {
-                                    Log.v("Background123", "Key: " + key);
-                                    Log.v("Background123", "Error: " + error);
+                                    Log.v(TAG, "Key: " + key);
+                                    Log.v(TAG, "Error: " + error);
                                 }
                             });
                             fusedLocationProviderClient.removeLocationUpdates(mLocationCallback);
-                            Log.v("NavigationActivity", "Not connected");
                         }
                     }
 
@@ -194,32 +196,50 @@ public class BackgroundFusedLocation extends Service {
 
     @Override
     public void onDestroy() {
-        Log.v("Background123", "OnDestroy");
-        realm.close();
+        Log.v(TAG, "OnDestroy");
 
-        try {
-            if (sessionManager.getDriverStatus() != 2 && sessionManager.getDriverStatus() != 3) {
-                mDatabase.child(getString(R.string.firebasenode))
-                        .child(DriverId).removeValue(new DatabaseReference.CompletionListener() {
-                    @Override
-                    public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-                        Log.v("Background123", "Node removed");
+        final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference()
+                .child("driver_current_location").child(String.valueOf(profile.getDriver_ID())).child("status");
+
+        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() != null) {
+                    int status = Integer.valueOf(dataSnapshot.getValue().toString());
+                    try {
+                        if (status == 1) {
+                            realm.close();
+                            mDatabase.child(getString(R.string.firebasenode))
+                                    .child(DriverId).removeValue(new DatabaseReference.CompletionListener() {
+                                @Override
+                                public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                                    Log.v(TAG, "Node removed");
+                                }
+                            });
+                            mDatabase.child("geofire")
+                                    .child(DriverId).removeValue(new DatabaseReference.CompletionListener() {
+                                @Override
+                                public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                                    Log.v(TAG, "Node removed");
+                                }
+                            });
+                            fusedLocationProviderClient.removeLocationUpdates(mLocationCallback);
+                            stopSelf();
+                        }
+                    } catch (Exception e) {
+
                     }
-                });
-                mDatabase.child("geofire")
-                        .child(DriverId).removeValue(new DatabaseReference.CompletionListener() {
-                    @Override
-                    public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-                        Log.v("Background123", "Node removed");
-                    }
-                });
+
+                }
             }
-        } catch (Exception e) {
 
-        }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-        fusedLocationProviderClient.removeLocationUpdates(mLocationCallback);
-        stopSelf();
+            }
+        });
+
+
         super.onDestroy();
     }
 }

@@ -11,4 +11,6 @@ public interface OTPBookingMVPView extends MVPView{
     void showMessage(String message);
 
     void startService();
+
+    void changedriverstatus();
 }

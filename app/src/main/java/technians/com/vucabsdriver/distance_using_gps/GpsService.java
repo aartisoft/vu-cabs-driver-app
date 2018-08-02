@@ -58,8 +58,8 @@ public class GpsService extends Service {
             // for ActivityCompat#requestPermissions for more details.
             return super.onStartCommand(intent, flags, startId);
         }
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 10, listener);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 10, listener);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10000, 10, listener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10, listener);
         return super.onStartCommand(intent, flags, startId);
     }
 

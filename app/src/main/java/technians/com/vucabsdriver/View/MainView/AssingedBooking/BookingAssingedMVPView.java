@@ -9,4 +9,6 @@ public interface BookingAssingedMVPView extends MVPView {
     Realm getRealm();
 
     void gotoTripCompleteActivity();
+
+    void stopService();
 }

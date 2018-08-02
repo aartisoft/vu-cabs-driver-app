@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -15,7 +16,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import io.realm.Realm;
+import technians.com.vucabsdriver.Model.Profile.Profile;
 import technians.com.vucabsdriver.R;
 import technians.com.vucabsdriver.RealmController1;
 import technians.com.vucabsdriver.Utilities.Constants;
@@ -31,13 +39,14 @@ public class OTPBookingActivity extends AppCompatActivity implements OTPBookingM
     private Realm realm;
     private int ID;
     private SessionManager sessionManager;
-
+    private String MobileNumber;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_otpbooking);
         sessionManager = new SessionManager(this);
         ID = getIntent().getIntExtra("ID", 0);
+        MobileNumber = getIntent().getStringExtra("Mobile");
         RealmController1 realmController1 = new RealmController1(this);
         realm = Realm.getInstance(realmController1.initializeDB());
         progressDialog = Constants.showProgressDialog(this);
@@ -169,11 +178,18 @@ public class OTPBookingActivity extends AppCompatActivity implements OTPBookingM
     }
 
     @Override
+    public void changedriverstatus() {
+        FirebaseDatabase.getInstance().getReference()
+                .child("driver_current_location").child(String.valueOf(realm.where(Profile.class)
+                .findFirst().getDriver_ID())).child("status").setValue(2);
+    }
+
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.activity_booking_otp_btn_verifyotp: {
                 if (getOTP().length() == 4) {
-                    presenter.verifyOTP(getOTP());
+                    presenter.verifyOTP(getOTP(),MobileNumber);
                 } else {
                     Toast.makeText(this, getString(R.string.validmobilenumber), Toast.LENGTH_SHORT).show();
                 }

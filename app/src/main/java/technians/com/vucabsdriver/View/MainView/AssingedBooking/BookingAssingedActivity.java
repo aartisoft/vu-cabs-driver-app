@@ -29,6 +29,7 @@ import technians.com.vucabsdriver.RealmController1;
 import technians.com.vucabsdriver.Utilities.Constants;
 import technians.com.vucabsdriver.Utilities.SessionManager;
 import technians.com.vucabsdriver.View.MainView.TripEnd.TripEndActivity;
+import technians.com.vucabsdriver.distance_using_gps.GpsService;
 
 public class BookingAssingedActivity extends AppCompatActivity implements View.OnClickListener, BookingAssingedMVPView {
 
@@ -229,5 +230,11 @@ public class BookingAssingedActivity extends AppCompatActivity implements View.O
     @Override
     public void gotoTripCompleteActivity() {
         startActivity(new Intent(BookingAssingedActivity.this, TripEndActivity.class).putExtra("ID", ID));
+    }
+
+    @Override
+    public void stopService() {
+        stopService(new Intent(BookingAssingedActivity.this, GpsService.class));
+        sessionManager.setRideDistance("0.0");
     }
 }

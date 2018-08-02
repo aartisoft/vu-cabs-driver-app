@@ -46,12 +46,14 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.FirebaseMessagingService;
 
 import io.realm.Realm;
 import technians.com.vucabsdriver.BackgroundFusedLocation;
 import technians.com.vucabsdriver.CustomInfoWindow.CustomInfoWindowGoogleMap;
 import technians.com.vucabsdriver.CustomInfoWindow.InfoWindowData;
 import technians.com.vucabsdriver.CustomToggleButton.CustomToggleButton;
+import technians.com.vucabsdriver.FirebaseService.MyFirebaseMessagingService;
 import technians.com.vucabsdriver.Model.DriverLocationPackage.DriverCurrentLocation;
 import technians.com.vucabsdriver.Model.DriverLocationPackage.DriverLocation;
 import technians.com.vucabsdriver.Model.DriverLocationPackage.ResumeMap;
@@ -117,6 +119,9 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
         btn_starttrip.setOnClickListener(this);
 
         getActivity().registerReceiver(broadcastReceiver, new IntentFilter(BackgroundFusedLocation.BROADCAST_ACTION));
+
+        getActivity().registerReceiver(broadcastReceiver_pendingRequest, new IntentFilter(MyFirebaseMessagingService.BROADCAST_ACTION));
+
         customToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -136,7 +141,7 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
 
         presenter.loadpendingrequest();
 
-        Log.v("Token123","Token: "+sessionManager.getToken());
+        Log.v("VUCABSDRIVER","Token: "+sessionManager.getToken());
         return view;
     }
 
@@ -254,7 +259,12 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
         }
     };
 
-
+    BroadcastReceiver broadcastReceiver_pendingRequest = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            presenter.loadpendingrequest();
+        }
+    };
     private void addMarker(DriverCurrentLocation driverLocation) {
         try {
             MarkerOptions markerOpt = new MarkerOptions();
@@ -409,7 +419,9 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
                 break;
             }
             case R.id.fragment_myduty_btn_starttrip: {
-                startActivity(new Intent(getActivity(), OTPBookingActivity.class).putExtra("ID", bookingData.getId()));
+                startActivity(new Intent(getActivity(), OTPBookingActivity.class)
+                        .putExtra("ID", bookingData.getId())
+                        .putExtra("Mobile", bookingData.getCustomer_mobile()));
                 break;
             }
         }
@@ -451,7 +463,7 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
                 if(dataSnapshot.getValue()!=null){
                     mDatabase.setValue(i);
                 }
-                Log.v("MyDutyFragment","DataSnapshot: "+dataSnapshot);
+                Log.v("VUCABSDRIVER","DataSnapshot: "+dataSnapshot);
             }
 
             @Override

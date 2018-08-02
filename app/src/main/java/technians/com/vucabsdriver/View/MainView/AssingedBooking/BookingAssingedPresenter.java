@@ -1,6 +1,7 @@
 package technians.com.vucabsdriver.View.MainView.AssingedBooking;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.widget.Toast;
 
 import retrofit2.Call;
@@ -66,26 +67,28 @@ public class BookingAssingedPresenter implements Presenter<BookingAssingedMVPVie
         }
     }
 
-    public void endTrip(Profile profile, DriverLocation driverLocation, final BookingData bookingData) {
-        try {
+    public void endTrip(final Profile profile, final DriverLocation driverLocation, final BookingData bookingData) {
+        final double Distance = Float.valueOf(bookingAssingedMVPView.getSession().getRideDistance()) * 0.001;
 
-            double Distance = Float.valueOf(bookingAssingedMVPView.getSession().getRideDistance()) * 0.001;
-            int carid = bookingAssingedMVPView.getRealm().where(Profile.class).findFirst().getCar_Type();
+
+        try {
+            final int carid = bookingAssingedMVPView.getRealm().where(Profile.class).findFirst().getCar_Type();
             bookingAssingedMVPView.showProgress();
             ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
             Call<TripEndResponce> call = apiService.tripEnd(bookingAssingedMVPView.getSession().getToken(), String.valueOf(profile.getDriver_ID())
                     , String.valueOf(bookingData.getId()), getLocationAddress(driverLocation.getLatitude(), driverLocation.getLongitude(),
                             bookingAssingedMVPView.getContext()), driverLocation.getLatitude(), driverLocation.getLongitude(), 1,
-                    Distance,bookingData.getTime_duration(),carid);
+                    0.05, bookingData.getTime_duration(), carid);
 
             call.enqueue(new Callback<TripEndResponce>() {
                 @Override
                 public void onResponse(@NonNull Call<TripEndResponce> call, @NonNull Response<TripEndResponce> response) {
                     bookingAssingedMVPView.hideProgress();
+                    Log.v("Booking123", "Distance: " + response.body().getResponce());
                     if (response.body() != null) {
                         if (response.body().getStatus() == 200) {
                             if (response.body() != null) {
-
+                                bookingAssingedMVPView.stopService();
                                 TripEndData data = response.body().getResponce().getInvoice();
                                 bookingAssingedMVPView.getRealm().beginTransaction();
                                 BookingData booking = bookingAssingedMVPView.getRealm().where(BookingData.class).equalTo("id", bookingData.getId()).findFirst();
@@ -103,11 +106,12 @@ public class BookingAssingedPresenter implements Presenter<BookingAssingedMVPVie
                 @Override
                 public void onFailure(@NonNull Call<TripEndResponce> call, @NonNull Throwable t) {
                     bookingAssingedMVPView.hideProgress();
+                    bookingAssingedMVPView.stopService();
                     String error = new NetworkError(t).getAppErrorMessage();
                     bookingAssingedMVPView.showApiError(error);
                 }
             });
-        }catch (Exception e) {
+        } catch (Exception e) {
             bookingAssingedMVPView.showApiError(bookingAssingedMVPView.getContext().getString(R.string.label_something_went_wrong));
         }
     }

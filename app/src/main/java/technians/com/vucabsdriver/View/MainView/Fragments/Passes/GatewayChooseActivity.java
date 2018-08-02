@@ -2,6 +2,7 @@ package technians.com.vucabsdriver.View.MainView.Fragments.Passes;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -12,23 +13,34 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.github.javiersantos.materialstyleddialogs.MaterialStyledDialog;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.paytm.pgsdk.PaytmOrder;
 import com.paytm.pgsdk.PaytmPGService;
 import com.paytm.pgsdk.PaytmPaymentTransactionCallback;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
-import retrofit2.Call;
-import retrofit2.Callback;
+import okhttp3.FormBody;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Call;
+import okhttp3.Callback;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import technians.com.vucabsdriver.AppController;
 import technians.com.vucabsdriver.Model.RetrofitError.NetworkError;
+import technians.com.vucabsdriver.PayUMoneyIntegrate.PayUMoneyActivity;
 import technians.com.vucabsdriver.R;
 import technians.com.vucabsdriver.Utilities.Constants;
 import technians.com.vucabsdriver.Utilities.SessionManager;
+import okhttp3.Response;
 import technians.com.vucabsdriver.rest.ApiInterface;
 
 public class GatewayChooseActivity extends AppCompatActivity implements View.OnClickListener {
@@ -38,16 +50,16 @@ public class GatewayChooseActivity extends AppCompatActivity implements View.OnC
     ProgressDialog progressDialog;
     String DriverId;
     String order_id;
-
+    private AppController appController;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gateway_choose);
         progressDialog = Constants.showProgressDialog(GatewayChooseActivity.this);
-        order_id = String.valueOf(System.currentTimeMillis());
+        appController = (AppController)getApplicationContext();
         DriverId = String.valueOf(new SessionManager(GatewayChooseActivity.this).getDriverId());
-
-        Amount = 1;
+        order_id = "VUCABS"+DriverId+String.valueOf(System.currentTimeMillis());
+        Amount = getIntent().getIntExtra("Amount", 0);
         Rides = getIntent().getIntExtra("Rides_qty", 0);
         toolbar = findViewById(R.id.activity_gatewaychoosetoolbar);
         setSupportActionBar(toolbar);
@@ -68,40 +80,57 @@ public class GatewayChooseActivity extends AppCompatActivity implements View.OnC
                 break;
             }
             case R.id.paymentButton_payU: {
+                startActivityForResult(new Intent(GatewayChooseActivity.this, PayUMoneyActivity.class)
+                        .putExtra("Amount", Amount)
+                        .putExtra("Rides_qty", Rides),6);
                 break;
             }
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Intent intent = new Intent();
+        setResult(RESULT_OK, intent);
+        finish();
+    }
+
     private void startTransaction(final String order_id) {
         progressDialog.show();
-        Gson gson = new GsonBuilder()
-                .setLenient()
-                .create();
+        RequestBody body = new FormBody.Builder().
+                add( "MID" , "ShriHH48818866225445").
+                add( "ORDER_ID" , order_id).
+                add( "CUST_ID" , DriverId).
+                add( "INDUSTRY_TYPE_ID" , "Retail109").
+                add( "CHANNEL_ID" , "WAP").
+                add( "TXN_AMOUNT" , String.valueOf(Amount)).
+                add( "WEBSITE" , "ShriHHWAP").
+                add( "CALLBACK_URL", "https://securegw.paytm.in/theia/paytmCallback?ORDER_ID="+order_id).
+                build();
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://www.vucabs.com/api/")
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .build();
-        ApiInterface apiService = retrofit.create(ApiInterface.class);
-        Call<String> call = apiService.paytmchecksum("ShriHa03311053236907", order_id,
-                DriverId, "Retail", "WAP",
-                String.valueOf(Amount), "APPSTAGING",
-                "https://securegw-stage.paytm.in/theia/paytmCallback?ORDER_ID=" + order_id + "");
-        call.enqueue(new Callback<String>() {
+        final Request request = new Request.Builder().
+                url("https://www.vucabs.com/api/paytm-genrate-checksum").
+                post(body).
+                build();
+
+        appController.getOkHttpClient().newCall(request).enqueue(new Callback() {
             @Override
-            public void onResponse(@NonNull Call<String> call, @NonNull retrofit2.Response<String> response) {
+            public void onFailure(Call call, IOException e) {
                 progressDialog.dismiss();
-                String checksumhash = response.body().toString();
-                initializeTransaction(checksumhash, order_id);
             }
 
             @Override
-            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
-                Log.v("PayTmActivity", "Error: " + t.getMessage());
+            public void onResponse(Call call, Response response) throws IOException {
+                final String json = response.body().string();
                 progressDialog.dismiss();
-                String error = new NetworkError(t).getAppErrorMessage();
-                Toast.makeText(GatewayChooseActivity.this, error, Toast.LENGTH_SHORT).show();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                       initializeTransaction(json,order_id);
+                    }
+                });
             }
         });
     }
@@ -122,14 +151,14 @@ public class GatewayChooseActivity extends AppCompatActivity implements View.OnC
 
         // these are mandatory parameters
         Map<String, String> paramMap = new HashMap<String, String>();
-        paramMap.put("MID", "ShriHa03311053236907");
+        paramMap.put("MID", "ShriHH48818866225445");
         paramMap.put("ORDER_ID", orderid);
         paramMap.put("CUST_ID", DriverId);
-        paramMap.put("INDUSTRY_TYPE_ID", "Retail");
+        paramMap.put("INDUSTRY_TYPE_ID", "Retail109");
         paramMap.put("CHANNEL_ID", "WAP");
         paramMap.put("TXN_AMOUNT", String.valueOf(Amount));
-        paramMap.put("WEBSITE", "APPSTAGING");
-        paramMap.put("CALLBACK_URL", "https://securegw-stage.paytm.in/theia/paytmCallback?ORDER_ID=" + orderid + "");
+        paramMap.put("WEBSITE", "ShriHHWAP");
+        paramMap.put("CALLBACK_URL", "https://securegw.paytm.in/theia/paytmCallback?ORDER_ID=" + orderid + "");
         paramMap.put("CHECKSUMHASH", checksumhash);
 
         PaytmOrder Order = new PaytmOrder(paramMap);
@@ -150,30 +179,72 @@ public class GatewayChooseActivity extends AppCompatActivity implements View.OnC
                         // initialization of webview. // Error Message details
                         // the error occurred.
                     }
-//					@Override
-//					public void onTransactionFailure(String inErrorMessage,
-//							Bundle inResponse) {
-//						// This method gets called if transaction failed. //
-//						// Here in this case transaction is completed, but with
-//						// a failure. // Error Message describes the reason for
-//						// failure. // Response bundle contains the merchant
-//						// response parameters.
-//						Log.d("LOG", "Payment Transaction Failed " + inErrorMessage);
-//						Toast.makeText(getBaseContext(), "Payment Transaction Failed ", Toast.LENGTH_LONG).show();
-//					}
-//                    @Override
-//                    public void onTransactionSuccess(Bundle inResponse) {
-//                        // After successful transaction this method gets called.
-//                        // // Response bundle contains the merchant response
-//                        // parameters.
-//                        Log.d("LOG", "Payment Transaction is successful " + inResponse);
-//                        Toast.makeText(getApplicationContext(), "Payment Transaction is successful ", Toast.LENGTH_LONG).show();
-//                    }
+
+				/*	@Override
+					public void onTransactionSuccess(Bundle inResponse) {
+						// After successful transaction this method gets called.
+						// // Response bundle contains the merchant response
+						// parameters.
+						Log.d("LOG", "Payment Transaction is successful " + inResponse);
+						Toast.makeText(getApplicationContext(), "Payment Transaction is successful ", Toast.LENGTH_LONG).show();
+					}
+					@Override
+					public void onTransactionFailure(String inErrorMessage,
+							Bundle inResponse) {
+						// This method gets called if transaction failed. //
+						// Here in this case transaction is completed, but with
+						// a failure. // Error Message describes the reason for
+						// failure. // Response bundle contains the merchant
+						// response parameters.
+						Log.d("LOG", "Payment Transaction Failed " + inErrorMessage);
+						Toast.makeText(getBaseContext(), "Payment Transaction Failed ", Toast.LENGTH_LONG).show();
+					}*/
 
                     @Override
                     public void onTransactionResponse(Bundle inResponse) {
                         Log.d("LOG", "Payment Transaction is successful " + inResponse);
                         Toast.makeText(getApplicationContext(), "Payment Transaction response " + inResponse.toString(), Toast.LENGTH_LONG).show();
+                        if (inResponse.getString("STATUS").equalsIgnoreCase("TXN_SUCCESS")){
+                            final MaterialStyledDialog.Builder dialogHeader_1 = new MaterialStyledDialog.Builder(GatewayChooseActivity.this)
+                                    .setIcon(R.drawable.ic_check_circle_coloraccent_50_48dp)
+                                    .withDialogAnimation(true)
+                                    .withIconAnimation(true)
+                                    .setHeaderColorInt(Color.BLACK)
+                                    .setTitle(getString(R.string.rechrgesuccess))
+                                    .setDescription(getString(R.string.rechargedescription))
+                                    .setPositiveText(getString(R.string.Continue))
+                                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                        @Override
+                                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                            dialog.dismiss();
+                                            Intent intent = new Intent();
+                                            setResult(RESULT_OK, intent);
+                                            finish();
+                                        }
+                                    });
+                            dialogHeader_1.show();
+                        }else {
+                            new MaterialStyledDialog.Builder(GatewayChooseActivity.this)
+                                    .setIcon(R.drawable.ic_cancel_red_a700_24dp)
+                                    .withDialogAnimation(true)
+                                    .withIconAnimation(true)
+                                    .setHeaderColorInt(Color.BLACK)
+                                    .setTitle(getString(R.string.rechrgefail))
+                                    .setDescription(getString(R.string.rechargefaildescription))
+                                    .setPositiveText(getString(R.string.btn_ok))
+                                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                        @Override
+                                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                            dialog.dismiss();
+                                            Intent intent = new Intent();
+                                            setResult(RESULT_OK, intent);
+                                            finish();
+                                        }
+                                    })
+                                    .show();
+                        }
+
+
                     }
 
                     @Override
@@ -202,7 +273,7 @@ public class GatewayChooseActivity extends AppCompatActivity implements View.OnC
                     // had to be added: NOTE
                     @Override
                     public void onBackPressedCancelTransaction() {
-                        Toast.makeText(GatewayChooseActivity.this, "Back pressed. Transaction cancelled", Toast.LENGTH_LONG).show();
+                        Toast.makeText(GatewayChooseActivity.this,"Back pressed. Transaction cancelled",Toast.LENGTH_LONG).show();
                     }
 
                     @Override
@@ -212,5 +283,6 @@ public class GatewayChooseActivity extends AppCompatActivity implements View.OnC
                     }
 
                 });
+
     }
 }

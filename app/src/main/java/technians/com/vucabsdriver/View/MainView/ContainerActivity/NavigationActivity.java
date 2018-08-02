@@ -60,6 +60,7 @@ import technians.com.vucabsdriver.View.MainView.Fragments.MyProfile.ProfileFragm
 import technians.com.vucabsdriver.View.MainView.Fragments.Passes.MyPassFragment;
 import technians.com.vucabsdriver.View.MainView.Fragments.RatingFeedback.RatingFeedbackFragment;
 
+import static technians.com.vucabsdriver.FirebaseService.MyFirebaseMessagingService.BROADCAST_ACTION;
 import static technians.com.vucabsdriver.View.MainView.Fragments.MyDuty.MyDutyFragment.LOCATION_PERMISSION_REQUEST_CODE;
 
 public class NavigationActivity extends AppCompatActivity
@@ -85,7 +86,7 @@ public class NavigationActivity extends AppCompatActivity
 
 
         RealmController1 realmController1 = new RealmController1(this);
-        realm= Realm.getInstance(realmController1.initializeDB());
+        realm = Realm.getInstance(realmController1.initializeDB());
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -108,17 +109,17 @@ public class NavigationActivity extends AppCompatActivity
         navigationView.getMenu().getItem(0).setChecked(true);
         sessionManager.setCurrentFragment(R.id.nav_myduty);
         if (checkPermission()) {
-            Log.v("NavigationActivity", "checkPermission: true");
+            Log.v("VUCABSDRIVER", "checkPermission: true");
             manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
             if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                 checkgpsstatus();
             } else {
-                Log.v("NavigationActivity", "checkPermission: else");
+                Log.v("VUCABSDRIVER", "checkPermission: else");
 //                startService(new Intent(NavigationActivity.this, BackgroundFusedLocation.class));
                 if (!String.valueOf(realm.where(ResumeMap.class).findFirst()).equals("null")) {
-                    Log.v("NavigationActivity", "checkPermission: resume map");
+                    Log.v("VUCABSDRIVER", "checkPermission: resume map");
                     ResumeMap resumeMap = realm.where(ResumeMap.class).findFirst();
-                    Log.v("NavigationActivity", "checkPermission: resume map status: " + resumeMap.getDriverStatus());
+                    Log.v("VUCABSDRIVER", "checkPermission: resume map status: " + resumeMap.getDriverStatus());
                     if (!resumeMap.getDriverStatus()) {
                         stopService(new Intent(NavigationActivity.this, BackgroundFusedLocation.class));
                     } else {
@@ -147,7 +148,7 @@ public class NavigationActivity extends AppCompatActivity
                         int statusCode = ((ApiException) e).getStatusCode();
                         switch (statusCode) {
                             case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                                Log.v("NavigationActivity", "Location settings are not satisfied. Attempting to upgrade " +
+                                Log.v("VUCABSDRIVER", "Location settings are not satisfied. Attempting to upgrade " +
                                         "location settings ");
                                 try {
                                     // Show the dialog by calling startResolutionForResult(), and check the
@@ -155,7 +156,7 @@ public class NavigationActivity extends AppCompatActivity
                                     ResolvableApiException rae = (ResolvableApiException) e;
                                     rae.startResolutionForResult(NavigationActivity.this, REQUEST_CHECK_SETTINGS);
                                 } catch (IntentSender.SendIntentException sie) {
-                                    Log.v("NavigationActivity", "PendingIntent unable to execute request.");
+                                    Log.v("VUCABSDRIVER", "PendingIntent unable to execute request.");
                                 }
                                 break;
                             case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
@@ -187,7 +188,7 @@ public class NavigationActivity extends AppCompatActivity
     }
 
     public boolean checkPermission() {
-        Log.v("NavigationActivity", "checkPermission");
+        Log.v("VUCABSDRIVER", "checkPermission");
         if (Build.VERSION.SDK_INT >= 23) {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                     ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -199,11 +200,14 @@ public class NavigationActivity extends AppCompatActivity
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        Log.v("NavigationActivity", "onRequestPermissionsResult");
+        Log.v("VUCABSDRIVER", "onRequestPermissionsResult");
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
+                if (String.valueOf(realm.where(ResumeMap.class).findFirst()).equals("null")) {
+                    startService(new Intent(NavigationActivity.this, BackgroundFusedLocation.class));
+                }
+                Log.v("VUCABSDRIVER", "PERMISSION Granted");
             } else {
                 final MaterialStyledDialog.Builder dialogHeader_1 = new MaterialStyledDialog.Builder(NavigationActivity.this)
                         .setIcon(R.drawable.ic_if_setting)
@@ -340,15 +344,15 @@ public class NavigationActivity extends AppCompatActivity
 
     @Override
     public void setProfileData() {
-        Log.v("NavigationActivity", "setProfileData");
+        Log.v("VUCABSDRIVER", "setProfileData");
         try {
             profile = realm.where(Profile.class).findFirst();
             DriverName.setText(profile.getName().toUpperCase());
             DriverEmail.setText(profile.getEmail());
             sessionManager.setDriverId(profile.getDriver_ID());
-
+            Intent intent = new Intent(BROADCAST_ACTION);
+            sendBroadcast(intent);
             if (String.valueOf(realm.where(ResumeMap.class).findFirst()).equals("null")) {
-                Log.v("NavigationActivity", "Resume Null");
                 startService(new Intent(NavigationActivity.this, BackgroundFusedLocation.class));
             }
             final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference()
@@ -397,7 +401,7 @@ public class NavigationActivity extends AppCompatActivity
         mDatabase1.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.getValue()!=null){
+                if (dataSnapshot.getValue() != null) {
                     sessionManager.setDriverStatus(Integer.valueOf(dataSnapshot.getValue().toString()));
                 }
             }
@@ -455,10 +459,12 @@ public class NavigationActivity extends AppCompatActivity
                 case RESULT_OK: {
                     MyDutyFragment fragment = (MyDutyFragment) getSupportFragmentManager().findFragmentByTag(getString(R.string.myduty));
                     fragment.startService();
+                    Log.v("VUCABSDRIVER", "REQUEST OK");
                     break;
                 }
                 case RESULT_CANCELED: {
                     Toast.makeText(this, "Cancelled", Toast.LENGTH_SHORT).show();
+                    Log.v("VUCABSDRIVER", "REQUEST CAncel");
 //                    finishAffinity();
                     break;
                 }
