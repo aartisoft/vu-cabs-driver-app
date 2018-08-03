@@ -36,11 +36,7 @@
         <!-- android:value=".MainActivity" /> -->
         <!-- </activity> -->
         <activity android:name=".SplashScreenActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <!-- <activity android:name=".DashboardItems.DriverDuty.BookingOtpActivity"> -->
         <!-- <meta-data -->
@@ -114,12 +110,21 @@
         <activity android:name=".View.MainView.AssingedBooking.BookingAssingedActivity" />
         <activity android:name=".View.MainView.TripEnd.TripEndActivity" />
         <activity android:name=".View.MainView.Fragments.Passes.PayTmActivity" />
-        <activity android:name=".View.MainView.Fragments.Passes.GatewayChooseActivity"></activity>
+        <activity android:name=".View.MainView.Fragments.Passes.GatewayChooseActivity" />
+
         <service android:name=".distance_using_gps.GpsService">
             <intent-filter>
                 <action android:name="com.package.name.START_SERVICE" />
             </intent-filter>
         </service>
+
+        <activity android:name=".GPSActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
