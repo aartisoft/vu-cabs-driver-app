@@ -46,7 +46,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import io.realm.Realm;
-import technians.com.vucabsdriver.BackgroundFusedLocation;
 import technians.com.vucabsdriver.Model.DriverLocationPackage.ResumeMap;
 import technians.com.vucabsdriver.Model.Profile.Profile;
 import technians.com.vucabsdriver.R;
@@ -108,27 +107,25 @@ public class NavigationActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.getMenu().getItem(0).setChecked(true);
         sessionManager.setCurrentFragment(R.id.nav_myduty);
-        if (checkPermission()) {
-            Log.v("VUCABSDRIVER", "checkPermission: true");
-            manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-            if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                checkgpsstatus();
-            } else {
-                Log.v("VUCABSDRIVER", "checkPermission: else");
-//                startService(new Intent(NavigationActivity.this, BackgroundFusedLocation.class));
-                if (!String.valueOf(realm.where(ResumeMap.class).findFirst()).equals("null")) {
-                    Log.v("VUCABSDRIVER", "checkPermission: resume map");
-                    ResumeMap resumeMap = realm.where(ResumeMap.class).findFirst();
-                    Log.v("VUCABSDRIVER", "checkPermission: resume map status: " + resumeMap.getDriverStatus());
-                    if (!resumeMap.getDriverStatus()) {
-                        stopService(new Intent(NavigationActivity.this, BackgroundFusedLocation.class));
-                    } else {
-                        startService(new Intent(NavigationActivity.this, BackgroundFusedLocation.class));
-                    }
-                }
-
-            }
-        }
+//        if (checkPermission()) {
+//            Log.v("VUCABSDRIVER", "checkPermission: true");
+//            manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+//            if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+//                checkgpsstatus();
+//            } else {
+//                Log.v("VUCABSDRIVER", "checkPermission: else");
+////                startService(new Intent(NavigationActivity.this, BackgroundFusedLocation.class));
+//                if (!String.valueOf(realm.where(ResumeMap.class).findFirst()).equals("null")) {
+//                    ResumeMap resumeMap = realm.where(ResumeMap.class).findFirst();
+//                    if (!resumeMap.getDriverStatus()) {
+//                        stopService(new Intent(NavigationActivity.this, BackgroundFusedLocation.class));
+//                    } else {
+//                        startService(new Intent(NavigationActivity.this, BackgroundFusedLocation.class));
+//                    }
+//                }
+//
+//            }
+//        }
     }
 
     private void checkgpsstatus() {
@@ -195,9 +192,9 @@ public class NavigationActivity extends AppCompatActivity
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
             }
         }else {
-            if (String.valueOf(realm.where(ResumeMap.class).findFirst()).equals("null")) {
-                startService(new Intent(NavigationActivity.this, BackgroundFusedLocation.class));
-            }
+//            if (String.valueOf(realm.where(ResumeMap.class).findFirst()).equals("null")) {
+//                startService(new Intent(NavigationActivity.this, BackgroundFusedLocation.class));
+//            }
         }
         return true;
     }
@@ -208,9 +205,9 @@ public class NavigationActivity extends AppCompatActivity
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                if (String.valueOf(realm.where(ResumeMap.class).findFirst()).equals("null")) {
-                    startService(new Intent(NavigationActivity.this, BackgroundFusedLocation.class));
-                }
+//                if (String.valueOf(realm.where(ResumeMap.class).findFirst()).equals("null")) {
+//                    startService(new Intent(NavigationActivity.this, BackgroundFusedLocation.class));
+//                }
                 Log.v("VUCABSDRIVER", "PERMISSION Granted");
             } else {
                 final MaterialStyledDialog.Builder dialogHeader_1 = new MaterialStyledDialog.Builder(NavigationActivity.this)
@@ -242,7 +239,7 @@ public class NavigationActivity extends AppCompatActivity
     protected void onDestroy() {
         presenter.detachView();
         realm.close();
-        this.stopService(new Intent(NavigationActivity.this, BackgroundFusedLocation.class));
+//        this.stopService(new Intent(NavigationActivity.this, BackgroundFusedLocation.class));
         super.onDestroy();
     }
 
@@ -291,7 +288,7 @@ public class NavigationActivity extends AppCompatActivity
                 break;
             case R.id.nav_logout:
                 sessionManager.setLogin(false);
-                stopService(new Intent(NavigationActivity.this, BackgroundFusedLocation.class));
+//                stopService(new Intent(NavigationActivity.this, BackgroundFusedLocation.class));
                 realm.beginTransaction();
                 realm.deleteAll();
                 realm.commitTransaction();
@@ -459,8 +456,8 @@ public class NavigationActivity extends AppCompatActivity
         if (requestCode == REQUEST_CHECK_SETTINGS) {
             switch (resultCode) {
                 case RESULT_OK: {
-                    MyDutyFragment fragment = (MyDutyFragment) getSupportFragmentManager().findFragmentByTag(getString(R.string.myduty));
-                    fragment.startService();
+//                    MyDutyFragment fragment = (MyDutyFragment) getSupportFragmentManager().findFragmentByTag(getString(R.string.myduty));
+//                    fragment.startService();
                     Log.v("VUCABSDRIVER", "REQUEST OK");
                     break;
                 }

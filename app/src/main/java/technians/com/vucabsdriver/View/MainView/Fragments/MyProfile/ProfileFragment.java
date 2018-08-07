@@ -62,10 +62,6 @@ public class ProfileFragment extends Fragment {
         realm= Realm.getInstance(realmController1.initializeDB());
         helper=new RealmHelper(realm);
 
-
-//        Realm.init(getActivity());
-//        realm = RealmController.getInstance().getRealm();
-//        realm = Realm.getDefaultInstance();
         getUserProfile();
 
         return view;
