@@ -33,7 +33,7 @@ import static technians.com.vucabsdriver.View.MainView.ContainerActivity.Navigat
 
 public class GPSActivity extends AppCompatActivity {
 
-    private static final String REQUESTING_LOCATION_UPDATES_KEY ="RequestLocation" ;
+    private static final String REQUESTING_LOCATION_UPDATES_KEY = "RequestLocation";
     String TAG = "VUCABSDRIVER";
     LocationRequest mLocationRequest;
     private boolean mRequestingLocationUpdates = true;
@@ -52,6 +52,22 @@ public class GPSActivity extends AppCompatActivity {
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         checkgpsstatus();
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        mFusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                Log.v(TAG,"Location: "+location);
+            }
+        });
         mLocationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
@@ -63,8 +79,6 @@ public class GPSActivity extends AppCompatActivity {
                     Log.v(TAG,"onLocationResult: "+location);
                 }
             }
-
-            ;
         };
 
     }
@@ -171,8 +185,8 @@ public class GPSActivity extends AppCompatActivity {
                     break;
                 }
                 case RESULT_CANCELED: {
-                    Toast.makeText(this, "Cancelled", Toast.LENGTH_SHORT).show();
-                    Log.v(TAG, "REQUEST CAncel");
+//                    Toast.makeText(this, "Cancelled", Toast.LENGTH_SHORT).show();
+//                    Log.v(TAG, "REQUEST CAncel");
 //                    finishAffinity();
                     break;
                 }

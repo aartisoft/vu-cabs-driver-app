@@ -35,9 +35,11 @@ import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -64,6 +66,7 @@ import static technians.com.vucabsdriver.View.MainView.Fragments.MyDuty.MyDutyFr
 
 public class NavigationActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, NavigationMVPView {
+    String TAG = "NavigationActivity123";
     private TextView DriverName, DriverEmail;
     private Realm realm;
     private NavigationPresenter presenter;
@@ -107,13 +110,17 @@ public class NavigationActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.getMenu().getItem(0).setChecked(true);
         sessionManager.setCurrentFragment(R.id.nav_myduty);
+        checkPermission();
 //        if (checkPermission()) {
-//            Log.v("VUCABSDRIVER", "checkPermission: true");
+//            checkgpsstatus();
+//        }
+//        if (checkPermission()) {
+//            Log.v(TAG, "checkPermission: true");
 //            manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 //            if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
 //                checkgpsstatus();
 //            } else {
-//                Log.v("VUCABSDRIVER", "checkPermission: else");
+//                Log.v(TAG, "checkPermission: else");
 ////                startService(new Intent(NavigationActivity.this, BackgroundFusedLocation.class));
 //                if (!String.valueOf(realm.where(ResumeMap.class).findFirst()).equals("null")) {
 //                    ResumeMap resumeMap = realm.where(ResumeMap.class).findFirst();
@@ -139,13 +146,19 @@ public class NavigationActivity extends AppCompatActivity
         SettingsClient client = LocationServices.getSettingsClient(NavigationActivity.this);
         client
                 .checkLocationSettings(mLocationSettingsRequest)
+                .addOnSuccessListener(this, new OnSuccessListener<LocationSettingsResponse>() {
+                    @Override
+                    public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
+                        startLocationUpdates();
+                    }
+                })
                 .addOnFailureListener(this, new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         int statusCode = ((ApiException) e).getStatusCode();
                         switch (statusCode) {
                             case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                                Log.v("VUCABSDRIVER", "Location settings are not satisfied. Attempting to upgrade " +
+                                Log.v(TAG, "Location settings are not satisfied. Attempting to upgrade " +
                                         "location settings ");
                                 try {
                                     // Show the dialog by calling startResolutionForResult(), and check the
@@ -153,7 +166,7 @@ public class NavigationActivity extends AppCompatActivity
                                     ResolvableApiException rae = (ResolvableApiException) e;
                                     rae.startResolutionForResult(NavigationActivity.this, REQUEST_CHECK_SETTINGS);
                                 } catch (IntentSender.SendIntentException sie) {
-                                    Log.v("VUCABSDRIVER", "PendingIntent unable to execute request.");
+                                    Log.v(TAG, "PendingIntent unable to execute request.");
                                 }
                                 break;
                             case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
@@ -165,6 +178,10 @@ public class NavigationActivity extends AppCompatActivity
 
                     }
                 });
+    }
+
+    private void startLocationUpdates() {
+        Log.v(TAG, "startLocationUpdates()");
     }
 
 
@@ -184,31 +201,26 @@ public class NavigationActivity extends AppCompatActivity
 
     }
 
-    public boolean checkPermission() {
-        Log.v("VUCABSDRIVER", "checkPermission");
+    public void checkPermission() {
         if (Build.VERSION.SDK_INT >= 23) {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                     ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+            } else {
+                checkgpsstatus();
             }
-        }else {
-//            if (String.valueOf(realm.where(ResumeMap.class).findFirst()).equals("null")) {
-//                startService(new Intent(NavigationActivity.this, BackgroundFusedLocation.class));
-//            }
+        } else {
+            checkgpsstatus();
         }
-        return true;
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        Log.v("VUCABSDRIVER", "onRequestPermissionsResult");
+        Log.v(TAG, "onRequestPermissionsResult");
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                if (String.valueOf(realm.where(ResumeMap.class).findFirst()).equals("null")) {
-//                    startService(new Intent(NavigationActivity.this, BackgroundFusedLocation.class));
-//                }
-                Log.v("VUCABSDRIVER", "PERMISSION Granted");
+                checkgpsstatus();
             } else {
                 final MaterialStyledDialog.Builder dialogHeader_1 = new MaterialStyledDialog.Builder(NavigationActivity.this)
                         .setIcon(R.drawable.ic_if_setting)
@@ -345,7 +357,7 @@ public class NavigationActivity extends AppCompatActivity
 
     @Override
     public void setProfileData() {
-        Log.v("VUCABSDRIVER", "setProfileData");
+        Log.v(TAG, "setProfileData");
         try {
             profile = realm.where(Profile.class).findFirst();
             DriverName.setText(profile.getName().toUpperCase());
@@ -456,15 +468,14 @@ public class NavigationActivity extends AppCompatActivity
         if (requestCode == REQUEST_CHECK_SETTINGS) {
             switch (resultCode) {
                 case RESULT_OK: {
+                    startLocationUpdates();
 //                    MyDutyFragment fragment = (MyDutyFragment) getSupportFragmentManager().findFragmentByTag(getString(R.string.myduty));
 //                    fragment.startService();
-                    Log.v("VUCABSDRIVER", "REQUEST OK");
                     break;
                 }
                 case RESULT_CANCELED: {
                     Toast.makeText(this, "Cancelled", Toast.LENGTH_SHORT).show();
-                    Log.v("VUCABSDRIVER", "REQUEST CAncel");
-//                    finishAffinity();
+                    finishAffinity();
                     break;
                 }
             }

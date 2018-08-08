@@ -10,6 +10,7 @@ import java.util.Date;
  */
 
 public class SessionManager {
+    private static final String KEY_REQUEST_UPDATES ="request_updates" ;
     private static String TAG = SessionManager.class.getSimpleName();
 
     // Shared Preferences
@@ -65,6 +66,11 @@ public class SessionManager {
 
     public void setDriverStatus(int driverStatus) {
         editor.putInt(KEY_DRIVER_STATUS, driverStatus);
+        // commit changes
+        editor.commit();
+    }
+    public void setRequestUpdates(Boolean requestUpdates) {
+        editor.putBoolean(KEY_REQUEST_UPDATES, requestUpdates);
         // commit changes
         editor.commit();
     }
@@ -136,5 +142,8 @@ public class SessionManager {
     }
     public int getPassesCount() {
         return pref.getInt(KEY_PASSES_COUNT, -1);
+    }
+    public Boolean getRequestUpdateStatus() {
+        return pref.getBoolean(KEY_REQUEST_UPDATES, true);
     }
 }

@@ -112,7 +112,8 @@
 //
 //                DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
 //                connectedRef.addValueEventListener(new ValueEventListener() {
-//                    @Override
+//
+//           @Override
 //                    public void onDataChange(@NonNull DataSnapshot snapshot) {
 //                        Log.v(TAG, "onDataChange");
 //                        boolean connected = snapshot.getValue(Boolean.class);

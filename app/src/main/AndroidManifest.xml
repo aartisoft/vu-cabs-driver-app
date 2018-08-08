@@ -36,7 +36,11 @@
         <!-- android:value=".MainActivity" /> -->
         <!-- </activity> -->
         <activity android:name=".SplashScreenActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <!-- <activity android:name=".DashboardItems.DriverDuty.BookingOtpActivity"> -->
         <!-- <meta-data -->
@@ -49,7 +53,7 @@
         <!-- android:value=".MainActivity" /> -->
         <!-- </activity> -->
 
-        <service android:name=".BackgroundFusedLocation" />
+        <!--<service android:name=".BackgroundFusedLocation" />-->
 
         <activity android:name=".View.Login.LoginWithPhone.LoginWithPhoneActivity" />
         <activity android:name=".View.Login.LoginWithOTP.LoginWithOTPActivity" />
@@ -119,11 +123,7 @@
         </service>
 
         <activity android:name=".GPSActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
     </application>
 
