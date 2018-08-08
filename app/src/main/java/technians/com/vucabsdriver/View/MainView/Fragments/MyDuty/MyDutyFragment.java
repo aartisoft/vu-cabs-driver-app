@@ -211,55 +211,55 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
     }
 
     private void updateFireBaseData(Location location) {
+        if (isAdded()) {
+            String DriverId = String.valueOf(profile.getDriver_ID());
+            String Address = getLocationAddress(location.getLatitude(), location.getLongitude(), getActivity());
+            Date currenttime = Calendar.getInstance().getTime();
+            SimpleDateFormat formatter = new SimpleDateFormat("dd.MMM.yyyy hh:mm aaa");
+            String updatedat = formatter.format(currenttime);
 
-        String DriverId = String.valueOf(profile.getDriver_ID());
-        String Address = getLocationAddress(location.getLatitude(), location.getLongitude(), getActivity());
-        Date currenttime = Calendar.getInstance().getTime();
-        SimpleDateFormat formatter = new SimpleDateFormat("dd.MMM.yyyy hh:mm aaa");
-        String updatedat = formatter.format(currenttime);
+            CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(new LatLng(location.getLatitude(), location.getLongitude()))
+                    .zoom(17)
+                    .build();
 
-        CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(new LatLng(location.getLatitude(), location.getLongitude()))
-                .zoom(17)
-                .build();
+            addOverlay(new LatLng(location.getLatitude(), location.getLongitude()));
+            mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
-        addOverlay(new LatLng(location.getLatitude(), location.getLongitude()));
-        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+            MarkerOptions markerOpt = new MarkerOptions();
+            markerOpt.position(new LatLng(location.getLatitude(), location.getLongitude()))
+                    .snippet(Address)
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
 
-        MarkerOptions markerOpt = new MarkerOptions();
-        markerOpt.position(new LatLng(location.getLatitude(), location.getLongitude()))
-                .snippet(Address)
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+            info.setLast_updated(updatedat);
 
-        info.setLast_updated(updatedat);
+            CustomInfoWindowGoogleMap customInfoWindow = new CustomInfoWindowGoogleMap(getActivity());
+            mMap.setInfoWindowAdapter(customInfoWindow);
 
-        CustomInfoWindowGoogleMap customInfoWindow = new CustomInfoWindowGoogleMap(getActivity());
-        mMap.setInfoWindowAdapter(customInfoWindow);
+            Marker marker = mMap.addMarker(markerOpt);
+            marker.setTag(info);
+            marker.showInfoWindow();
+            DriverCurrentLocation driverLocation = new DriverCurrentLocation(Address, updatedat, profile.getCar_Type(),
+                    profile.getDriver_ID(), sessionManager.getDriverStatus(), location.getLatitude(),
+                    location.getLongitude(), profile.getCar_Seat(), profile.getName(), profile.getMobileNumber(),
+                    profile.getProfileURL(), profile.getCar_Name(), profile.getCar_Number(), profile.getCarURL(), sessionManager.getPassesCount());
+            mDatabase.child("driver_current_location")
+                    .child(DriverId)
+                    .setValue(driverLocation);
 
-        Marker marker = mMap.addMarker(markerOpt);
-        marker.setTag(info);
-        marker.showInfoWindow();
-
-        DriverCurrentLocation driverLocation = new DriverCurrentLocation(Address, updatedat, profile.getCar_Type(),
-                profile.getDriver_ID(), sessionManager.getDriverStatus(), location.getLatitude(),
-                location.getLongitude(), profile.getCar_Seat(), profile.getName(), profile.getMobileNumber(),
-                profile.getProfileURL(), profile.getCar_Name(), profile.getCar_Number(), profile.getCarURL(), sessionManager.getPassesCount());
-        mDatabase.child("driver_current_location")
-                .child(DriverId)
-                .setValue(driverLocation);
-
-        geoFire.setLocation(DriverId, new GeoLocation(location.getLatitude(), location.getLongitude()), new GeoFire.CompletionListener() {
-            //            @Override
-            public void onComplete(String key, DatabaseError error) {
-                if (error != null) {
-                    Log.v("GeoQuery", "onComplete There was an error saving the location to GeoFire: " + error);
-                } else {
-                    Log.v("GeoQuery", "onComplete Location saved on server successfully!");
+            geoFire.setLocation(DriverId, new GeoLocation(location.getLatitude(), location.getLongitude()), new GeoFire.CompletionListener() {
+                //            @Override
+                public void onComplete(String key, DatabaseError error) {
+                    if (error != null) {
+                        Log.v("GeoQuery", "onComplete There was an error saving the location to GeoFire: " + error);
+                    } else {
+                        Log.v("GeoQuery", "onComplete Location saved on server successfully!");
+                    }
                 }
+            });
+            if (sessionManager.getDriverStatus() == -1) {
+                presenter.loadpendingrequest();
             }
-        });
-        if (sessionManager.getDriverStatus() == -1) {
-            presenter.loadpendingrequest();
         }
     }
 
@@ -488,15 +488,16 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
     }
 
     public void addOverlay(LatLng place) {
+        if (isAdded()) {
+            GroundOverlay groundOverlay = mMap.addGroundOverlay(new
+                    GroundOverlayOptions()
+                    .position(place, 100)
+                    .transparency(0.5f)
+                    .zIndex(3)
+                    .image(BitmapDescriptorFactory.fromBitmap(drawableToBitmap(getResources().getDrawable(R.drawable.map_overlay)))));
 
-        GroundOverlay groundOverlay = mMap.addGroundOverlay(new
-                GroundOverlayOptions()
-                .position(place, 100)
-                .transparency(0.5f)
-                .zIndex(3)
-                .image(BitmapDescriptorFactory.fromBitmap(drawableToBitmap(getResources().getDrawable(R.drawable.map_overlay)))));
-
-        startOverlayAnimation(groundOverlay);
+            startOverlayAnimation(groundOverlay);
+        }
     }
 
 
