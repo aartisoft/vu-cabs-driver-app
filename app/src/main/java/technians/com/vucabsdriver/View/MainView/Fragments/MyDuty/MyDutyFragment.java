@@ -36,10 +36,12 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.GroundOverlay;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
@@ -215,6 +217,28 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
         Date currenttime = Calendar.getInstance().getTime();
         SimpleDateFormat formatter = new SimpleDateFormat("dd.MMM.yyyy hh:mm aaa");
         String updatedat = formatter.format(currenttime);
+
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(new LatLng(location.getLatitude(), location.getLongitude()))
+                .zoom(17)
+                .build();
+
+        addOverlay(new LatLng(location.getLatitude(), location.getLongitude()));
+        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+        MarkerOptions markerOpt = new MarkerOptions();
+        markerOpt.position(new LatLng(location.getLatitude(), location.getLongitude()))
+                .snippet(Address)
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+
+        info.setLast_updated(updatedat);
+
+        CustomInfoWindowGoogleMap customInfoWindow = new CustomInfoWindowGoogleMap(getActivity());
+        mMap.setInfoWindowAdapter(customInfoWindow);
+
+        Marker marker = mMap.addMarker(markerOpt);
+        marker.setTag(info);
+        marker.showInfoWindow();
 
         DriverCurrentLocation driverLocation = new DriverCurrentLocation(Address, updatedat, profile.getCar_Type(),
                 profile.getDriver_ID(), sessionManager.getDriverStatus(), location.getLatitude(),
