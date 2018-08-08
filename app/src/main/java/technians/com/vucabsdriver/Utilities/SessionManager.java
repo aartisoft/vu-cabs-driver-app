@@ -3,8 +3,6 @@ package technians.com.vucabsdriver.Utilities;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import java.util.Date;
-
 /**
  * Created by vineet on 9/25/2017.
  */
@@ -144,6 +142,6 @@ public class SessionManager {
         return pref.getInt(KEY_PASSES_COUNT, -1);
     }
     public Boolean getRequestUpdateStatus() {
-        return pref.getBoolean(KEY_REQUEST_UPDATES, true);
+        return pref.getBoolean(KEY_REQUEST_UPDATES, false);
     }
 }

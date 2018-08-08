@@ -3,11 +3,7 @@ package technians.com.vucabsdriver.View.MainView.Fragments.MyDuty;
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -35,37 +31,24 @@ import android.widget.Toast;
 
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.LocationSettingsResponse;
-import com.google.android.gms.location.LocationSettingsStatusCodes;
-import com.google.android.gms.location.SettingsClient;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.GroundOverlay;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.messaging.FirebaseMessagingService;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -75,8 +58,6 @@ import io.realm.Realm;
 import technians.com.vucabsdriver.CustomInfoWindow.CustomInfoWindowGoogleMap;
 import technians.com.vucabsdriver.CustomInfoWindow.InfoWindowData;
 import technians.com.vucabsdriver.CustomToggleButton.CustomToggleButton;
-import technians.com.vucabsdriver.FirebaseService.MyFirebaseMessagingService;
-import technians.com.vucabsdriver.GPSActivity;
 import technians.com.vucabsdriver.Model.DriverLocationPackage.DriverCurrentLocation;
 import technians.com.vucabsdriver.Model.DriverLocationPackage.DriverLocation;
 import technians.com.vucabsdriver.Model.DriverLocationPackage.ResumeMap;
@@ -90,7 +71,6 @@ import technians.com.vucabsdriver.View.MainView.BookingOTP.OTPBookingActivity;
 
 import static technians.com.vucabsdriver.Utilities.Constants.formateDateFromstring;
 import static technians.com.vucabsdriver.Utilities.Constants.getLocationAddress;
-import static technians.com.vucabsdriver.View.MainView.ContainerActivity.NavigationActivity.REQUEST_CHECK_SETTINGS;
 
 
 public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View.OnClickListener, MyDutyMVPView {
@@ -217,7 +197,9 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
                 for (Location location : locationResult.getLocations()) {
                     // Update UI with location data
                     Log.v(TAG, "onLocation" + "Result: " + location);
-                    updateFireBaseData(location);
+                    if (location.getAccuracy() < 100.0 && location.getSpeed() < 6.95) {
+                        updateFireBaseData(location);
+                    }
                 }
             }
         };
@@ -238,7 +220,7 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
                 profile.getDriver_ID(), sessionManager.getDriverStatus(), location.getLatitude(),
                 location.getLongitude(), profile.getCar_Seat(), profile.getName(), profile.getMobileNumber(),
                 profile.getProfileURL(), profile.getCar_Name(), profile.getCar_Number(), profile.getCarURL(), sessionManager.getPassesCount());
-        mDatabase.child(getString(R.string.firebasenode))
+        mDatabase.child("driver_current_location")
                 .child(DriverId)
                 .setValue(driverLocation);
 
@@ -288,6 +270,7 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
         Log.v(TAG, "onResume: " + mRequestingLocationUpdates);
         if (mRequestingLocationUpdates) {
             startLocationUpdates();
+            customToggleButton.setChecked(true);
         } else {
             customToggleButton.setChecked(false);
         }
@@ -334,7 +317,7 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
 //
     }
 
-    private void startLocationUpdates() {
+    public void startLocationUpdates() {
         Log.v(TAG, "startLocationUpdates: " + mRequestingLocationUpdates);
         if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -361,6 +344,17 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
 
     private void stopLocationUpdates() {
         Log.v(TAG, "stopLocationUpdates");
+        if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
         mFusedLocationClient.removeLocationUpdates(mLocationCallback);
     }
 
@@ -616,7 +610,7 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
 
     @Override
     public void updatestatus(final int i) {
-        mDatabase.child(getString(R.string.firebasenode))
+        mDatabase.child("driver_current_location")
                 .child(String.valueOf(profile.getDriver_ID())).child("status").setValue(i);
     }
 }

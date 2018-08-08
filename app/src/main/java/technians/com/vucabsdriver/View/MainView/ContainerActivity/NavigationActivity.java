@@ -48,7 +48,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import io.realm.Realm;
-import technians.com.vucabsdriver.Model.DriverLocationPackage.ResumeMap;
 import technians.com.vucabsdriver.Model.Profile.Profile;
 import technians.com.vucabsdriver.R;
 import technians.com.vucabsdriver.RealmController1;
@@ -149,6 +148,7 @@ public class NavigationActivity extends AppCompatActivity
                 .addOnSuccessListener(this, new OnSuccessListener<LocationSettingsResponse>() {
                     @Override
                     public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
+                        sessionManager.setRequestUpdates(true);
                         startLocationUpdates();
                     }
                 })
@@ -181,7 +181,8 @@ public class NavigationActivity extends AppCompatActivity
     }
 
     private void startLocationUpdates() {
-        Log.v(TAG, "startLocationUpdates()");
+        MyDutyFragment fragment = (MyDutyFragment) getSupportFragmentManager().findFragmentByTag(getString(R.string.myduty));
+                    fragment.startLocationUpdates();
     }
 
 
@@ -468,6 +469,7 @@ public class NavigationActivity extends AppCompatActivity
         if (requestCode == REQUEST_CHECK_SETTINGS) {
             switch (resultCode) {
                 case RESULT_OK: {
+                    sessionManager.setRequestUpdates(true);
                     startLocationUpdates();
 //                    MyDutyFragment fragment = (MyDutyFragment) getSupportFragmentManager().findFragmentByTag(getString(R.string.myduty));
 //                    fragment.startService();
