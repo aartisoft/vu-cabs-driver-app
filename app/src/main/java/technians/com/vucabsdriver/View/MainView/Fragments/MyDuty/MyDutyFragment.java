@@ -3,7 +3,10 @@ package technians.com.vucabsdriver.View.MainView.Fragments.MyDuty;
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -48,9 +51,11 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -60,15 +65,18 @@ import io.realm.Realm;
 import technians.com.vucabsdriver.CustomInfoWindow.CustomInfoWindowGoogleMap;
 import technians.com.vucabsdriver.CustomInfoWindow.InfoWindowData;
 import technians.com.vucabsdriver.CustomToggleButton.CustomToggleButton;
+import technians.com.vucabsdriver.FirebaseService.MyFirebaseMessagingService;
 import technians.com.vucabsdriver.Model.DriverLocationPackage.DriverCurrentLocation;
 import technians.com.vucabsdriver.Model.DriverLocationPackage.DriverLocation;
 import technians.com.vucabsdriver.Model.DriverLocationPackage.ResumeMap;
 import technians.com.vucabsdriver.Model.PendingRequest.BookingData;
 import technians.com.vucabsdriver.Model.Profile.Profile;
+import technians.com.vucabsdriver.OnClearFromRecentService;
 import technians.com.vucabsdriver.R;
 import technians.com.vucabsdriver.RealmController1;
 import technians.com.vucabsdriver.Utilities.Constants;
 import technians.com.vucabsdriver.Utilities.SessionManager;
+import technians.com.vucabsdriver.View.MainView.AssingedBooking.BookingAssingedActivity;
 import technians.com.vucabsdriver.View.MainView.BookingOTP.OTPBookingActivity;
 
 import static technians.com.vucabsdriver.Utilities.Constants.formateDateFromstring;
@@ -106,13 +114,13 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
 
     DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     private GeoFire geoFire;
-    Profile profile;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_my_duty, container, false);
+        getActivity().startService(new Intent(getActivity(), OnClearFromRecentService.class));
         sessionManager = new SessionManager(getActivity());
         mRequestingLocationUpdates = sessionManager.getRequestUpdateStatus();
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
@@ -123,7 +131,7 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
         presenter.attachView(this);
         RealmController1 realmController1 = new RealmController1(getContext());
         realm = Realm.getInstance(realmController1.initializeDB());
-        profile = realm.where(Profile.class).findFirst();
+
         mapFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -142,9 +150,11 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
         btn_PickCustomer.setOnClickListener(this);
         btn_starttrip.setOnClickListener(this);
 
-//        getActivity().registerReceiver(broadcastReceiver, new IntentFilter(BackgroundFusedLocation.BROADCAST_ACTION));
-//
-//        getActivity().registerReceiver(broadcastReceiver_pendingRequest, new IntentFilter(MyFirebaseMessagingService.BROADCAST_ACTION));
+        if (sessionManager.getAssingedStatus()) {
+            btn_starttrip.setText("Continue Trip");
+        } else {
+            btn_starttrip.setText("Start Trip");
+        }
 
         customToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -153,15 +163,9 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
                 if (isChecked) {
                     sessionManager.setRequestUpdates(true);
                     startLocationUpdates();
-//                    startService();
-//                    changedriverstatus(true);
-//                    Toast.makeText(getActivity(), getString(R.string.online), Toast.LENGTH_LONG).show();
                 } else {
                     sessionManager.setRequestUpdates(false);
                     stopLocationUpdates();
-//                    stopService();
-//                    changedriverstatus(false);
-//                    Toast.makeText(getActivity(), getString(R.string.offline), Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -177,13 +181,7 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
             // for ActivityCompat#requestPermissions for more details.
             return view;
         }
-//        mFusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
-//            @Override
-//            public void onSuccess(Location location) {
-//                if (loca)
-//                Log.v(TAG,"Location: "+location);
-//            }
-//        });
+
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(10000);
         mLocationRequest.setFastestInterval(5000);
@@ -207,23 +205,47 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
         };
 
         presenter.loadpendingrequest();
+        mDatabase.child("driver_current_location").child(String.valueOf(sessionManager.getDriverId())).child("status")
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        Log.v(TAG, "onDataChange: " + dataSnapshot);
+                        if (dataSnapshot.getValue() != null) {
+                            int status = Integer.parseInt(dataSnapshot.getValue().toString());
+                            sessionManager.setDriverStatus(status);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
         return view;
     }
 
+
     private void updateFireBaseData(Location location) {
         if (isAdded()) {
-            String DriverId = String.valueOf(profile.getDriver_ID());
+            if (!customToggleButton.isChecked()) {
+                customToggleButton.setChecked(true);
+            }
+            String DriverId = String.valueOf(sessionManager.getDriverId());
             String Address = getLocationAddress(location.getLatitude(), location.getLongitude(), getActivity());
             Date currenttime = Calendar.getInstance().getTime();
             SimpleDateFormat formatter = new SimpleDateFormat("dd.MMM.yyyy hh:mm aaa");
+            SimpleDateFormat formatter2 = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             String updatedat = formatter.format(currenttime);
+            String updatedat2 = formatter2.format(currenttime);
+            Profile profile = realm.where(Profile.class).findFirst();
 
+            mMap.clear();
             CameraPosition cameraPosition = new CameraPosition.Builder()
                     .target(new LatLng(location.getLatitude(), location.getLongitude()))
                     .zoom(17)
                     .build();
 
-            addOverlay(new LatLng(location.getLatitude(), location.getLongitude()));
+
             mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
             MarkerOptions markerOpt = new MarkerOptions();
@@ -236,13 +258,19 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
             CustomInfoWindowGoogleMap customInfoWindow = new CustomInfoWindowGoogleMap(getActivity());
             mMap.setInfoWindowAdapter(customInfoWindow);
 
+
             Marker marker = mMap.addMarker(markerOpt);
             marker.setTag(info);
             marker.showInfoWindow();
-            DriverCurrentLocation driverLocation = new DriverCurrentLocation(Address, updatedat, profile.getCar_Type(),
-                    profile.getDriver_ID(), sessionManager.getDriverStatus(), location.getLatitude(),
+            addOverlay(new LatLng(location.getLatitude(), location.getLongitude()));
+            DriverCurrentLocation driverLocation = new DriverCurrentLocation(Address, updatedat2, profile.getCar_Type(),
+                    sessionManager.getDriverId(), sessionManager.getDriverStatus(), location.getLatitude(),
                     location.getLongitude(), profile.getCar_Seat(), profile.getName(), profile.getMobileNumber(),
                     profile.getProfileURL(), profile.getCar_Name(), profile.getCar_Number(), profile.getCarURL(), sessionManager.getPassesCount());
+            realm.beginTransaction();
+            realm.copyToRealmOrUpdate(new DriverLocation(1, location.getLatitude(), location.getLongitude()));
+            realm.commitTransaction();
+
             mDatabase.child("driver_current_location")
                     .child(DriverId)
                     .setValue(driverLocation);
@@ -260,18 +288,6 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
             if (sessionManager.getDriverStatus() == -1) {
                 presenter.loadpendingrequest();
             }
-        }
-    }
-
-    private void changedriverstatus(Boolean status) {
-        try {
-            if (!String.valueOf(realm.where(ResumeMap.class).findFirst()).equals("null")) {
-                realm.beginTransaction();
-                realm.where(ResumeMap.class).findFirst().setDriverStatus(status);
-                realm.commitTransaction();
-            }
-        } catch (Exception e) {
-            Toast.makeText(getActivity(), getString(R.string.label_something_went_wrong), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -298,47 +314,6 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
         } else {
             customToggleButton.setChecked(false);
         }
-//        mapFragment.getMapAsync(new OnMapReadyCallback() {
-//            @Override
-//            public void onMapReady(GoogleMap googleMap) {
-//                try {
-//                    if (!String.valueOf(realm.where(ResumeMap.class).findFirst()).equals("null")) {
-//
-//                        ResumeMap resumeMap = realm.where(ResumeMap.class).findFirst();
-//                        if (resumeMap.getDriverStatus() == null) {
-//                            customToggleButton.setChecked(true);
-//                        } else {
-//                            customToggleButton.setChecked(resumeMap.getDriverStatus());
-//                        }
-////
-//                        CameraPosition cameraPosition = new CameraPosition.Builder()
-//                                .target(new LatLng(resumeMap.getLatitude(), resumeMap.getLongitude()))
-//                                .zoom(17)
-//                                .build();
-//
-//                        addOverlay(new LatLng(resumeMap.getLatitude(), resumeMap.getLongitude()));
-//                        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-//                        MarkerOptions markerOpt = new MarkerOptions();
-//                        markerOpt.position(new LatLng(resumeMap.getLatitude(), resumeMap.getLongitude()))
-//                                .snippet(resumeMap.getAddress())
-//                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-//
-//                        info.setLast_updated(resumeMap.getLastupdated());
-//
-//                        CustomInfoWindowGoogleMap customInfoWindow = new CustomInfoWindowGoogleMap(getActivity());
-//                        mMap.setInfoWindowAdapter(customInfoWindow);
-//
-//                        Marker marker = mMap.addMarker(markerOpt);
-//                        marker.setTag(info);
-//                        marker.showInfoWindow();
-//                    }
-//                } catch (Exception e) {
-//                    Toast.makeText(getActivity(), getString(R.string.label_something_went_wrong), Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        });
-
-//
     }
 
     public void startLocationUpdates() {
@@ -359,14 +334,30 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
                 Looper.myLooper());
     }
 
-//    @Override
-//    public void onSaveInstanceState(Bundle outState) {
-//        outState.putBoolean(REQUESTING_LOCATION_UPDATES_KEY,
-//                mRequestingLocationUpdates);
-//        super.onSaveInstanceState(outState);
-//    }
 
-    private void stopLocationUpdates() {
+    @Override
+    public void onStart() {
+        getActivity().registerReceiver(broadcastReceiver_pendingRequest,
+                new IntentFilter(MyFirebaseMessagingService.BROADCAST_ACTION));
+        super.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        Log.v(TAG, "onStop");
+        getActivity().unregisterReceiver(broadcastReceiver_pendingRequest);
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroyView() {
+
+        realm.close();
+        presenter.detachView();
+        super.onDestroyView();
+    }
+
+    public void stopLocationUpdates() {
         Log.v(TAG, "stopLocationUpdates");
         if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -379,91 +370,22 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
+        Log.v(TAG, "fused: " + mFusedLocationClient);
+        Log.v(TAG, "fused: " + sessionManager.getDriverStatus());
         mFusedLocationClient.removeLocationUpdates(mLocationCallback);
-    }
-
-//    private void updateValuesFromBundle(Bundle savedInstanceState) {
-//        Log.v(TAG, "updatesValuesFromBundle: "+mRequestingLocationUpdates);
-//        if (savedInstanceState == null) {
-//            return;
-//        }
-//
-//        // Update the value of mRequestingLocationUpdates from the Bundle.
-//        if (savedInstanceState.keySet().contains(REQUESTING_LOCATION_UPDATES_KEY)) {
-//            mRequestingLocationUpdates = savedInstanceState.getBoolean(REQUESTING_LOCATION_UPDATES_KEY);
-//            Log.v(TAG, "updatesValuesFromBundle: "+mRequestingLocationUpdates);
-//        }
-//
-//    }
-
-//    public void startService() {
-//        getActivity().getApplicationContext().startService(new Intent(getActivity(), BackgroundFusedLocation.class));
-//
-//    }
-//
-//    public void stopService() {
-//        getActivity().getApplicationContext().stopService(new Intent(getActivity(), BackgroundFusedLocation.class));
-//
-//    }
-//
-//    BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-//        @Override
-//        public void onReceive(Context context, Intent intent) {
-//            try {
-//                mMap.clear();
-//                Location location = intent.getParcelableExtra("Location");
-//                DriverCurrentLocation driverLocation = (DriverCurrentLocation) intent.getSerializableExtra("DriverLocation");
-//                userLocation = location;
-//
-//                realm.beginTransaction();
-//                realm.copyToRealmOrUpdate(new DriverLocation(1, location.getLatitude(), location.getLongitude()));
-//                realm.commitTransaction();
-//
-//                CameraPosition cameraPosition = new CameraPosition.Builder()
-//                        .target(new LatLng(userLocation.getLatitude(), userLocation.getLongitude()))
-//                        .zoom(17)
-//                        .build();
-//
-//                addOverlay(new LatLng(userLocation.getLatitude(), userLocation.getLongitude()));
-//                mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-//                addMarker(driverLocation);
-//                ResumeMap resumeMap = new ResumeMap(1, driverLocation.getAddress(), driverLocation.getUpdated_at(), true,
-//                        location.getLatitude(), location.getLongitude());
-//                realm.beginTransaction();
-//                realm.copyToRealmOrUpdate(resumeMap);
-//                realm.commitTransaction();
-//            } catch (Exception e) {
-//                Toast.makeText(getActivity(), getString(R.string.label_something_went_wrong), Toast.LENGTH_SHORT).show();
-//            }
-//        }
-//    };
-
-    //    BroadcastReceiver broadcastReceiver_pendingRequest = new BroadcastReceiver() {
-//        @Override
-//        public void onReceive(Context context, Intent intent) {
-//            presenter.loadpendingrequest();
-//        }
-//    };
-    private void addMarker(DriverCurrentLocation driverLocation) {
-        try {
-            MarkerOptions markerOpt = new MarkerOptions();
-            markerOpt.position(new LatLng(userLocation.getLatitude(), userLocation.getLongitude()))
-                    .snippet(driverLocation.getAddress())
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-
-            info.setLast_updated(driverLocation.getUpdated_at());
-//        info.setStatus(DriverStatus);
-
-            CustomInfoWindowGoogleMap customInfoWindow = new CustomInfoWindowGoogleMap(getActivity());
-            mMap.setInfoWindowAdapter(customInfoWindow);
-
-            Marker marker = mMap.addMarker(markerOpt);
-            marker.setTag(info);
-            marker.showInfoWindow();
-        } catch (Exception e) {
-            Toast.makeText(getActivity(), getString(R.string.label_something_went_wrong), Toast.LENGTH_SHORT).show();
+        if (sessionManager.getDriverStatus() == 1) {
+            mDatabase.child("driver_current_location").child(String.valueOf(sessionManager.getDriverId())).removeValue();
+            mDatabase.child("geofire").child(String.valueOf(sessionManager.getDriverId())).removeValue();
         }
     }
+
+
+    BroadcastReceiver broadcastReceiver_pendingRequest = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            presenter.loadpendingrequest();
+        }
+    };
 
     private Bitmap drawableToBitmap(Drawable drawable) {
         Bitmap bitmap = null;
@@ -545,15 +467,6 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
 
 
     @Override
-    public void onDestroyView() {
-        realm.close();
-        presenter.detachView();
-//        getActivity().unregisterReceiver(broadcastReceiver);
-        super.onDestroyView();
-    }
-
-
-    @Override
     public SessionManager getSession() {
         return sessionManager;
     }
@@ -599,9 +512,15 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
                 break;
             }
             case R.id.fragment_myduty_btn_starttrip: {
-                startActivity(new Intent(getActivity(), OTPBookingActivity.class)
-                        .putExtra("ID", bookingData.getId())
-                        .putExtra("Mobile", bookingData.getCustomer_mobile()));
+                if (!sessionManager.getAssingedStatus()) {
+                    startActivity(new Intent(getActivity(), OTPBookingActivity.class)
+                            .putExtra("ID", bookingData.getId())
+                            .putExtra("Mobile", bookingData.getCustomer_mobile()));
+
+                } else {
+                    startActivity(new Intent(getActivity(), BookingAssingedActivity.class)
+                            .putExtra("ID", new SessionManager(getActivity()).getAssingedInt()));
+                }
                 break;
             }
         }
@@ -636,7 +555,7 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
     @Override
     public void updatestatus(final int i) {
         mDatabase.child("driver_current_location")
-                .child(String.valueOf(profile.getDriver_ID())).child("status").setValue(i);
+                .child(String.valueOf(sessionManager.getDriverId())).child("status").setValue(i);
     }
 }
 

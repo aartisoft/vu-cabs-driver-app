@@ -35,12 +35,14 @@ import okhttp3.Callback;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import technians.com.vucabsdriver.AppController;
+import technians.com.vucabsdriver.Model.PassesRecharge.PassesRechargeResponce;
 import technians.com.vucabsdriver.Model.RetrofitError.NetworkError;
 import technians.com.vucabsdriver.PayUMoneyIntegrate.PayUMoneyActivity;
 import technians.com.vucabsdriver.R;
 import technians.com.vucabsdriver.Utilities.Constants;
 import technians.com.vucabsdriver.Utilities.SessionManager;
 import okhttp3.Response;
+import technians.com.vucabsdriver.rest.ApiClient;
 import technians.com.vucabsdriver.rest.ApiInterface;
 
 public class GatewayChooseActivity extends AppCompatActivity implements View.OnClickListener {
@@ -180,49 +182,31 @@ public class GatewayChooseActivity extends AppCompatActivity implements View.OnC
                         // the error occurred.
                     }
 
-				/*	@Override
-					public void onTransactionSuccess(Bundle inResponse) {
-						// After successful transaction this method gets called.
-						// // Response bundle contains the merchant response
-						// parameters.
-						Log.d("LOG", "Payment Transaction is successful " + inResponse);
-						Toast.makeText(getApplicationContext(), "Payment Transaction is successful ", Toast.LENGTH_LONG).show();
-					}
-					@Override
-					public void onTransactionFailure(String inErrorMessage,
-							Bundle inResponse) {
-						// This method gets called if transaction failed. //
-						// Here in this case transaction is completed, but with
-						// a failure. // Error Message describes the reason for
-						// failure. // Response bundle contains the merchant
-						// response parameters.
-						Log.d("LOG", "Payment Transaction Failed " + inErrorMessage);
-						Toast.makeText(getBaseContext(), "Payment Transaction Failed ", Toast.LENGTH_LONG).show();
-					}*/
 
                     @Override
                     public void onTransactionResponse(Bundle inResponse) {
                         Log.d("LOG", "Payment Transaction is successful " + inResponse);
                         Toast.makeText(getApplicationContext(), "Payment Transaction response " + inResponse.toString(), Toast.LENGTH_LONG).show();
                         if (inResponse.getString("STATUS").equalsIgnoreCase("TXN_SUCCESS")){
-                            final MaterialStyledDialog.Builder dialogHeader_1 = new MaterialStyledDialog.Builder(GatewayChooseActivity.this)
-                                    .setIcon(R.drawable.ic_check_circle_coloraccent_50_48dp)
-                                    .withDialogAnimation(true)
-                                    .withIconAnimation(true)
-                                    .setHeaderColorInt(Color.BLACK)
-                                    .setTitle(getString(R.string.rechrgesuccess))
-                                    .setDescription(getString(R.string.rechargedescription))
-                                    .setPositiveText(getString(R.string.Continue))
-                                    .onPositive(new MaterialDialog.SingleButtonCallback() {
-                                        @Override
-                                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                            dialog.dismiss();
-                                            Intent intent = new Intent();
-                                            setResult(RESULT_OK, intent);
-                                            finish();
-                                        }
-                                    });
-                            dialogHeader_1.show();
+                            AddPayment(new SessionManager(GatewayChooseActivity.this).getDriverName(),Rides,Amount);
+//                            final MaterialStyledDialog.Builder dialogHeader_1 = new MaterialStyledDialog.Builder(GatewayChooseActivity.this)
+//                                    .setIcon(R.drawable.ic_check_circle_coloraccent_50_48dp)
+//                                    .withDialogAnimation(true)
+//                                    .withIconAnimation(true)
+//                                    .setHeaderColorInt(Color.BLACK)
+//                                    .setTitle(getString(R.string.rechrgesuccess))
+//                                    .setDescription(getString(R.string.rechargedescription))
+//                                    .setPositiveText(getString(R.string.Continue))
+//                                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+//                                        @Override
+//                                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+//                                            dialog.dismiss();
+//                                            Intent intent = new Intent();
+//                                            setResult(RESULT_OK, intent);
+//                                            finish();
+//                                        }
+//                                    });
+//                            dialogHeader_1.show();
                         }else {
                             new MaterialStyledDialog.Builder(GatewayChooseActivity.this)
                                     .setIcon(R.drawable.ic_cancel_red_a700_24dp)
@@ -285,4 +269,72 @@ public class GatewayChooseActivity extends AppCompatActivity implements View.OnC
                 });
 
     }
+
+    private void AddPayment(final String Name, final int RideQuantity, final int Amount) {
+        try {
+            progressDialog.show();
+            ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
+            retrofit2.Call<PassesRechargeResponce> call = apiService.getRechargeDetails(new SessionManager(GatewayChooseActivity.this).getToken()
+                    , String.valueOf(DriverId), Name, String.valueOf(Amount), String.valueOf(RideQuantity));
+            call.enqueue(new retrofit2.Callback<PassesRechargeResponce>() {
+                @Override
+                public void onResponse(@NonNull retrofit2.Call<PassesRechargeResponce> call, @NonNull retrofit2.Response<PassesRechargeResponce> response) {
+                    progressDialog.dismiss();
+
+                    if (response.body() != null) {
+                        if (response.body().getStatus() == 200) {
+                            final MaterialStyledDialog.Builder dialogHeader_1 = new MaterialStyledDialog.Builder(GatewayChooseActivity.this)
+                                    .setIcon(R.drawable.ic_check_circle_coloraccent_50_48dp)
+                                    .withDialogAnimation(true)
+                                    .withIconAnimation(true)
+                                    .setHeaderColorInt(Color.BLACK)
+                                    .setTitle(getString(R.string.rechrgesuccess))
+                                    .setDescription(getString(R.string.rechargedescription))
+                                    .setPositiveText(getString(R.string.Continue))
+                                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                        @Override
+                                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                            dialog.dismiss();
+                                            Intent intent = new Intent();
+                                            setResult(RESULT_OK, intent);
+                                            finish();
+                                        }
+                                    });
+                            dialogHeader_1.show();
+                        } else {
+                            new MaterialStyledDialog.Builder(GatewayChooseActivity.this)
+                                    .setIcon(R.drawable.ic_cancel_red_a700_24dp)
+                                    .withDialogAnimation(true)
+                                    .withIconAnimation(true)
+                                    .setHeaderColorInt(Color.BLACK)
+                                    .setTitle(getString(R.string.rechrgefail))
+                                    .setDescription(getString(R.string.rechargefaildescription))
+                                    .setPositiveText(getString(R.string.btn_ok))
+                                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                        @Override
+                                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                            dialog.dismiss();
+                                            Intent intent = new Intent();
+                                            setResult(RESULT_OK, intent);
+                                            finish();
+                                        }
+                                    })
+                                    .show();
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull retrofit2.Call<PassesRechargeResponce> call, @NonNull Throwable t) {
+                    progressDialog.dismiss();
+                    String error = new NetworkError(t).getAppErrorMessage();
+                    Toast.makeText(GatewayChooseActivity.this, error, Toast.LENGTH_SHORT).show();
+                }
+            });
+        }catch (Exception e){
+            Toast.makeText(this, getString(R.string.label_something_went_wrong), Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
 }

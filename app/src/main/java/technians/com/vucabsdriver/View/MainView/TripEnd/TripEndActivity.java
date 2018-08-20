@@ -58,6 +58,7 @@ public class TripEndActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(TripEndActivity.this, NavigationActivity.class));
+                new SessionManager(TripEndActivity.this).setAssingedData(-1,false);
                 finish();
             }
         });

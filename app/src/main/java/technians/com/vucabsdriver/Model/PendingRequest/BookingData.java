@@ -6,6 +6,8 @@ import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
 public class BookingData extends RealmObject{
+    @SerializedName("customer_id")
+    private int customer_id;
     @SerializedName("customer_name")
     private String customer_name;
     @SerializedName("customer_mobile")
@@ -52,7 +54,8 @@ public class BookingData extends RealmObject{
 
     }
 
-    public BookingData(String customer_name, String customer_mobile, String customer_email, int id, String order_id, String pickup_location, double pickup_latitude, double pickup_longitude, String drop_location, double drop_latitude, double drop_longitude, float distance, String time_duration, String payment_type, float gst_amount, float ride_amount, float total_amount, int toll, int status, String date) {
+    public BookingData(int customer_id, String customer_name, String customer_mobile, String customer_email, int id, String order_id, String pickup_location, double pickup_latitude, double pickup_longitude, String drop_location, double drop_latitude, double drop_longitude, float distance, String time_duration, String payment_type, float gst_amount, float ride_amount, float total_amount, int toll, int status, String date) {
+        this.customer_id = customer_id;
         this.customer_name = customer_name;
         this.customer_mobile = customer_mobile;
         this.customer_email = customer_email;
@@ -73,6 +76,14 @@ public class BookingData extends RealmObject{
         this.toll = toll;
         this.status = status;
         this.date = date;
+    }
+
+    public int getCustomer_id() {
+        return customer_id;
+    }
+
+    public void setCustomer_id(int customer_id) {
+        this.customer_id = customer_id;
     }
 
     public String getCustomer_name() {

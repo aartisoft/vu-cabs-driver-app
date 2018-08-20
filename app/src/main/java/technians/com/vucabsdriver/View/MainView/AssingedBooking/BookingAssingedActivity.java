@@ -12,6 +12,7 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,6 +29,7 @@ import technians.com.vucabsdriver.R;
 import technians.com.vucabsdriver.RealmController1;
 import technians.com.vucabsdriver.Utilities.Constants;
 import technians.com.vucabsdriver.Utilities.SessionManager;
+import technians.com.vucabsdriver.View.MainView.Fragments.MyDuty.MyDutyFragment;
 import technians.com.vucabsdriver.View.MainView.TripEnd.TripEndActivity;
 import technians.com.vucabsdriver.distance_using_gps.GpsService;
 
@@ -44,7 +46,7 @@ public class BookingAssingedActivity extends AppCompatActivity implements View.O
     private BookingData bookingData;
     private DriverLocation driverLocation;
     private AlertDialog b;
-
+    String TAG_BOOKING = "BOOKINGASSINGED123";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,8 +90,9 @@ public class BookingAssingedActivity extends AppCompatActivity implements View.O
             mTextViewDropLocation.setText(bookingData.getDrop_location());
             String upperString = bookingData.getPayment_type().substring(0, 1).toUpperCase() + bookingData.getPayment_type().substring(1);
             mTextViewPaymentType.setText(upperString);
-            mTextViewDate.setText(Constants.formateDateFromstring("mm-dd-yyyy", "dd.MMM.yyyy", bookingData.getDate()));
-            mTextViewTime.setText(Constants.formateDateFromstring("mm-dd-yyyy", "hh:mm aaa", bookingData.getDate()));
+            Log.v(TAG_BOOKING,"Date: "+bookingData.getDate());
+            mTextViewDate.setText(Constants.formateDateFromstring("dd-MM-yyyy hh:mm:ss", "dd.MMM.yyyy", bookingData.getDate()));
+            mTextViewTime.setText(Constants.formateDateFromstring("dd-MM-yyyy hh:mm:ss", "hh:mm aaa", bookingData.getDate()));
         } catch (Exception e) {
             Toast.makeText(this, getString(R.string.label_something_went_wrong), Toast.LENGTH_SHORT).show();
         }

@@ -3,6 +3,7 @@ package technians.com.vucabsdriver;
 import android.app.Application;
 import android.support.multidex.MultiDexApplication;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -31,6 +32,7 @@ public class AppController extends MultiDexApplication {
     static public boolean uiInForeground = false;
     @Override
     public void onCreate() {
+        Log.v("AppController123","OnCreate");
         super.onCreate();
 
         okHttpClient = new OkHttpClient.Builder().
@@ -42,6 +44,12 @@ public class AppController extends MultiDexApplication {
 
         appEnvironment = AppEnvironment.SANDBOX;
 
+    }
+
+    @Override
+    public void onTerminate() {
+        Log.v("AppController123","OnTerminate");
+        super.onTerminate();
     }
 
     public static synchronized AppController getInstance() {

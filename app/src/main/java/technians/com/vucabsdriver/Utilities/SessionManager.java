@@ -9,6 +9,8 @@ import android.content.SharedPreferences;
 
 public class SessionManager {
     private static final String KEY_REQUEST_UPDATES ="request_updates" ;
+    private static final String KEY_DRIVER_NAME = "driver_name";
+    private static final String KEY_ASSINGEDBOOKING_STATUS = "aasinged_booking_status";
     private static String TAG = SessionManager.class.getSimpleName();
 
     // Shared Preferences
@@ -28,6 +30,7 @@ public class SessionManager {
     private static final String KEY_RIDE_DISTANCE = "driver_distance";
     private static final String KEY_RIDE_TIME = "driver_time";
     private static final String KEY_PASSES_COUNT= "passescount";
+    private static final String KEY_ASSINGEDBOOKING_ID= "assingedbooking_id";
 
     public SessionManager(Context context) {
         int PRIVATE_MODE = 0;
@@ -62,6 +65,13 @@ public class SessionManager {
         editor.commit();
     }
 
+    public void setAssingedData(int assingedId,boolean status) {
+        editor.putInt(KEY_ASSINGEDBOOKING_ID, assingedId);
+        editor.putBoolean(KEY_ASSINGEDBOOKING_STATUS, status);
+        // commit changes
+        editor.commit();
+    }
+
     public void setDriverStatus(int driverStatus) {
         editor.putInt(KEY_DRIVER_STATUS, driverStatus);
         // commit changes
@@ -83,6 +93,11 @@ public class SessionManager {
         // commit changes
         editor.commit();
     }
+    public void setDriverName(String name) {
+        editor.putString(KEY_DRIVER_NAME, name);
+        // commit changes
+        editor.commit();
+    }
 
     public void setDrivingActive(Boolean active) {
         editor.putBoolean(KEY_DRIVING_ACTIVE, active);
@@ -95,11 +110,6 @@ public class SessionManager {
         // commit changes
         editor.commit();
     }
-//    public void setRidestartTime(Date date) {
-//        editor.putString(KEY_RIDE_TIME, date);
-//        // commit changes
-//        editor.commit();
-//    }
 
 
 
@@ -134,6 +144,9 @@ public class SessionManager {
     public String getRideDistance() {
         return pref.getString(KEY_RIDE_DISTANCE,"0.0");
     }
+    public String getDriverName() {
+        return pref.getString(KEY_DRIVER_NAME,"");
+    }
 
     public int getRideTime() {
         return pref.getInt(KEY_RIDE_TIME, -1);
@@ -143,5 +156,11 @@ public class SessionManager {
     }
     public Boolean getRequestUpdateStatus() {
         return pref.getBoolean(KEY_REQUEST_UPDATES, false);
+    }
+    public Boolean getAssingedStatus() {
+        return pref.getBoolean(KEY_ASSINGEDBOOKING_STATUS, false);
+    }
+    public int getAssingedInt() {
+        return pref.getInt(KEY_ASSINGEDBOOKING_ID, -1);
     }
 }

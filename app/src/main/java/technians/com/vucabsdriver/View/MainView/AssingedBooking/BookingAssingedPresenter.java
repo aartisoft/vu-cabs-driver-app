@@ -4,6 +4,8 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.sql.Time;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -75,16 +77,32 @@ public class BookingAssingedPresenter implements Presenter<BookingAssingedMVPVie
             final int carid = bookingAssingedMVPView.getRealm().where(Profile.class).findFirst().getCar_Type();
             bookingAssingedMVPView.showProgress();
             ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
-            Call<TripEndResponce> call = apiService.tripEnd(bookingAssingedMVPView.getSession().getToken(), String.valueOf(profile.getDriver_ID())
-                    , String.valueOf(bookingData.getId()), getLocationAddress(driverLocation.getLatitude(), driverLocation.getLongitude(),
-                            bookingAssingedMVPView.getContext()), driverLocation.getLatitude(), driverLocation.getLongitude(), 1,
-                    Distance, bookingData.getTime_duration(), carid);
+            Log.v("BookingAssinged123", "Token: " + bookingAssingedMVPView.getSession().getToken());
+            Log.v("BookingAssinged123", "Driver_id: " + String.valueOf(bookingAssingedMVPView.getSession().getDriverId()));
+            Log.v("BookingAssinged123", "BookingId: " + String.valueOf(bookingData.getId()));
+            Log.v("BookingAssinged123", "Address: " + getLocationAddress(driverLocation.getLatitude(), driverLocation.getLongitude(),
+                    bookingAssingedMVPView.getContext()));
+            Log.v("BookingAssinged123", "Latitude: " + driverLocation.getLatitude());
+            Log.v("BookingAssinged123", "Longitude: " + driverLocation.getLongitude());
+            Log.v("BookingAssinged123", "Distance: " + Distance);
+            Log.v("BookingAssinged123", "Time: " + bookingData.getTime_duration());
+            Log.v("BookingAssinged123", "Carid: " + carid);
+            Log.v("BookingAssinged123", "Customerid: " + bookingData.getCustomer_id());
+
+            Call<TripEndResponce> call = apiService.tripEnd(bookingAssingedMVPView.getSession().getToken(),
+                    String.valueOf(bookingAssingedMVPView.getSession().getDriverId())
+                    , String.valueOf(bookingData.getId()),
+                    getLocationAddress(driverLocation.getLatitude(), driverLocation.getLongitude(),
+                            bookingAssingedMVPView.getContext()), driverLocation.getLatitude(),
+                    driverLocation.getLongitude(), 1,
+                    Distance, bookingData.getTime_duration(), carid, bookingData.getCustomer_id());
+
 
             call.enqueue(new Callback<TripEndResponce>() {
                 @Override
                 public void onResponse(@NonNull Call<TripEndResponce> call, @NonNull Response<TripEndResponce> response) {
                     bookingAssingedMVPView.hideProgress();
-                    Log.v("Booking123", "Distance: " + response.body().getResponce());
+                    Log.v("BookingAssinged123", "onFailure: " + response.message());
                     if (response.body() != null) {
                         if (response.body().getStatus() == 200) {
                             if (response.body() != null) {
@@ -105,6 +123,8 @@ public class BookingAssingedPresenter implements Presenter<BookingAssingedMVPVie
 
                 @Override
                 public void onFailure(@NonNull Call<TripEndResponce> call, @NonNull Throwable t) {
+                    Log.v("BookingAssinged123", "onFailure: " + t.getMessage());
+
                     bookingAssingedMVPView.hideProgress();
                     bookingAssingedMVPView.stopService();
                     String error = new NetworkError(t).getAppErrorMessage();
@@ -112,6 +132,8 @@ public class BookingAssingedPresenter implements Presenter<BookingAssingedMVPVie
                 }
             });
         } catch (Exception e) {
+            Log.v("BookingAssinged123", "Exception: " + e.getMessage());
+
             bookingAssingedMVPView.showApiError(bookingAssingedMVPView.getContext().getString(R.string.label_something_went_wrong));
         }
     }

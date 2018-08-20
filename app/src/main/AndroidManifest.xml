@@ -121,6 +121,7 @@
                 <action android:name="com.package.name.START_SERVICE" />
             </intent-filter>
         </service>
+        <service android:name=".OnClearFromRecentService" android:stopWithTask="false" />
 
         <activity android:name=".GPSActivity">
 

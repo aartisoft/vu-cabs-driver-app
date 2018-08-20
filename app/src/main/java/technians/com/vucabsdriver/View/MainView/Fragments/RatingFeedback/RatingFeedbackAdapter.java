@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,7 +58,11 @@ public class RatingFeedbackAdapter extends RecyclerView.Adapter<RatingFeedbackAd
     public void onBindViewHolder(RatingFeedbackAdapter.MyViewHolder holder, int position) {
         Rating rating = ratingList.get(position);
         String CustomerName = rating.getCus_name().substring(0,1).toUpperCase() + rating.getCus_name().substring(1);
-        String Comment = rating.getComment().substring(0,1).toUpperCase() + rating.getComment().substring(1);
+        String Comment = rating.getComment();
+        Log.v("Comment123","Comment: "+Comment);
+//        if (Comment.length()!=0){
+//            Comment = Comment.substring(0,1).toUpperCase() + rating.getComment().substring(1);
+//        }
         holder.tv_CustomerName.setText(CustomerName);
         holder.tv_RatingText.setText(String.format("%d/5", rating.getRating()));
         holder.tv_Comment.setText(Comment);

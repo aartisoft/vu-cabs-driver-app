@@ -77,7 +77,21 @@ public class NavigationActivity extends AppCompatActivity
     public static final int REQUEST_CHECK_SETTINGS = 100;
 
     @Override
+    protected void onStart() {
+        Log.v(TAG,"onStart");
+        super.onStart();
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.v(TAG,"onStop");
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.v(TAG,"onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
 
@@ -250,14 +264,21 @@ public class NavigationActivity extends AppCompatActivity
 
     @Override
     protected void onDestroy() {
-        presenter.detachView();
-        realm.close();
-//        this.stopService(new Intent(NavigationActivity.this, BackgroundFusedLocation.class));
+        Log.v(TAG,"OnDestroyActivity");
+
+//        MyDutyFragment fragment = (MyDutyFragment) getSupportFragmentManager().findFragmentByTag(getString(R.string.myduty));
+//        Log.v("MYDUTYFRAGMENT","Fragment: "+fragment.getTag());
+//        fragment.stopLocationUpdates();
+//        presenter.detachView();
+//        realm.close();
         super.onDestroy();
+
     }
+
 
     @Override
     protected void onPause() {
+        Log.v(TAG,"onPause");
         super.onPause();
     }
 
@@ -301,7 +322,6 @@ public class NavigationActivity extends AppCompatActivity
                 break;
             case R.id.nav_logout:
                 sessionManager.setLogin(false);
-//                stopService(new Intent(NavigationActivity.this, BackgroundFusedLocation.class));
                 realm.beginTransaction();
                 realm.deleteAll();
                 realm.commitTransaction();
@@ -311,12 +331,11 @@ public class NavigationActivity extends AppCompatActivity
             case R.id.nav_termscons:
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.url_terms)));
                 startActivity(browserIntent);
+                finish();
                 break;
         }
 
-        //replacing the fragment
         if (fragment != null) {
-
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.contentframe, fragment, tag);
             ft.commit();
@@ -364,6 +383,7 @@ public class NavigationActivity extends AppCompatActivity
             DriverName.setText(profile.getName().toUpperCase());
             DriverEmail.setText(profile.getEmail());
             sessionManager.setDriverId(profile.getDriver_ID());
+            sessionManager.setDriverName(profile.getName());
             Intent intent = new Intent(BROADCAST_ACTION);
             sendBroadcast(intent);
 
@@ -457,7 +477,9 @@ public class NavigationActivity extends AppCompatActivity
 
     @Override
     protected void onResume() {
+        Log.v(TAG,"onResume");
         super.onResume();
+
         displaySelectedScreen(sessionManager.getCurrentFragment());
     }
 

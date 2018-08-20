@@ -34,6 +34,8 @@ import com.google.firebase.database.ValueEventListener;
 import technians.com.vucabsdriver.R;
 import technians.com.vucabsdriver.Utilities.SessionManager;
 import technians.com.vucabsdriver.View.Login.LoginWithOTP.LoginWithOTPActivity;
+import technians.com.vucabsdriver.View.MainView.AssingedBooking.BookingAssingedActivity;
+import technians.com.vucabsdriver.View.MainView.BookingOTP.OTPBookingActivity;
 import technians.com.vucabsdriver.View.MainView.ContainerActivity.NavigationActivity;
 
 import static technians.com.vucabsdriver.Utilities.Constants.showProgressDialog;
@@ -67,6 +69,11 @@ public class LoginWithPhoneActivity extends AppCompatActivity implements LoginWi
             startActivity(new Intent(LoginWithPhoneActivity.this, NavigationActivity.class));
             finish();
         }
+//        if (new SessionManager(this).isLoggedIn()&& new SessionManager(this).getAssingedStatus()) {
+//            startActivity(new Intent(LoginWithPhoneActivity.this, BookingAssingedActivity.class)
+//                    .putExtra("ID", new SessionManager(this).getAssingedInt()));
+//            finish();
+//        }
         btnlogin.setOnClickListener(this);
         etphoneno.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override

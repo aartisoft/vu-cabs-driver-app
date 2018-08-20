@@ -46,6 +46,11 @@ public class OTPBookingPresenter implements Presenter<OTPBookingMVPView> {
 
                         //uncomment below code and remove above line
 
+//                        otpBookingMVPView.gotoAssingedbooking();
+//                        otpBookingMVPView.getSession().setDrivingActive(true);
+//                        otpBookingMVPView.startService();
+//                        otpBookingMVPView.changedriverstatus();
+
                         if (response.body().getStatus() == 200) {
                             otpBookingMVPView.gotoAssingedbooking();
                             otpBookingMVPView.getSession().setDrivingActive(true);

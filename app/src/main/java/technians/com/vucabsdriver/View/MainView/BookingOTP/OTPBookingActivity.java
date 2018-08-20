@@ -205,6 +205,7 @@ public class OTPBookingActivity extends AppCompatActivity implements OTPBookingM
 
     @Override
     public void gotoAssingedbooking() {
+        sessionManager.setAssingedData(ID,true);
         startActivity(new Intent(OTPBookingActivity.this, BookingAssingedActivity.class)
                 .putExtra("ID", ID));
         finish();
