@@ -1,5 +1,6 @@
 package technians.com.vucabsdriver.View.MainView.Fragments.MyDuty;
 
+import android.app.ProgressDialog;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -13,11 +14,13 @@ import technians.com.vucabsdriver.Model.PendingRequest.PendingRequestResponce;
 import technians.com.vucabsdriver.Model.RetrofitError.NetworkError;
 import technians.com.vucabsdriver.Presenter.Presenter;
 import technians.com.vucabsdriver.R;
+import technians.com.vucabsdriver.Utilities.Constants;
 import technians.com.vucabsdriver.rest.ApiClient;
 import technians.com.vucabsdriver.rest.ApiInterface;
 
 public class MyDutyPresenter implements Presenter<MyDutyMVPView> {
     private MyDutyMVPView myDutyMVPView;
+    private ProgressDialog progressDialog;
 
     @Override
     public void attachView(MyDutyMVPView view) {
@@ -30,8 +33,9 @@ public class MyDutyPresenter implements Presenter<MyDutyMVPView> {
     }
 
     public void loadpendingrequest() {
+        progressDialog = Constants.showProgressDialog(myDutyMVPView.getContext());
         try {
-            myDutyMVPView.showProgress();
+            progressDialog.show();
             ApiInterface apiService = ApiClient.getClient().create(ApiInterface.class);
             Log.v("loadpendingrequest", "Pending Request");
             Call<PendingRequestResponce> call = apiService.getPendingRequest(myDutyMVPView.getSession().getToken());
@@ -40,7 +44,7 @@ public class MyDutyPresenter implements Presenter<MyDutyMVPView> {
                 public void onResponse(@NonNull Call<PendingRequestResponce> call, @NonNull Response<PendingRequestResponce> response) {
                     Log.v("MyDuty123", "Exception: " + response);
 
-                    myDutyMVPView.hideProgress();
+                    progressDialog.dismiss();
                     if (response.body() != null) {
                         if (response.body().getStatus() == 200) {
                             ArrayList<BookingData> arrayList = response.body().getPendingRequestData().getBookingData();
@@ -80,7 +84,7 @@ public class MyDutyPresenter implements Presenter<MyDutyMVPView> {
                 @Override
                 public void onFailure(@NonNull Call<PendingRequestResponce> call, @NonNull Throwable t) {
                     Log.v("MyDuty123", "Exception: " + t.getMessage());
-                    myDutyMVPView.hideProgress();
+                    progressDialog.dismiss();
                     String error = new NetworkError(t).getAppErrorMessage();
                     myDutyMVPView.showApiError(error);
                 }

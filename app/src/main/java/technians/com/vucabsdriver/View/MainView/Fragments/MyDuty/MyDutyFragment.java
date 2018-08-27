@@ -74,6 +74,7 @@ import technians.com.vucabsdriver.Model.Profile.Profile;
 import technians.com.vucabsdriver.OnClearFromRecentService;
 import technians.com.vucabsdriver.R;
 import technians.com.vucabsdriver.RealmController1;
+import technians.com.vucabsdriver.Utilities.Connectivity;
 import technians.com.vucabsdriver.Utilities.Constants;
 import technians.com.vucabsdriver.Utilities.SessionManager;
 import technians.com.vucabsdriver.View.MainView.AssingedBooking.BookingAssingedActivity;
@@ -191,15 +192,13 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
         mLocationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
+                Log.v(TAG, "onLocation" + "Result: " + locationResult);
                 if (locationResult == null) {
                     return;
                 }
                 for (Location location : locationResult.getLocations()) {
                     // Update UI with location data
-                    Log.v(TAG, "onLocation" + "Result: " + location);
-                    if (location.getAccuracy() < 100.0 && location.getSpeed() < 6.95) {
                         updateFireBaseData(location);
-                    }
                 }
             }
         };
@@ -221,12 +220,26 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
 
                     }
                 });
+        if (!Connectivity.isConnected(getActivity())){
+            Log.v(TAG, "Not Connected");
+            customToggleButton.setChecked(false);
+            mDatabase.child("driver_current_location").child(String.valueOf(sessionManager.getDriverId())).onDisconnect().removeValue();
+        }
+        mDatabase.child("driver_current_location").child(String.valueOf(sessionManager.getDriverId())).onDisconnect()
+                .removeValue(new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                Log.v(TAG, "Not Connected onDisconnect");
+            }
+        });
         return view;
     }
 
 
     private void updateFireBaseData(Location location) {
-        if (isAdded()) {
+        Log.v(TAG, "updateFireBaseData: " + location);
+        if (isAdded() && Connectivity.isConnected(getActivity())) {
+
             if (!customToggleButton.isChecked()) {
                 customToggleButton.setChecked(true);
             }
@@ -262,6 +275,7 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
             Marker marker = mMap.addMarker(markerOpt);
             marker.setTag(info);
             marker.showInfoWindow();
+
             addOverlay(new LatLng(location.getLatitude(), location.getLongitude()));
             DriverCurrentLocation driverLocation = new DriverCurrentLocation(Address, updatedat2, profile.getCar_Type(),
                     sessionManager.getDriverId(), sessionManager.getDriverStatus(), location.getLatitude(),
@@ -288,6 +302,8 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
             if (sessionManager.getDriverStatus() == -1) {
                 presenter.loadpendingrequest();
             }
+        }else if (!Connectivity.isConnected(getActivity())){
+            customToggleButton.setChecked(false);
         }
     }
 
@@ -308,7 +324,7 @@ public class MyDutyFragment extends Fragment implements OnMapReadyCallback, View
     public void onResume() {
         super.onResume();
         Log.v(TAG, "onResume: " + mRequestingLocationUpdates);
-        if (mRequestingLocationUpdates) {
+        if (mRequestingLocationUpdates&&Connectivity.isConnected(getActivity())) {
             startLocationUpdates();
             customToggleButton.setChecked(true);
         } else {

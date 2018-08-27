@@ -498,8 +498,8 @@ public class NavigationActivity extends AppCompatActivity
                     break;
                 }
                 case RESULT_CANCELED: {
-                    Toast.makeText(this, "Cancelled", Toast.LENGTH_SHORT).show();
-                    finishAffinity();
+//                    Toast.makeText(this, "Cancelled", Toast.LENGTH_SHORT).show();
+//                    finishAffinity();
                     break;
                 }
             }
